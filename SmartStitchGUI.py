@@ -33,13 +33,13 @@ class SmartStitch(Tk):
         self.iconphoto(False, PhotoImage(file = "SmartStitchLogo.png"))
 
         # Sets Window Size, centers it on Launch and Prevents Resize.
-        window_height = 280
-        window_width = 500
+        window_width = self.winfo_width()
+        window_height = self.winfo_height()
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
-        x_cordinate = int((screen_width/2) - (window_width/2))
-        y_cordinate = int((screen_height/2) - (window_height/2))
-        self.geometry("{}x{}+{}+{}".format(window_width, window_height, x_cordinate, y_cordinate))
+        x = (self.winfo_screenwidth()/2) - (window_height/2) - 120
+        y = (self.winfo_screenheight()/2) - (window_width/2) - 40
+        self.geometry('+%d+%d' % (x, y))
         self.columnconfigure(0, weight=1)
         self.resizable(False, False)
 
