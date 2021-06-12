@@ -5,6 +5,7 @@ from PIL import Image as pil
 import numpy as np
 import os
 import time
+import pickle
 
 class SmartStitch(Tk):
     def __init__(self, *args, **kwargs):
@@ -27,10 +28,11 @@ class SmartStitch(Tk):
         self.SetupSettingsFrame().grid(row=1, column=0, padx=(15), pady=(0,15), sticky="new")
         self.SetupStatusFrame().grid(row=2, column=0, padx=(15), pady=(0,15), sticky="new")
         self.SetupActionFrame().grid(row=3, column=0, padx=(15), pady=(0,15), sticky="new")
+        self.LoadPrevSettings()
 
     def SetupWindow(self):
         # Sets up Title and Logo
-        self.title('SmartStitch by MechTechnology [1.3]')
+        self.title('SmartStitch by MechTechnology [1.4]')
         self.iconphoto(False, PhotoImage(file = "SmartStitchLogo.png"))
 
         # Sets Window Size, centers it on Launch and Prevents Resize.
@@ -43,6 +45,29 @@ class SmartStitch(Tk):
         self.geometry('+%d+%d' % (x, y))
         self.columnconfigure(0, weight=1)
         self.resizable(False, False)
+
+    def LoadPrevSettings(self):
+        # loads the setting on start up (creates if it does not exist)
+        settings_pickle = "settings.pickle"
+        if not os.path.exists(settings_pickle):
+            self.SaveCurrentSettings()
+        else:
+            with open(settings_pickle, "rb") as settings_handle:
+                settings = pickle.load(settings_handle)
+                self.split_height.set(settings[0])
+                self.senstivity.set(settings[1])
+                self.output_type.set(settings[2])
+
+    def SaveCurrentSettings(self, *args):
+        # Saves the settings
+        settings = []
+        settings.append(self.split_height.get())
+        settings.append(self.senstivity.get())
+        settings.append(self.output_type.get())
+
+        settings_pickle = "settings.pickle"
+        with open(settings_pickle, 'wb') as settings_handle:
+            pickle.dump(settings, settings_handle)
 
     def SetupBrowseFrame(self):
         # Browse Button and Input and Output Field
@@ -76,12 +101,15 @@ class SmartStitch(Tk):
         settings_frame = Frame(self)
         split_label = ttk.Label(settings_frame, text = 'Rough Panel Height (In Pixels):')
         split_field = ttk.Entry(settings_frame, textvariable=self.split_height, validate='all')
+        split_field.bind("<Any-KeyRelease>", self.SaveCurrentSettings)
         split_field['validatecommand'] = (split_field.register(self.AllowNumOnly),'%P','%d','%s')
         senstivity_label = ttk.Label(settings_frame, text = 'Bubble Detection Senstivity (0-100%):')
         senstivity_field = ttk.Entry(settings_frame, textvariable=self.senstivity, validate='all')
+        senstivity_field.bind("<Any-KeyRelease>", self.SaveCurrentSettings)
         senstivity_field['validatecommand'] = (senstivity_field.register(self.AllowPercentOnly),'%P','%d','%s')
         type_label = ttk.Label(settings_frame, text = 'Output Images Type:')
         type_dropdown = ttk.Combobox(settings_frame, textvariable=self.output_type, values=('.jpg', '.png', '.bmp', '.tiff', '.tga'))
+        type_dropdown.bind("<<ComboboxSelected>>", self.SaveCurrentSettings)
         split_label.grid(row=0, column=0, sticky="new")
         split_field.grid(row=1, column=0, pady=(2,0), sticky="new")
         senstivity_label.grid(row = 0, column = 1, padx=(15, 0), sticky="new")
