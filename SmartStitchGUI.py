@@ -17,6 +17,7 @@ class SmartStitch(Tk):
         self.split_height = StringVar(value="5000")
         self.senstivity = StringVar(value="90")
         self.status = StringVar(value="Idle")
+        self.output_type = StringVar(value=".jpg")
         self.progress = ""
         self.actionbutton = ""
 
@@ -29,7 +30,7 @@ class SmartStitch(Tk):
 
     def SetupWindow(self):
         # Sets up Title and Logo
-        self.title('SmartStitch by MechTechnology')
+        self.title('SmartStitch by MechTechnology [1.2]')
         self.iconphoto(False, PhotoImage(file = "SmartStitchLogo.png"))
 
         # Sets Window Size, centers it on Launch and Prevents Resize.
@@ -48,6 +49,7 @@ class SmartStitch(Tk):
         browse_frame = Frame(self)
         browse_label = ttk.Label(browse_frame, text = 'Input Path')
         browse_field = ttk.Entry(browse_frame, textvariable=self.input_folder)
+        browse_field.bind("<Any-KeyRelease>", self.UpdateOutputFolder)
         browse_button = ttk.Button(browse_frame, text = 'Browse', command=self.BrowseToCommand)
         output_label = ttk.Label(browse_frame, text = 'Output Path')
         output_field = ttk.Entry(browse_frame, textvariable=self.output_folder)
@@ -65,6 +67,10 @@ class SmartStitch(Tk):
         self.input_folder.set(foldername)
         self.output_folder.set(foldername + " [Stitched]")
 
+    def UpdateOutputFolder(self, *args):
+        foldername = self.input_folder.get()
+        self.output_folder.set(foldername + " [Stitched]")
+
     def SetupSettingsFrame(self):
         # Browse Split Field and Senstivity Fields
         settings_frame = Frame(self)
@@ -74,10 +80,14 @@ class SmartStitch(Tk):
         senstivity_label = ttk.Label(settings_frame, text = 'Bubble Detection Senstivity (0-100%):')
         senstivity_field = ttk.Entry(settings_frame, textvariable=self.senstivity, validate='all')
         senstivity_field['validatecommand'] = (senstivity_field.register(self.AllowPercentOnly),'%P','%d','%s')
+        type_label = ttk.Label(settings_frame, text = 'Output Images Type:')
+        type_dropdown = ttk.Combobox(settings_frame, textvariable=self.output_type, values=('.jpg', '.png', '.bmp', '.tiff', '.tga'))
         split_label.grid(row=0, column=0, sticky="new")
         split_field.grid(row=1, column=0, pady=(2,0), sticky="new")
         senstivity_label.grid(row = 0, column = 1, padx=(15, 0), sticky="new")
         senstivity_field.grid(row = 1, column = 1, padx=(15, 0), pady=(2,0), sticky="new")
+        type_label.grid(row = 2, column = 0, columnspan=2, pady=(5,0), sticky="new")
+        type_dropdown.grid(row = 3, column = 0, columnspan=2, pady=(2,0), sticky="new")
         settings_frame.columnconfigure(0, weight=1)
         settings_frame.columnconfigure(1, weight=1)
         return settings_frame
@@ -200,8 +210,9 @@ class SmartStitch(Tk):
         if not os.path.exists(new_folder):
             os.makedirs(new_folder)
         imageIndex = 1
+        outputformat = self.output_type.get()
         for image in data:
-            image.save(new_folder + '/' + str(f'{imageIndex:02}') + '.png')
+            image.save(new_folder + '/' + str(f'{imageIndex:02}') + outputformat)
             imageIndex += 1
             progress_value = 40 + (60 * imageIndex/len(data))
             self.progress['value'] = progress_value
