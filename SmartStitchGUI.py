@@ -17,7 +17,7 @@ class SmartStitch(Tk):
         self.split_height = StringVar(value="5000")
         self.senstivity = StringVar(value="90")
         self.status = StringVar(value="Idle")
-        self.output_type = StringVar(value=".png")
+        self.output_type = StringVar(value=".jpg")
         self.progress = ""
         self.actionbutton = ""
 
@@ -30,7 +30,7 @@ class SmartStitch(Tk):
 
     def SetupWindow(self):
         # Sets up Title and Logo
-        self.title('SmartStitch by MechTechnology [1.2]')
+        self.title('SmartStitch by MechTechnology [1.3]')
         self.iconphoto(False, PhotoImage(file = "SmartStitchLogo.png"))
 
         # Sets Window Size, centers it on Launch and Prevents Resize.
@@ -81,7 +81,7 @@ class SmartStitch(Tk):
         senstivity_field = ttk.Entry(settings_frame, textvariable=self.senstivity, validate='all')
         senstivity_field['validatecommand'] = (senstivity_field.register(self.AllowPercentOnly),'%P','%d','%s')
         type_label = ttk.Label(settings_frame, text = 'Output Images Type:')
-        type_dropdown = ttk.Combobox(settings_frame, textvariable=self.output_type, values=('.png', '.jpg', '.bmp', '.tiff', '.tga'))
+        type_dropdown = ttk.Combobox(settings_frame, textvariable=self.output_type, values=('.jpg', '.png', '.bmp', '.tiff', '.tga'))
         split_label.grid(row=0, column=0, sticky="new")
         split_field.grid(row=1, column=0, pady=(2,0), sticky="new")
         senstivity_label.grid(row = 0, column = 1, padx=(15, 0), sticky="new")
@@ -212,7 +212,7 @@ class SmartStitch(Tk):
         imageIndex = 1
         outputformat = self.output_type.get()
         for image in data:
-            image.save(new_folder + '/' + str(f'{imageIndex:02}') + outputformat)
+            image.save(new_folder + '/' + str(f'{imageIndex:02}') + outputformat, quality=100)
             imageIndex += 1
             progress_value = 40 + (60 * imageIndex/len(data))
             self.progress['value'] = progress_value
