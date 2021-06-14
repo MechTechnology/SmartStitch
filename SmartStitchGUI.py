@@ -162,7 +162,7 @@ class SmartStitch(Tk):
             return images
         folder = os.path.abspath(str(self.input_folder.get()))
         for imgFile in os.listdir(folder):
-            if imgFile.endswith(('.png', '.jpg', '.jpeg', '.bmp', '.tiff', '.tga')):
+            if imgFile.endswith(('.png', '.webp', '.jpg', '.jpeg', '.bmp', '.tiff', '.tga')):
                 imgPath = os.path.join(folder, imgFile)
                 image = pil.open(imgPath)
                 images.append(image)
