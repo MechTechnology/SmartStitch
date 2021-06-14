@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(['SmartStitchGUI.py'],
-             pathex=['C:\\Users\\mosta\\Source Codes\\Public Projects\\SmartStitcher'],
+             pathex=['.'],
              binaries=[],
              datas=[],
              hiddenimports=[],
@@ -29,7 +29,7 @@ exe = EXE(pyz,
           upx=True,
           console=False , icon='SmartStitchLogo.ico')
 coll = COLLECT(exe,
-               a.binaries,
+               a.binaries + [('SmartStitchLogo.ico', 'SmartStitchLogo.ico', 'DATA')],
                a.zipfiles,
                a.datas,
                strip=False,
