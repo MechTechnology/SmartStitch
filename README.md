@@ -20,3 +20,11 @@ It's not fancy, and does not use AI, but it's fast, simple and more importantly 
 - Before slicing thou, it checks the row of pixels it will slice at if there is bubbles or whatever, it compares neighbouring pixels for any drastic jump in value, (tolarence for value jumps is the sentivity)
 - if there is too big of a jump in value between the pixels, that means there is something that shouldn't be cut, so it move up a pixel row and repeat.
 - For senstivity 100 will mean if the pixel row that it will slice at will have to be the same color, 0 being it does not care so it will cut there
+
+### How to built --Windows
+1. install PyInstaller if you haven't yet with the following command: pip install pyinstaller
+3. then to create a build do: pyinstaller SmartStitchGUI.spec
+
+### How single file --Windows
+1. install PyInstaller if you haven't yet with the following command: pip install pyinstaller
+3. then to create a build do: pyinstaller singleFile.spec

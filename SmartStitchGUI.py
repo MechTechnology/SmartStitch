@@ -30,10 +30,18 @@ class SmartStitch(Tk):
         self.SetupActionFrame().grid(row=3, column=0, padx=(15), pady=(0,15), sticky="new")
         self.LoadPrevSettings()
 
+    def geticon(self, relative_path):    
+        if not hasattr(sys, "frozen"):
+            relative_path = os.path.join(os.path.dirname(__file__), relative_path)
+        else:
+            relative_path = os.path.join(sys.prefix, relative_path)
+        return relative_path
+
+        # return os.path.join(base_path, relative_path)
     def SetupWindow(self):
         # Sets up Title and Logo
         self.title('SmartStitch by MechTechnology [1.4]')
-        self.iconphoto(False, PhotoImage(file = "SmartStitchLogo.png"))
+        self.iconbitmap(default=self.geticon("SmartStitchLogo.ico"))
 
         # Sets Window Size, centers it on Launch and Prevents Resize.
         window_width = self.winfo_width()
@@ -108,7 +116,7 @@ class SmartStitch(Tk):
         senstivity_field.bind("<Any-KeyRelease>", self.SaveCurrentSettings)
         senstivity_field['validatecommand'] = (senstivity_field.register(self.AllowPercentOnly),'%P','%d','%s')
         type_label = ttk.Label(settings_frame, text = 'Output Images Type:')
-        type_dropdown = ttk.Combobox(settings_frame, textvariable=self.output_type, values=('.jpg', '.png', '.bmp', '.tiff', '.tga'))
+        type_dropdown = ttk.Combobox(settings_frame, textvariable=self.output_type, values=('.jpg', '.png', '.webp', '.bmp', '.tiff', '.tga'))
         type_dropdown.bind("<<ComboboxSelected>>", self.SaveCurrentSettings)
         split_label.grid(row=0, column=0, sticky="new")
         split_field.grid(row=1, column=0, pady=(2,0), sticky="new")
@@ -162,7 +170,7 @@ class SmartStitch(Tk):
             return images
         folder = os.path.abspath(str(self.input_folder.get()))
         for imgFile in os.listdir(folder):
-            if imgFile.endswith(('.png', '.jpg', '.jpeg', '.bmp', '.tiff', '.tga')):
+            if imgFile.endswith(('.png', '.webp', '.jpg', '.jpeg', '.bmp', '.tiff', '.tga')):
                 imgPath = os.path.join(folder, imgFile)
                 image = pil.open(imgPath)
                 images.append(image)
