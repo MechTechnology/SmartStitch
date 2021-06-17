@@ -1,6 +1,6 @@
 # SmartStitch
 A small program for stitching together webtoons/manhwa/manhua raws.
-It's not fancy, and does not use AI, but it's fast, simple and more importantly works for me. (So i decided to share it with you!)
+The smart part of the name is that it does not cut/slice through sfx or speech or drawings. it making life easy for the team working on the combined images. [CLRD and TS now love me]. *It's not fancy, and does not use AI, but it's fast, simple and more importantly works for me. (So i decided to share it with you!)*
 
 ### How to Use:
 1. Download it from the release section in this github
@@ -9,8 +9,9 @@ It's not fancy, and does not use AI, but it's fast, simple and more importantly 
 4. Browse to your raw folder
 5. Set the rough height/length of the output files
 6. Set the sensitivity or leave it as is (setting it as 0, would turn off the smart aspect and you will get a normal image combiner)
-7. Click start process
-8. Done, Enjoy
+7. Set the output file type. (Supported types: png. jpg, webp, bmp, tiff, tga)
+8. Click start process
+9. Done, Enjoy
 
 - Number your files correctly and don't use single digit numbering since it might mix up your files
 - Bad: 1,2,3...10,11,12), Good: 01,02,03,...10,11,12
