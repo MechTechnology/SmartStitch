@@ -13,8 +13,7 @@ The smart part of the name is that it does not cut/slice through sfx or speech o
 8. Click start process
 9. Done, Enjoy
 
-- Number your files correctly and don't use single digit numbering since it might mix up your files
-- Bad: 1,2,3...10,11,12), Good: 01,02,03,...10,11,12
+- Your file will be ordered the same way they are in your file explorer, so make sure everything is in order. (sort by name in file explorer)
 
 ### How it Works (and What is Sensitivity)
 - how it works is that it combines everything into a single image, and then starts slicing it into smaller ones
