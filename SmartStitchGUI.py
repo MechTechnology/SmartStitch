@@ -2,6 +2,7 @@ from tkinter import filedialog
 from tkinter import *
 from tkinter import ttk
 from PIL import Image as pil
+from natsort import natsorted
 import numpy as np
 import os
 import time
@@ -40,7 +41,7 @@ class SmartStitch(Tk):
         # return os.path.join(base_path, relative_path)
     def SetupWindow(self):
         # Sets up Title and Logo
-        self.title('SmartStitch by MechTechnology [1.4]')
+        self.title('SmartStitch by MechTechnology [1.5]')
         self.iconbitmap(default=self.geticon("SmartStitchLogo.ico"))
 
         # Sets Window Size, centers it on Launch and Prevents Resize.
@@ -169,7 +170,10 @@ class SmartStitch(Tk):
         if (self.input_folder.get() == ""):
             return images
         folder = os.path.abspath(str(self.input_folder.get()))
-        for imgFile in os.listdir(folder):
+        files = natsorted(os.listdir(folder))
+        if len(files) == 0:
+            return images
+        for imgFile in files:
             if imgFile.endswith(('.png', '.webp', '.jpg', '.jpeg', '.bmp', '.tiff', '.tga')):
                 imgPath = os.path.join(folder, imgFile)
                 image = pil.open(imgPath)
