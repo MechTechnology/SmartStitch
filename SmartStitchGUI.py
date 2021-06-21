@@ -41,7 +41,7 @@ class SmartStitch(Tk):
         # return os.path.join(base_path, relative_path)
     def SetupWindow(self):
         # Sets up Title and Logo
-        self.title('SmartStitch by MechTechnology [1.5]')
+        self.title('SmartStitch by MechTechnology [1.6]')
         self.iconbitmap(default=self.geticon("SmartStitchLogo.ico"))
 
         # Sets Window Size, centers it on Launch and Prevents Resize.
@@ -174,7 +174,7 @@ class SmartStitch(Tk):
         if len(files) == 0:
             return images
         for imgFile in files:
-            if imgFile.endswith(('.png', '.webp', '.jpg', '.jpeg', '.bmp', '.tiff', '.tga')):
+            if imgFile.endswith(('.png', '.webp', '.jpg', '.jpeg', '.jfif', '.bmp', '.tiff', '.tga')):
                 imgPath = os.path.join(folder, imgFile)
                 image = pil.open(imgPath)
                 images.append(image)
