@@ -22,9 +22,14 @@ class SmartStitch(Tk):
         self.senstivity = StringVar(value="90")
         self.status = StringVar(value="Idle")
         self.output_type = StringVar(value=".jpg")
+        self.width_enforce_type = StringVar(value="No Width Enforcement")
+        self.custom_width = StringVar(value="720")
         self.num_of_inputs = 1
         self.progress = ""
         self.actionbutton = ""
+        self.widthfieldtitle = ""
+        self.widthfield = ""
+        self.widthdisclamer = ""
 
         # Componant Setup
         self.SetupWindow()
@@ -33,6 +38,7 @@ class SmartStitch(Tk):
         self.SetupStatusFrame().grid(row=2, column=0, padx=(15), pady=(0,15), sticky="new")
         self.SetupActionFrame().grid(row=3, column=0, padx=(15), pady=(0,15), sticky="new")
         self.LoadPrevSettings()
+        self.UpdateWidthMode()
 
     def geticon(self, relative_path):    
         if not hasattr(sys, "frozen"):
@@ -44,7 +50,7 @@ class SmartStitch(Tk):
         # return os.path.join(base_path, relative_path)
     def SetupWindow(self):
         # Sets up Title and Logo
-        self.title('SmartStitch by MechTechnology [1.7]')
+        self.title('SmartStitch by MechTechnology [1.8]')
         self.iconbitmap(default=self.geticon("SmartStitchLogo.ico"))
 
         # Sets Window Size, centers it on Launch and Prevents Resize.
@@ -52,8 +58,8 @@ class SmartStitch(Tk):
         window_height = self.winfo_height()
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
-        x = (self.winfo_screenwidth()/2) - (window_height/2) - 120
-        y = (self.winfo_screenheight()/2) - (window_width/2) - 40
+        x = (self.winfo_screenwidth()/2) - (window_height/2) - 220
+        y = (self.winfo_screenheight()/2) - (window_width/2) - 200
         self.geometry('+%d+%d' % (x, y))
         self.columnconfigure(0, weight=1)
         self.resizable(False, False)
@@ -69,6 +75,8 @@ class SmartStitch(Tk):
                 self.split_height.set(settings[0])
                 self.senstivity.set(settings[1])
                 self.output_type.set(settings[2])
+                self.width_enforce_type.set(settings[3])
+                self.custom_width.set(settings[4])
 
     def SaveCurrentSettings(self, *args):
         # Saves the settings
@@ -76,6 +84,8 @@ class SmartStitch(Tk):
         settings.append(self.split_height.get())
         settings.append(self.senstivity.get())
         settings.append(self.output_type.get())
+        settings.append(self.width_enforce_type.get())
+        settings.append(self.custom_width.get())
 
         settings_pickle = "settings.pickle"
         with open(settings_pickle, 'wb') as settings_handle:
@@ -124,12 +134,22 @@ class SmartStitch(Tk):
         type_label = ttk.Label(settings_frame, text = 'Output Images Type:')
         type_dropdown = ttk.Combobox(settings_frame, textvariable=self.output_type, values=('.jpg', '.png', '.webp', '.bmp', '.tiff', '.tga'))
         type_dropdown.bind("<<ComboboxSelected>>", self.SaveCurrentSettings)
+        width_enforce_label = ttk.Label(settings_frame, text = 'Output Width Enforcement:')
+        width_enforce_dropdown = ttk.Combobox(settings_frame, textvariable=self.width_enforce_type, values=('No Width Enforcement', 'Automatic Uniform Width', 'User Customized Width'))
+        width_enforce_dropdown.bind("<<ComboboxSelected>>", self.UpdateWidthMode)
+        self.widthfieldtitle = ttk.Label(settings_frame, text = 'Custom Width to be Enforced (In Pixels):')
+        self.widthfield = ttk.Entry(settings_frame, textvariable=self.custom_width, validate='all')
+        self.widthfield.bind("<Any-KeyRelease>", self.SaveCurrentSettings)
+        self.widthfield['validatecommand'] = (split_field.register(self.AllowNumOnly),'%P','%d','%s')
+        self.widthdisclamer = ttk.Label(settings_frame, foreground='red', text = 'Disclaimer:', justify=LEFT, wraplength=380)
         split_label.grid(row=0, column=0, sticky="new")
         split_field.grid(row=1, column=0, pady=(2,0), sticky="new")
         senstivity_label.grid(row = 0, column = 1, padx=(15, 0), sticky="new")
         senstivity_field.grid(row = 1, column = 1, padx=(15, 0), pady=(2,0), sticky="new")
-        type_label.grid(row = 2, column = 0, columnspan=2, pady=(5,0), sticky="new")
-        type_dropdown.grid(row = 3, column = 0, columnspan=2, pady=(2,0), sticky="new")
+        type_label.grid(row = 2, column = 0, pady=(5,0), sticky="new")
+        type_dropdown.grid(row = 3, column = 0, pady=(2,0), sticky="new")
+        width_enforce_label.grid(row = 2, column = 1, padx=(15, 0), pady=(5,0), sticky="new")
+        width_enforce_dropdown.grid(row = 3, column = 1, padx=(15, 0), pady=(2,0), sticky="new")
         settings_frame.columnconfigure(0, weight=1)
         settings_frame.columnconfigure(1, weight=1)
         return settings_frame
@@ -147,6 +167,25 @@ class SmartStitch(Tk):
             if not (P.isdigit() and len(s) < 3 and int(P)<=100):
                 return False
         return True
+
+    def UpdateWidthMode(self, *args):
+        enforce_type = self.width_enforce_type.get()
+        if enforce_type == 'Automatic Uniform Width':
+            self.widthfieldtitle.grid_remove()
+            self.widthfield.grid_remove()
+            self.widthdisclamer['text'] = 'Disclaimer: This width enforcement mode will cause files with a larger width to be resized down (using LANCZOS) to the width of smallest input file.'
+            self.widthdisclamer.grid(row = 6, column = 0, columnspan=2, pady=(5,0), sticky="new")
+        elif enforce_type == 'User Customized Width':
+            self.widthfieldtitle.grid(row = 4, column = 0, columnspan=2, pady=(5,0), sticky="new")
+            self.widthfield.grid(row = 5, column = 0, columnspan=2, pady=(2,0), sticky="new")
+            self.widthdisclamer['text'] = 'Disclaimer: This width enforcement mode will cause all files to be resized (using LANCZOS) to the width you specify. Please use tools like waifu2x for large upscaling.'
+            self.widthdisclamer.grid(row = 6, column = 0, columnspan=2, pady=(5,0), sticky="new")
+        else:
+            self.widthfieldtitle.grid_remove()
+            self.widthfield.grid_remove()
+            self.widthdisclamer.grid_remove()
+        if args != ():
+            self.SaveCurrentSettings()        
     
     def SetupStatusFrame(self):
         status_frame = Frame(self)
@@ -192,13 +231,35 @@ class SmartStitch(Tk):
                 images.append(image)
         return images
 
+    def ResizeImages(self, images):
+        #Resizes the images according to what enforcement mode you have.
+        enforce_type = self.width_enforce_type.get()
+        if enforce_type == "No Width Enforcement":
+            return images
+        else:
+            resized_images = []
+            new_image_width = 0
+            if enforce_type == 'Automatic Uniform Width':
+                widths, heights = zip(*(image.size for image in images))
+                new_image_width = min(widths)
+            elif enforce_type == 'User Customized Width':
+                new_image_width = int(self.custom_width.get())
+            for image in images:
+                if image.size[0] == new_image_width:
+                    resized_images.append(image)
+                else:
+                    ratio = float(image.size[1] / image.size[0])
+                    new_image_height = int(ratio * new_image_width)
+                    new_image = image.resize((new_image_width, new_image_height), pil.ANTIALIAS)
+                    resized_images.append(new_image)
+            return resized_images
+
     def CombineVertically(self, images):
         # All this does is combine all the files into a single image in the memory.
         widths, heights = zip(*(image.size for image in images))
         new_image_width = max(widths)
         new_image_height = sum(heights)
         new_image = pil.new('RGB', (new_image_width, new_image_height))
-
         combine_offset = 0
         for image in images:
             new_image.paste(image, (0, combine_offset))
@@ -302,10 +363,14 @@ class SmartStitch(Tk):
                 self.status.set("Idle - No Image Files Found!")
                 self.actionbutton['state'] = "normal"
                 return
-            self.status.set("Working - Combining Image Files!")
+            if self.width_enforce_type.get() == "No Width Enforcement":
+                self.status.set("Working - Combining Image Files!")
+            else:
+                self.status.set("Working - Resizing & Combining Image Files!")
             self.progress['value'] += (10 / self.num_of_inputs)
             Tk.update_idletasks(self)
-            combined_image = self.CombineVertically(images)
+            resized_images = self.ResizeImages(images)
+            combined_image = self.CombineVertically(resized_images)
             self.status.set("Working - Slicing Combined Image into Finalized Images!")
             self.progress['value'] += (10 / self.num_of_inputs)
             Tk.update_idletasks(self)
