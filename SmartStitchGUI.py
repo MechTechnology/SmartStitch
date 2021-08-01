@@ -50,7 +50,7 @@ class SmartStitch(Tk):
         # return os.path.join(base_path, relative_path)
     def SetupWindow(self):
         # Sets up Title and Logo
-        self.title('SmartStitch by MechTechnology [1.8]')
+        self.title('SmartStitch by MechTechnology [1.8.5]')
         self.iconbitmap(default=self.geticon("SmartStitchLogo.ico"))
 
         # Sets Window Size, centers it on Launch and Prevents Resize.
@@ -270,11 +270,14 @@ class SmartStitch(Tk):
         # Where the smart magic happens, compares pixels of each row, to decide if it's okay to cut there
         AdjustSensitivity = int(255 * (1-(senstivity/100)))
         adjust_in_progress = True
+        last_row = len(combined_pixels) - 1
         new_split_height = split_height
         countdown = True
         while (adjust_in_progress):
             adjust_in_progress = False
             split_row = split_offset + new_split_height
+            if (split_row == last_row):
+                break
             pixel_row = combined_pixels[split_row]
             prev_pixel = pixel_row[0]
             for x in range(1, len(pixel_row)):
