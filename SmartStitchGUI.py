@@ -50,7 +50,7 @@ class SmartStitch(Tk):
         # return os.path.join(base_path, relative_path)
     def SetupWindow(self):
         # Sets up Title and Logo
-        self.title('SmartStitch by MechTechnology [1.8.5]')
+        self.title('SmartStitch by MechTechnology [1.9]')
         self.iconbitmap(default=self.geticon("SmartStitchLogo.ico"))
 
         # Sets Window Size, centers it on Launch and Prevents Resize.
@@ -268,22 +268,21 @@ class SmartStitch(Tk):
 
     def SmartAdjust(self, combined_pixels, split_height, split_offset, senstivity):
         # Where the smart magic happens, compares pixels of each row, to decide if it's okay to cut there
-        AdjustSensitivity = int(255 * (1-(senstivity/100)))
+        threshold = int(255 * (1-(senstivity/100)))
         adjust_in_progress = True
-        last_row = len(combined_pixels) - 1
         new_split_height = split_height
+        last_row = len(combined_pixels) - 1
+        split_row = split_offset + new_split_height
         countdown = True
-        while (adjust_in_progress):
+        while (adjust_in_progress and split_row < last_row):
             adjust_in_progress = False
             split_row = split_offset + new_split_height
-            if (split_row == last_row):
-                break
             pixel_row = combined_pixels[split_row]
-            prev_pixel = pixel_row[0]
-            for x in range(1, len(pixel_row)):
-                current_pixel = pixel_row[x]
-                diff_pixel = int(current_pixel - prev_pixel)
-                if (diff_pixel > AdjustSensitivity):
+            prev_pixel = int(pixel_row[0])
+            for x in range(1, len(pixel_row)-1):
+                current_pixel = int(pixel_row[x])
+                pixel_value_diff = current_pixel - prev_pixel
+                if (pixel_value_diff < -threshold or pixel_value_diff > threshold):
                     if (countdown):
                         new_split_height -= 1
                     else:
@@ -315,9 +314,11 @@ class SmartStitch(Tk):
             split_offset += new_split_height
             images.append(split_image)
         # Final image (What ever is remaining in the combined img, will be smaller than the rest for sure)
-        split_image = pil.new('RGB', (max_width, max_height-split_offset))
-        split_image.paste(combined_img,(0,-split_offset))
-        images.append(split_image)
+        remaining_rows = max_height-split_offset
+        if (remaining_rows > 0):
+            split_image = pil.new('RGB', (max_width, max_height-split_offset))
+            split_image.paste(combined_img,(0,-split_offset))
+            images.append(split_image)
         return images
 
     def SaveData(self, data, foldername):
