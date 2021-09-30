@@ -1,111 +1,38 @@
-# Smart Stitchy By MechTechnology
-# How to you use:
-# 1. Put your raws in folders in the same directory as this script
-# 2. Go the very end of this script and add a call to the function
-# SaveSplitVertical(Foldername, AverageImgHeight, Senstivity)
-# Example if i put my raw in a folder called Chapter 40 and want them to be 4300 height on average (90% is a good senstivity)
-# SaveSplitVertical(Chapter 40, 4300, 90)
-# output will be in the (foldername + [Stitched])
-#
-# that is all, you can add multiple calls to different folder to do bigger batchs at once
+import SmartStitchCore as ssc
 
-from PIL import Image as pil
-import numpy as np
-import os
+def run_stitch_process(input_folder, split_height, output_files_type, batch_mode=False, width_enforce_type=0, custom_width=720, senstivity=90, ignorable_pixels=0, scan_line_step=5):
+  """Runs the stitch process using the SS core functions, and updates the progress on the UI."""
+  output_folder = input_folder + " [Stitched]"
+  print("Working - Loading Image Files!")
+  folder_paths = ssc.get_folder_paths(batch_mode, input_folder, output_folder)
+  # Sets the number of folders as a global variable, so it can be used in other update related functions.
+  num_of_inputs = len(folder_paths)
+  if (num_of_inputs == 0):
+    print("Batch Mode Enabled, No Suitable Input Folders Found!")
+    return 
+  for path in folder_paths:
+    images = ssc.load_images(path[0])
+    if len(images) == 0 and num_of_inputs == 1:
+      print("No Image Files Found!")
+      return
+    elif len(images) == 0:
+      print(path[0] + " Has been skipped, No Image Files Found!")
+      continue
+    # The reason index is used here is because the core functions use intgers to switch between enforcement modes/types
+    if width_enforce_type == 0:
+      print("Working - Combining Image Files!")
+    else:
+      print("Working - Resizing & Combining Image Files!")
+    resized_images = ssc.resize_images(images, width_enforce_type, custom_width)
+    combined_image = ssc.combine_images(resized_images)
+    print("Working - Slicing Combined Image into Finalized Images!")
+    final_images = ssc.split_image(combined_image, split_height, senstivity, ignorable_pixels, scan_line_step)
+    print("Working - Saving Finalized Images!")
+    ssc.SaveData(final_images, path[1], output_files_type)
+    print(path[1] + " Has Been Successfully Complete.")
 
-def LoadImages(folder):
-    images = []
-    for imgFile in os.listdir(folder):
-        imgPath = folder + '/' + imgFile
-        image = pil.open(imgPath)
-        if image is not None:
-            images.append(image)
-    return images
-
-def CombineVertically(folder):
-    images = LoadImages(folder)
-    
-    widths, heights = zip(*(image.size for image in images))
-    new_image_width = max(widths)
-    new_image_height = sum(heights)
-    new_image = pil.new('RGB', (new_image_width, new_image_height))
-
-    combine_offset = 0
-    for image in images:
-        new_image.paste(image, (0, combine_offset))
-        combine_offset += image.size[1]
-    return new_image
-
-def SmartAdjust(combined_pixels, split_height, split_offset, senstivity):
-    AdjustSensitivity = int(255 * (1-(senstivity/100)))
-    adjust_in_progress = True
-    new_split_height = split_height
-    countdown = True
-    while (adjust_in_progress):
-        adjust_in_progress = False
-        split_row = split_offset + new_split_height
-        pixel_row = combined_pixels[split_row]
-        prev_pixel = pixel_row[0]
-        for x in range(1, len(pixel_row)):
-            current_pixel = pixel_row[x]
-            diff_pixel = current_pixel - prev_pixel
-            if (diff_pixel > AdjustSensitivity):
-                if (countdown):
-                    new_split_height -= 1
-                else:
-                    new_split_height += 1
-                adjust_in_progress = True
-                break
-            current_pixel = prev_pixel
-        if (new_split_height < 0.5*split_height):
-            new_split_height = split_height
-            countdown = False
-            adjust_in_progress = True
-    return new_split_height
-
-
-def SplitVertical(folder, split_height, senstivity=90):
-    combined_img = CombineVertically(folder)
-    max_width = combined_img.size[0]
-    max_height = combined_img.size[1]
-    combined_pixels = np.array(combined_img.convert('L'))
-    images = []
-    split_offset = 0
-    while((split_offset + split_height) < max_height):
-        new_split_height = SmartAdjust(combined_pixels, split_height, split_offset, senstivity)
-        split_image = pil.new('RGB', (max_width, new_split_height))
-        split_image.paste(combined_img,(0,-split_offset))
-        split_offset += new_split_height
-        images.append(split_image)
-    
-    #Final image
-    split_image = pil.new('RGB', (max_width, max_height-split_offset))
-    split_image.paste(combined_img,(0,-split_offset))
-    images.append(split_image)
-
-    print("Number of Output Page:", len(images))
-    return images
-
-def SaveData(folder, data, single_file = False):
-    new_folder = folder + " [Stitched]"
-    if not os.path.exists(new_folder):
-        os.makedirs(new_folder)
-    
-    if (single_file):
-        data.save(new_folder + '/Combined.png')
-        return
-
-    imageIndex = 1
-    for image in data:
-        image.save(new_folder + '/' + str(f'{imageIndex:02}') + '.png')
-        imageIndex += 1
-    return
-
-def SaveSplitVertical(folder, split_height, senstivity=90):
-    data = SplitVertical(folder, split_height, senstivity)
-    SaveData(folder, data)
-    print("Files Successfully Stitched!")
-
-
-#Here Just Call SaveSplitVertical(Foldername, AverageImgHeight, Senstivity)
-SaveSplitVertical("Chapter 40", 4300, 90)
+# Example of a basic run => run_stitch_process("Chapter 1", split_height=5000, output_files_type=".png")
+# You can add edit the other arguments to how you want them to be.
+# Additional Arguments: batch_mode, width_enforce_type, custom_width, senstivity, ignorable_pixels, scan_line_step
+# Take a look at the ReadMe for details on these arguments
+run_stitch_process("Chapter 1", split_height=5000, output_files_type=".png")

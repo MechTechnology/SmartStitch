@@ -1,398 +1,360 @@
-from tkinter import filedialog
 from tkinter import *
-from tkinter import ttk
-from PIL import Image as pil
-from natsort import natsorted
-import numpy as np
+from tkinter import ttk, filedialog
+from datetime import datetime
+from time import time
 import os
-import time
 import pickle
+import logging
 import threading
+import SmartStitchCore as ssc
 
-class SmartStitch(Tk):
-    def __init__(self, *args, **kwargs):
-        # Initalizes a tk window with the give parameters of the constructor.
-        Tk.__init__(self, *args, **kwargs)
+class SmartStitchGUI(Tk):
+  def __init__(self):
+    """GUI Default Constructor."""
+    # Intializes Tkinter Window.
+    super().__init__()
+    # Application Basic Settings Variables
+    self.input_folder = StringVar()
+    self.output_folder = StringVar()
+    self.enable_batch_mode = BooleanVar()
+    self.split_height = StringVar(value="5000")
+    self.output_files_type = StringVar(value=".png")
+    # Application Advance Settings Variables
+    self.show_advanced_settings = BooleanVar(False)
+    self.slicing_senstivity = StringVar(value="90")
+    self.ignorable_edges_pixels = StringVar(value="0")
+    self.scan_line_step = StringVar(value="5")
+    self.width_enforce_type = StringVar(value="No Width Enforcement")
+    self.custom_enforce_width = StringVar(value="720")
+    # GUI related Variables
+    self.status = StringVar(value="Idle")
+    self.num_of_inputs = 1
+    self.progress = ""
+    self.width_enforce_types = ['No Width Enforcement', 'Automatic Uniform Width', 'User Customized Width']
+    # Application StartUp Sequence
+    self.load_app_settings()
+    self.setup_window(app_maintainer="MechTechnology", app_version="2.0")
+    self.setup_paths_frame().grid(row=0, column=0, padx=(10), pady=(5,0), sticky="new")
+    self.setup_basic_settings_frame().grid(row=1, column=0, padx=(10), pady=(5,0), sticky="new")
+    self.setup_advanced_settings_frame().grid(row=2, column=0, padx=(10), pady=(5,0), sticky="new")
+    self.setup_action_frame().grid(row=4, column=0, padx=(10), pady=(5), sticky="new")
 
-        # Global Variables
-        self.input_folder = StringVar()
-        self.output_folder = StringVar()
-        self.batch_mode = IntVar()
-        self.split_height = StringVar(value="5000")
-        self.senstivity = StringVar(value="90")
-        self.status = StringVar(value="Idle")
-        self.output_type = StringVar(value=".jpg")
-        self.width_enforce_type = StringVar(value="No Width Enforcement")
-        self.custom_width = StringVar(value="720")
-        self.num_of_inputs = 1
-        self.progress = ""
-        self.actionbutton = ""
-        self.widthfieldtitle = ""
-        self.widthfield = ""
-        self.widthdisclamer = ""
+  def save_app_settings(self, *args):
+    """Saves active application settings in a Pickle file."""
+    app_settings = []
+    app_settings.append(self.enable_batch_mode.get())
+    app_settings.append(self.split_height.get())
+    app_settings.append(self.output_files_type.get())
+    app_settings.append(self.show_advanced_settings.get())
+    app_settings.append(self.slicing_senstivity.get())
+    app_settings.append(self.ignorable_edges_pixels.get())
+    app_settings.append(self.width_enforce_type.get())
+    app_settings.append(self.custom_enforce_width.get())
+    with open("settings.pickle", "wb") as app_settings_handler:
+      pickle.dump(app_settings, app_settings_handler)
 
-        # Componant Setup
-        self.SetupWindow()
-        self.SetupBrowseFrame().grid(row=0, column=0, padx=(15), pady=(15), sticky="new")
-        self.SetupSettingsFrame().grid(row=1, column=0, padx=(15), pady=(0,15), sticky="new")
-        self.SetupStatusFrame().grid(row=2, column=0, padx=(15), pady=(0,15), sticky="new")
-        self.SetupActionFrame().grid(row=3, column=0, padx=(15), pady=(0,15), sticky="new")
-        self.LoadPrevSettings()
-        self.UpdateWidthMode()
-
-    def geticon(self, relative_path):    
-        if not hasattr(sys, "frozen"):
-            relative_path = os.path.join(os.path.dirname(__file__), relative_path)
-        else:
-            relative_path = os.path.join(sys.prefix, relative_path)
-        return relative_path
-
-        # return os.path.join(base_path, relative_path)
-    def SetupWindow(self):
-        # Sets up Title and Logo
-        self.title('SmartStitch by MechTechnology [1.9]')
-        self.iconbitmap(default=self.geticon("SmartStitchLogo.ico"))
-
-        # Sets Window Size, centers it on Launch and Prevents Resize.
-        window_width = self.winfo_width()
-        window_height = self.winfo_height()
-        screen_width = self.winfo_screenwidth()
-        screen_height = self.winfo_screenheight()
-        x = (self.winfo_screenwidth()/2) - (window_height/2) - 220
-        y = (self.winfo_screenheight()/2) - (window_width/2) - 200
-        self.geometry('+%d+%d' % (x, y))
-        self.columnconfigure(0, weight=1)
-        self.resizable(False, False)
-
-    def LoadPrevSettings(self):
-        # loads the setting on start up (creates if it does not exist)
-        settings_pickle = "settings.pickle"
-        if not os.path.exists(settings_pickle):
-            self.SaveCurrentSettings()
-        else:
-            with open(settings_pickle, "rb") as settings_handle:
-                settings = pickle.load(settings_handle)
-                self.split_height.set(settings[0])
-                self.senstivity.set(settings[1])
-                self.output_type.set(settings[2])
-                self.width_enforce_type.set(settings[3])
-                self.custom_width.set(settings[4])
-
-    def SaveCurrentSettings(self, *args):
-        # Saves the settings
-        settings = []
-        settings.append(self.split_height.get())
-        settings.append(self.senstivity.get())
-        settings.append(self.output_type.get())
-        settings.append(self.width_enforce_type.get())
-        settings.append(self.custom_width.get())
-
-        settings_pickle = "settings.pickle"
-        with open(settings_pickle, 'wb') as settings_handle:
-            pickle.dump(settings, settings_handle)  
-
-    def SetupBrowseFrame(self):
-        # Browse Button and Input and Output Field
-        browse_frame = Frame(self)
-        browse_label = ttk.Label(browse_frame, text = 'Input Path')
-        browse_field = ttk.Entry(browse_frame, textvariable=self.input_folder)
-        browse_field.bind("<Any-KeyRelease>", self.UpdateOutputFolder)
-        browse_button = ttk.Button(browse_frame, text = 'Browse', command=self.BrowseToCommand)
-        output_label = ttk.Label(browse_frame, text = 'Output Path')
-        output_field = ttk.Entry(browse_frame, textvariable=self.output_folder)
-        batch_checkbox = ttk.Checkbutton(browse_frame, variable=self.batch_mode, text = 'Batch Mode [Input folder contains multiple chapter folders]')
-        browse_label.grid(row = 0,column = 0, sticky="new")
-        browse_field.grid(row = 1, column = 0, pady=(2,0), sticky="new")
-        browse_button.grid(row = 1,column = 1, padx=(15, 0), sticky="ne")
-        output_label.grid(row = 2, column = 0, sticky="new")
-        output_field.grid(row = 3, column = 0, columnspan=2, pady=(2,0), sticky="new")
-        batch_checkbox.grid(row = 4, column = 0, columnspan=2, pady=(2,0), sticky="new")
-        browse_frame.columnconfigure(0, weight=1)
-        return browse_frame
-
-    def BrowseToCommand(self):
-        # Allow user to select a directory and updates input_folder and output_folder
-        foldername = filedialog.askdirectory()
-        self.input_folder.set(foldername)
-        self.output_folder.set(foldername + " [Stitched]")
-
-    def UpdateOutputFolder(self, *args):
-        foldername = self.input_folder.get()
-        self.output_folder.set(foldername + " [Stitched]")
-
-    def SetupSettingsFrame(self):
-        # Browse Split Field and Senstivity Fields
-        settings_frame = Frame(self)
-        split_label = ttk.Label(settings_frame, text = 'Rough Panel Height (In Pixels):')
-        split_field = ttk.Entry(settings_frame, textvariable=self.split_height, validate='all')
-        split_field.bind("<Any-KeyRelease>", self.SaveCurrentSettings)
-        split_field['validatecommand'] = (split_field.register(self.AllowNumOnly),'%P','%d','%s')
-        senstivity_label = ttk.Label(settings_frame, text = 'Bubble Detection Senstivity (0-100%):')
-        senstivity_field = ttk.Entry(settings_frame, textvariable=self.senstivity, validate='all')
-        senstivity_field.bind("<Any-KeyRelease>", self.SaveCurrentSettings)
-        senstivity_field['validatecommand'] = (senstivity_field.register(self.AllowPercentOnly),'%P','%d','%s')
-        type_label = ttk.Label(settings_frame, text = 'Output Images Type:')
-        type_dropdown = ttk.Combobox(settings_frame, textvariable=self.output_type, values=('.jpg', '.png', '.webp', '.bmp', '.tiff', '.tga'))
-        type_dropdown.bind("<<ComboboxSelected>>", self.SaveCurrentSettings)
-        width_enforce_label = ttk.Label(settings_frame, text = 'Output Width Enforcement:')
-        width_enforce_dropdown = ttk.Combobox(settings_frame, textvariable=self.width_enforce_type, values=('No Width Enforcement', 'Automatic Uniform Width', 'User Customized Width'))
-        width_enforce_dropdown.bind("<<ComboboxSelected>>", self.UpdateWidthMode)
-        self.widthfieldtitle = ttk.Label(settings_frame, text = 'Custom Width to be Enforced (In Pixels):')
-        self.widthfield = ttk.Entry(settings_frame, textvariable=self.custom_width, validate='all')
-        self.widthfield.bind("<Any-KeyRelease>", self.SaveCurrentSettings)
-        self.widthfield['validatecommand'] = (split_field.register(self.AllowNumOnly),'%P','%d','%s')
-        self.widthdisclamer = ttk.Label(settings_frame, foreground='red', text = 'Disclaimer:', justify=LEFT, wraplength=380)
-        split_label.grid(row=0, column=0, sticky="new")
-        split_field.grid(row=1, column=0, pady=(2,0), sticky="new")
-        senstivity_label.grid(row = 0, column = 1, padx=(15, 0), sticky="new")
-        senstivity_field.grid(row = 1, column = 1, padx=(15, 0), pady=(2,0), sticky="new")
-        type_label.grid(row = 2, column = 0, pady=(5,0), sticky="new")
-        type_dropdown.grid(row = 3, column = 0, pady=(2,0), sticky="new")
-        width_enforce_label.grid(row = 2, column = 1, padx=(15, 0), pady=(5,0), sticky="new")
-        width_enforce_dropdown.grid(row = 3, column = 1, padx=(15, 0), pady=(2,0), sticky="new")
-        settings_frame.columnconfigure(0, weight=1)
-        settings_frame.columnconfigure(1, weight=1)
-        return settings_frame
+  def load_app_settings(self):
+    """Loads application settings from a Pickle file."""
+    if not os.path.exists("settings.pickle"):
+      self.save_app_settings()
+    else:
+      with open("settings.pickle", 'rb') as app_settings_handler:
+        saved_settings = pickle.load(app_settings_handler)
+        self.enable_batch_mode.set(saved_settings[0])
+        self.split_height.set(saved_settings[1])
+        self.output_files_type.set(saved_settings[2])
+        self.show_advanced_settings.set(saved_settings[3])
+        self.slicing_senstivity.set(saved_settings[4])
+        self.ignorable_edges_pixels.set(saved_settings[5])
+        self.width_enforce_type.set(saved_settings[6])
+        self.custom_enforce_width.set(saved_settings[7])
     
-    def AllowNumOnly(self,P,d,s):
-        #If the Keyboard is trying to insert value
-        if d == '1': 
-            if not (P.isdigit()):
-                return False
-        return True
-    
-    def AllowPercentOnly(self,P,d,s):
-        #If the Keyboard is trying to insert value
-        if d == '1': 
-            if not (P.isdigit() and len(s) < 3 and int(P)<=100):
-                return False
-        return True
+  def setup_window(self, app_maintainer, app_version):
+    """Sets up Basic Attributes about the window such Application Logging, Title, Icon and Position on Start Up."""
+    # Sets up Title and Logo
+    self.title("SmartStitch by " + app_maintainer + " [" + app_version + "]")
+    icon_abs_path = os.path.join(os.path.dirname(__file__), "SmartStitchLogo.ico")
+    self.iconbitmap(icon_abs_path)
+    # Configures logging to save into a log file.
+    logging.basicConfig(filename="crashreport.log", level=logging.WARNING)
+    # Centers the window on Launch and Disables Resize.
+    window_width = self.winfo_width()
+    window_height = self.winfo_height()
+    screen_width = self.winfo_screenwidth()
+    screen_height = self.winfo_screenheight()
+    x = (self.winfo_screenwidth()/2) - (window_height/2) - 120
+    y = (self.winfo_screenheight()/2) - (window_width/2) - 120
+    self.geometry('+%d+%d' % (x, y))
+    self.columnconfigure(0, weight=1)
+    self.resizable(False, False)
 
-    def UpdateWidthMode(self, *args):
-        enforce_type = self.width_enforce_type.get()
-        if enforce_type == 'Automatic Uniform Width':
-            self.widthfieldtitle.grid_remove()
-            self.widthfield.grid_remove()
-            self.widthdisclamer['text'] = 'Disclaimer: This width enforcement mode will cause files with a larger width to be resized down (using LANCZOS) to the width of smallest input file.'
-            self.widthdisclamer.grid(row = 6, column = 0, columnspan=2, pady=(5,0), sticky="new")
-        elif enforce_type == 'User Customized Width':
-            self.widthfieldtitle.grid(row = 4, column = 0, columnspan=2, pady=(5,0), sticky="new")
-            self.widthfield.grid(row = 5, column = 0, columnspan=2, pady=(2,0), sticky="new")
-            self.widthdisclamer['text'] = 'Disclaimer: This width enforcement mode will cause all files to be resized (using LANCZOS) to the width you specify. Please use tools like waifu2x for large upscaling.'
-            self.widthdisclamer.grid(row = 6, column = 0, columnspan=2, pady=(5,0), sticky="new")
-        else:
-            self.widthfieldtitle.grid_remove()
-            self.widthfield.grid_remove()
-            self.widthdisclamer.grid_remove()
-        if args != ():
-            self.SaveCurrentSettings()        
-    
-    def SetupStatusFrame(self):
-        status_frame = Frame(self)
-        status_label = ttk.Label(status_frame, text = 'Status:')
-        status_field = ttk.Entry(status_frame, textvariable=self.status)
-        status_field.config(state=DISABLED)
-        status_label.grid(row = 0,column = 0, sticky="new")
-        status_field.grid(row = 1, column = 0, pady=(2,0), sticky="new")
-        status_frame.columnconfigure(0, weight=1)
-        return status_frame
+  def setup_paths_frame(self):
+    """Setups the Fields for the Input and Output Paths."""
+    # Browse Button and Input and Output Field
+    paths_frame = LabelFrame(self, text="Input/Output Settings", padx=(5))
+    paths_frame.columnconfigure(0, weight=1)
+    # Setup of Input Label, Entry Field, and Browse Button.
+    input_label = ttk.Label(paths_frame, text = 'Input Path')
+    input_field = ttk.Entry(paths_frame, textvariable=self.input_folder)
+    input_field.bind("<Any-KeyRelease>", self.update_output_path)
+    input_button = ttk.Button(paths_frame, text = 'Browse', command=self.browse_input_path)
+    input_label.grid(row = 0,column = 0, sticky="new")
+    input_field.grid(row = 1, column = 0, pady=(2,0), sticky="new")
+    input_button.grid(row = 1,column = 1, padx=(15, 0), sticky="ne")
+    # Setup of Output Label and Entry Field.
+    output_label = ttk.Label(paths_frame, text = 'Output Path')
+    output_field = ttk.Entry(paths_frame, textvariable=self.output_folder)
+    output_label.grid(row = 2, column = 0, sticky="new")
+    output_field.grid(row = 3, column = 0, columnspan=2, pady=(2,0), sticky="new")
+    # Setup of Back Mode Selector/Checkbox.
+    batch_checkbox = ttk.Checkbutton(paths_frame, variable=self.enable_batch_mode, text = 'Batch Mode [Input folder contains multiple chapter folders]', command=self.save_app_settings)
+    batch_checkbox.grid(row = 4, column = 0, columnspan=2, pady=(2,5), sticky="new")
+    return paths_frame
 
-    def SetupActionFrame(self):
-        action_frame = Frame(self)
-        self.progress = ttk.Progressbar(action_frame)
-        self.actionbutton = ttk.Button(action_frame, text = 'Start Process', command=self.RunStitchProcessAsync)
-        self.progress.grid(row = 0, column = 0, columnspan = 2, pady=(2,0), sticky="new")
-        self.actionbutton.grid(row = 0, column = 2, padx=(15, 0), sticky="new")
-        action_frame.columnconfigure(0, weight=1)
-        action_frame.columnconfigure(1, weight=1)
-        action_frame.columnconfigure(2, weight=1)
-        return action_frame
+  def setup_basic_settings_frame(self):
+    """Setups the basic settings controls that most user would need."""
+    basic_settings_frame = LabelFrame(self, text="Basic Settings", padx=(5))
+    basic_settings_frame.columnconfigure(0, weight=1, uniform="equal")
+    basic_settings_frame.columnconfigure(1, weight=1, uniform="equal")
+    # Setup of Split Height Label, Entry Field, and Browse Button.
+    split_label = ttk.Label(basic_settings_frame, text = 'Rough Panel Height (In Pixels):        ')
+    split_field = ttk.Entry(basic_settings_frame, textvariable=self.split_height, validate='all')
+    split_field.bind("<Any-KeyRelease>", self.save_app_settings)
+    split_field['validatecommand'] = (split_field.register(self.validate_nums_only),'%P','%d','%s')
+    split_label.grid(row=0, column=0, padx=(0,5), sticky="new")
+    split_field.grid(row=1, column=0, padx=(0,5), pady=(2,0), sticky="new")
+    # Setup of Output File Type Settings' Label, and Entry Field.
+    type_label = ttk.Label(basic_settings_frame, text = 'Output Images Type:')
+    type_dropdown = ttk.Combobox(basic_settings_frame, textvariable=self.output_files_type, values=('.png', '.jpg', '.webp', '.bmp', '.tiff', '.tga'))
+    type_dropdown.bind("<<ComboboxSelected>>", self.save_app_settings)
+    type_label.grid(row = 0, column = 1, padx=(5,0), sticky="new")
+    type_dropdown.grid(row = 1, column = 1,  padx=(5, 0), pady=(2,10), sticky="new")
+    return basic_settings_frame
 
-    def SetBatchFolders(self):
-        batch_input_folder = self.input_folder.get()
-        batch_output_folder = self.output_folder.get()
-        input_folders = [os.path.abspath(os.path.join(batch_input_folder, name)) for name in os.listdir(batch_input_folder) if os.path.isdir(os.path.join(batch_input_folder, name))]
-        output_folders = [os.path.abspath(os.path.join(batch_output_folder, name + " [Stitched]" )) for name in os.listdir(batch_input_folder) if os.path.isdir(os.path.join(batch_input_folder, name))]
-        return input_folders, output_folders
+  def setup_advanced_settings_frame(self):
+    """Setups the basic settings controls that most user would need."""
+    # Setup of Main Wrapper Frame That holds the advanced settings and its toggle checkbox
+    advanced_settings_frame = Frame(self)
+    advanced_settings_frame.columnconfigure(0, weight=1)
+    # Setup of a Frame That holds the settings is toggleable by a checkbox
+    shown_settings_frame = LabelFrame(advanced_settings_frame, text="Advanced Settings", padx=(5))
+    shown_settings_frame.columnconfigure(0, weight=1, uniform="equal")
+    shown_settings_frame.columnconfigure(1, weight=1, uniform="equal")
+    # Setup of Slice Senstivity Settings' Label, and Entry Field.
+    senstivity_label = ttk.Label(shown_settings_frame, text = 'Object Detection Sensitivity (%):')
+    senstivity_field = ttk.Entry(shown_settings_frame, textvariable=self.slicing_senstivity, validate='all')
+    senstivity_field.bind("<Any-KeyRelease>", self.save_app_settings)
+    senstivity_field['validatecommand'] = (senstivity_field.register(self.validate_percentage_only),'%P','%d','%s')
+    senstivity_label.grid(row = 0, column = 0, padx=(0,5), sticky="new")
+    senstivity_field.grid(row = 1, column = 0, padx=(0,5), pady=(2,5), sticky="new")
+    # Setup of Ignorable Pixels Senstivity Settings' Label, and Entry Field.
+    ignorable_pixels_label = ttk.Label(shown_settings_frame, text = 'Ignorable Border Pixels:')
+    ignorable_pixels_field = ttk.Entry(shown_settings_frame, textvariable=self.ignorable_edges_pixels, validate='all')
+    ignorable_pixels_field.bind("<Any-KeyRelease>", self.save_app_settings)
+    ignorable_pixels_field['validatecommand'] = (ignorable_pixels_field.register(self.validate_nums_only),'%P','%d','%s')
+    ignorable_pixels_label.grid(row = 0, column = 1, padx=(5, 0), sticky="new")
+    ignorable_pixels_field.grid(row = 1, column = 1, padx=(5, 0), pady=(2,5), sticky="new")
+    # Setup of Scan Line Step Settings' Label, and Entry Field.
+    scan_line_label = ttk.Label(shown_settings_frame, text = 'Scan Line Step:')
+    scan_line_field = ttk.Entry(shown_settings_frame, textvariable=self.scan_line_step, validate='all')
+    scan_line_field.bind("<Any-KeyRelease>", self.save_app_settings)
+    scan_line_field['validatecommand'] = (scan_line_field.register(self.validate_onetotwenty_only),'%P','%d','%s')
+    scan_line_label.grid(row = 2, column = 0, padx=(0,5), sticky="new")
+    scan_line_field.grid(row = 3, column = 0, padx=(0,5), pady=(2,5), sticky="new")
+    # Set of Custom Width Enforcement Settings' Label and Entry Field and Width
+    widthfieldtitle = ttk.Label(shown_settings_frame, text = 'Custom Width to be Enforced (In Pixels):')
+    widthfield = ttk.Entry(shown_settings_frame, textvariable=self.custom_enforce_width, validate='all')
+    widthfield.bind("<Any-KeyRelease>", self.save_app_settings)
+    widthfield['validatecommand'] = (widthfield.register(self.validate_nums_only),'%P','%d','%s')
+    widthdisclamer = ttk.Label(shown_settings_frame, foreground='red', text = 'Disclaimer:', justify=LEFT, wraplength=380)
+    # Setup of Width Enforcement Settings' Label, and Entry Field.
+    width_enforce_label = ttk.Label(shown_settings_frame, text = 'Output Width Enforcement:')
+    width_enforce_dropdown = ttk.Combobox(shown_settings_frame, textvariable=self.width_enforce_type, values=('No Width Enforcement', 'Automatic Uniform Width', 'User Customized Width'))
+    width_enforce_dropdown.bind("<<ComboboxSelected>>", lambda event: self.update_width_mode(widthfieldtitle, widthfield, widthdisclamer))
+    width_enforce_label.grid(row = 2, column = 1, padx=(5, 0), sticky="new")
+    width_enforce_dropdown.grid(row = 3, column = 1, padx=(5, 0), pady=(2,5), sticky="new")
+    # Setup of Toggle Button to show advanced settings or not.
+    show_advanced_checkbox = ttk.Checkbutton(advanced_settings_frame, variable=self.show_advanced_settings, text = 'Show Advanced Settings', command=lambda: self.advanced_settings_toggle(shown_settings_frame))
+    show_advanced_checkbox.grid(row = 0, column = 0, pady=(2,5), sticky="new")
+    # On first setup decides to display or the needed elements.
+    self.advanced_settings_toggle(shown_settings_frame)
+    self.update_width_mode(widthfieldtitle, widthfield, widthdisclamer)
+    return advanced_settings_frame
 
-    def LoadImages(self, foldername):
-        # Loads all image files in a given folder into a list of pillow image objects
-        images = []
-        if (foldername == ""):
-            return images
-        folder = os.path.abspath(str(foldername))
-        files = natsorted(os.listdir(folder))
-        if len(files) == 0:
-            return images
-        for imgFile in files:
-            if imgFile.endswith(('.png', '.webp', '.jpg', '.jpeg', '.jfif', '.bmp', '.tiff', '.tga')):
-                imgPath = os.path.join(folder, imgFile)
-                image = pil.open(imgPath)
-                images.append(image)
-        return images
+  def setup_action_frame(self):
+    action_frame = LabelFrame(self, padx=(5))
+    status_label = ttk.Label(action_frame, text='Current Status:')
+    status_field = ttk.Entry(action_frame, textvariable=self.status)
+    status_field.config(state=DISABLED)
+    status_label.grid(row = 0, column=0, columnspan=3, sticky="new")
+    status_field.grid(row = 1, column=0, columnspan=3, pady=(2,5), sticky="new")
+    self.progress = ttk.Progressbar(action_frame)
+    self.actionbutton = ttk.Button(action_frame, text = 'Start Process', command=self.run_stitch_process_async)
+    self.progress.grid(row = 2, column=0, columnspan=2, pady=(1,5), sticky="new")
+    self.actionbutton.grid(row = 2, column = 2, padx=(5,0), pady=(0,5), sticky="new")
+    action_frame.columnconfigure(0, weight=1)
+    action_frame.columnconfigure(1, weight=1)
+    action_frame.columnconfigure(2, weight=1)
+    return action_frame
 
-    def ResizeImages(self, images):
-        #Resizes the images according to what enforcement mode you have.
-        enforce_type = self.width_enforce_type.get()
-        if enforce_type == "No Width Enforcement":
-            return images
-        else:
-            resized_images = []
-            new_image_width = 0
-            if enforce_type == 'Automatic Uniform Width':
-                widths, heights = zip(*(image.size for image in images))
-                new_image_width = min(widths)
-            elif enforce_type == 'User Customized Width':
-                new_image_width = int(self.custom_width.get())
-            for image in images:
-                if image.size[0] == new_image_width:
-                    resized_images.append(image)
-                else:
-                    ratio = float(image.size[1] / image.size[0])
-                    new_image_height = int(ratio * new_image_width)
-                    new_image = image.resize((new_image_width, new_image_height), pil.ANTIALIAS)
-                    resized_images.append(new_image)
-            return resized_images
+  def advanced_settings_toggle(self, frame):
+    if (self.show_advanced_settings.get()):
+      frame.grid(row = 1, column = 0, sticky="new")
+    else:
+      frame.grid_forget()
+    self.save_app_settings()
 
-    def CombineVertically(self, images):
-        # All this does is combine all the files into a single image in the memory.
-        widths, heights = zip(*(image.size for image in images))
-        new_image_width = max(widths)
-        new_image_height = sum(heights)
-        new_image = pil.new('RGB', (new_image_width, new_image_height))
-        combine_offset = 0
-        for image in images:
-            new_image.paste(image, (0, combine_offset))
-            combine_offset += image.size[1]
-        return new_image
+  def update_width_mode(self, widthfieldtitle, widthfield, widthdisclamer):
+    self.save_app_settings() 
+    enforce_type = self.width_enforce_type.get()
+    if enforce_type == 'Automatic Uniform Width':
+      widthfieldtitle.grid_remove()
+      widthfield.grid_remove()
+      widthdisclamer['text'] = 'Disclaimer: This width enforcement mode will cause files with a larger width to be resized down (using LANCZOS) to the width of smallest input file.'
+      widthdisclamer.grid(row = 6, column = 0, columnspan=2, pady=(5), sticky="new")
+    elif enforce_type == 'User Customized Width':
+      widthfieldtitle.grid(row = 4, column = 0, columnspan=2, sticky="new")
+      widthfield.grid(row = 5, column = 0, columnspan=2, pady=(2,0), sticky="new")
+      widthdisclamer['text'] = 'Disclaimer: This width enforcement mode will cause all files to be resized (using LANCZOS) to the width you specify. Please use tools like waifu2x for large upscaling.'
+      widthdisclamer.grid(row = 6, column = 0, columnspan=2, pady=(5), sticky="new")
+    else:
+      widthfieldtitle.grid_remove()
+      widthfield.grid_remove()
+      widthdisclamer.grid_remove()
 
-    def SmartAdjust(self, combined_pixels, split_height, split_offset, senstivity):
-        # Where the smart magic happens, compares pixels of each row, to decide if it's okay to cut there
-        threshold = int(255 * (1-(senstivity/100)))
-        adjust_in_progress = True
-        new_split_height = split_height
-        last_row = len(combined_pixels) - 1
-        split_row = split_offset + new_split_height
-        countdown = True
-        while (adjust_in_progress and split_row < last_row):
-            adjust_in_progress = False
-            split_row = split_offset + new_split_height
-            pixel_row = combined_pixels[split_row]
-            prev_pixel = int(pixel_row[0])
-            for x in range(1, len(pixel_row)-1):
-                current_pixel = int(pixel_row[x])
-                pixel_value_diff = current_pixel - prev_pixel
-                if (pixel_value_diff < -threshold or pixel_value_diff > threshold):
-                    if (countdown):
-                        new_split_height -= 1
-                    else:
-                        new_split_height += 1
-                    adjust_in_progress = True
-                    break
-                current_pixel = prev_pixel
-            if (new_split_height < 0.5*split_height):
-                new_split_height = split_height
-                countdown = False
-                adjust_in_progress = True
-        return new_split_height
+  # These are all the necssary helper functions.
+  def browse_input_path(self):
+    """Opens Browse Dialog and Gets Directory For the Input and Updates Output."""
+    foldername = filedialog.askdirectory()
+    self.input_folder.set(foldername)
+    self.output_folder.set(foldername + " [Stitched]")
 
-    def SplitVertical(self, combined_img):
-        # Splits the gaint combined img into small images passed on desired height.
-        split_height = int(self.split_height.get())
-        senstivity = int(self.senstivity.get())
-        max_width = combined_img.size[0]
-        max_height = combined_img.size[1]
-        combined_pixels = np.array(combined_img.convert('L'))
-        images = []
+  def update_output_path(self, *args):
+    """Opens Browse Dialog and Gets Directory For the Input and Updates Output."""
+    self.output_folder.set(self.input_folder.get() + " [Stitched]")
 
-        # The spliting starts here (calls another function to decide where to slice)
-        split_offset = 0
-        while((split_offset + split_height) < max_height):
-            new_split_height = self.SmartAdjust(combined_pixels, split_height, split_offset, senstivity)
-            split_image = pil.new('RGB', (max_width, new_split_height))
-            split_image.paste(combined_img,(0,-split_offset))
-            split_offset += new_split_height
-            images.append(split_image)
-        # Final image (What ever is remaining in the combined img, will be smaller than the rest for sure)
-        remaining_rows = max_height-split_offset
-        if (remaining_rows > 0):
-            split_image = pil.new('RGB', (max_width, max_height-split_offset))
-            split_image.paste(combined_img,(0,-split_offset))
-            images.append(split_image)
-        return images
+  def validate_nums_only(self,P,d,s):
+    """Allows only numbers to be written in the Entry Field."""
+    if d == '1': 
+      if not (P.isdigit()):
+        return False
+    return True
 
-    def SaveData(self, data, foldername):
-        # Saves the given images/date in the output folder!
-        new_folder = str(foldername)
-        if not os.path.exists(new_folder):
-            os.makedirs(new_folder)
-        imageIndex = 1
-        outputformat = self.output_type.get()
-        progress_value = self.progress['value']
-        for image in data:
-            image.save(new_folder + '/' + str(f'{imageIndex:02}') + outputformat, quality=100)
-            imageIndex += 1
-            progress_value += ((60 * 1/len(data)) / self.num_of_inputs)
-            self.progress['value'] = progress_value
-            Tk.update_idletasks(self)
-        return
+  def validate_percentage_only(self,P,d,s):
+    """Allows only percentages to be written in the Entry Field."""
+    if d == '1': 
+      if not (P.isdigit() and len(s) < 3 and int(P)<=100):
+        return False
+    return True
 
-    def RunStitchProcess(self):
-        # Fires the process sequence from the GUI
-        self.actionbutton['state'] = "disabled"
-        self.actionbutton.update()
-        if(self.split_height.get() == "" or self.split_height.get() =="0"):
-            self.status.set("Idle - Split height value was not set!")
-            self.actionbutton['state'] = "normal"
-            return
-        if(self.senstivity.get() == "" or self.senstivity.get() == "0"):
-            self.status.set("Idle - Senstivity value was not set!")
-            self.actionbutton['state'] = "normal"
-            return
-        start = time.time()
-        self.status.set("Working - Loading Image Files!")
-        self.progress['value'] = 0
-        Tk.update_idletasks(self)
-        input_folders = []
-        output_folders = []
-        if self.batch_mode.get() == 0:
-            input_folders.append(self.input_folder.get())
-            output_folders.append(self.output_folder.get())
-        else:
-            input_folders , output_folders = self.SetBatchFolders()
-        self.num_of_inputs = len(input_folders)
-        for folder in input_folders:
-            images = self.LoadImages(folder)
-            if len(images) == 0:
-                self.status.set("Idle - No Image Files Found!")
-                self.actionbutton['state'] = "normal"
-                return
-            if self.width_enforce_type.get() == "No Width Enforcement":
-                self.status.set("Working - Combining Image Files!")
-            else:
-                self.status.set("Working - Resizing & Combining Image Files!")
-            self.progress['value'] += (10 / self.num_of_inputs)
-            Tk.update_idletasks(self)
-            resized_images = self.ResizeImages(images)
-            combined_image = self.CombineVertically(resized_images)
-            self.status.set("Working - Slicing Combined Image into Finalized Images!")
-            self.progress['value'] += (10 / self.num_of_inputs)
-            Tk.update_idletasks(self)
-            final_images = self.SplitVertical(combined_image)
-            self.status.set("Working - Saving Finalized Images!")
-            self.progress['value'] += (20 / self.num_of_inputs)
-            Tk.update_idletasks(self)
-            outfolder = output_folders[input_folders.index(folder)]
-            self.SaveData(final_images, outfolder)
-        end = time.time()
-        delta = end - start
-        self.status.set("Idle - Files successfully stitched in " +  str(delta) + "sec!")
-        self.progress['value'] = 100
-        self.actionbutton['state'] = "normal"
-    
-    def RunStitchProcessAsync(self):
-        workthread = threading.Thread(target=self.RunStitchProcess)
-        workthread.start()
-    
+  def validate_onetotwenty_only(self,P,d,s):
+    """Allows only percentages to be written in the Entry Field."""
+    if d == '1': 
+      if not (P.isdigit() and len(s) < 3 and 20>=int(P)>=1):
+        return False
+    return True
 
-SmartStitch().mainloop()
+  def update_gui_progress(self, status_message, progress_increase):
+    """Updates/Increments the progress value with the given value"""
+    self.status.set(status_message)
+    self.progress['value'] += progress_increase
+    Tk.update_idletasks(self)
+
+  def update_saving_progress(self, num_of_data):
+    """Updates the progress value according to the number of files being saved."""
+    self.progress['value'] += ((60 * 1/num_of_data) / self.num_of_inputs)
+    Tk.update_idletasks(self)
+
+  def pre_process_check(self):
+    """Checks if all the settings and parameters are ready for the operation to start."""
+    self.actionbutton['state'] = "disabled"
+    if(self.input_folder.get() == ""):
+      self.status.set("Idle - No Input folder path given!")
+      self.actionbutton['state'] = "normal"
+      return False
+    if(self.output_folder.get() == ""):
+      self.status.set("Idle - No Output folder path set!")
+      self.actionbutton['state'] = "normal"
+      return False
+    if(not os.path.exists(self.input_folder.get())):
+      self.status.set("Idle - Input folder path does not exist.")
+      self.actionbutton['state'] = "normal"
+      return False
+    if(self.split_height.get() == "" or self.split_height.get() == "0"):
+      self.status.set("Idle - Split Height value was not set!")
+      self.actionbutton['state'] = "normal"
+      return False
+    if(self.slicing_senstivity.get() == ""):
+      self.status.set("Idle - Detection Senstivity value was not set!")
+      self.actionbutton['state'] = "normal"
+      return False
+    if(self.ignorable_edges_pixels.get() == ""):
+      self.status.set("Idle - Ignoreable Pixels value was not set!")
+      self.actionbutton['state'] = "normal"
+      return False
+    if(self.scan_line_step.get() == ""):
+      self.status.set("Idle - Scan Line Step value was not set!")
+      self.actionbutton['state'] = "normal"
+      return False
+    return True
+
+  def stitch_process(self):
+    """Runs the stitch process using the SS core functions, and updates the progress on the UI."""
+    self.status.set("Working - Loading Image Files!")
+    self.progress['value'] = 0
+    folder_paths = ssc.get_folder_paths(self.enable_batch_mode.get(),self.input_folder.get(), self.output_folder.get())
+    # Sets the number of folders as a global variable, so it can be used in other update related functions.
+    self.num_of_inputs = len(folder_paths)
+    if (self.num_of_inputs == 0):
+      return "batch mode no folders"
+    for path in folder_paths:
+      images = ssc.load_images(path[0])
+      if len(images) == 0 and self.num_of_inputs == 1:
+        return "no images"
+      elif len(images) == 0:
+        continue
+      # The reason index is used here is because the core functions use intgers to switch between enforcement modes/types
+      width_type_index = self.width_enforce_types.index(self.width_enforce_type.get())
+      if width_type_index == 0:
+        self.update_gui_progress("Working - Combining Image Files!", (10 / self.num_of_inputs))
+      else:
+        self.update_gui_progress("Working - Resizing & Combining Image Files!", (10 / self.num_of_inputs))
+      resized_images = ssc.resize_images(images, width_type_index, self.custom_enforce_width.get())
+      combined_image = ssc.combine_images(resized_images)
+      self.update_gui_progress("Working - Slicing Combined Image into Finalized Images!", (10 / self.num_of_inputs))
+      final_images = ssc.split_image(combined_image, self.split_height.get(), self.slicing_senstivity.get(), self.ignorable_edges_pixels.get(), self.scan_line_step.get())
+      self.update_gui_progress("Working - Saving Finalized Images!", (20 / self.num_of_inputs))
+      # The reason a function called update_saving_progress is passed is so the UI can be updated about the saving progress
+      # since it is one of the longest, if not the longest stage in this process.
+      ssc.SaveData(final_images, path[1], self.output_files_type.get(), self.update_saving_progress)
+    return "complete"
+
+  def run_stitch_process(self):
+    if (self.pre_process_check() == False):
+      return
+    process_status = ""
+    starting_time = time()
+    try:
+      process_status = self.stitch_process()
+    except Exception as e:
+      logging.exception("An unexpected error has occured at " + str(datetime.now()))
+      process_status = "crash"
+    ending_time = time()
+    delta = ending_time - starting_time
+    if (process_status == "crash"):
+      self.status.set("Idle - An Unexpected Error Occured, Check The'crashreport.log' File!")
+    elif (process_status == "batch mode no folders"):
+      self.status.set("Idle - Batch Mode Enabled, No Suitable Input Folders Found!")
+    elif (process_status == "no images"):
+      self.status.set("Idle - No Image Files Found!")
+    else:
+      self.status.set("Idle - Files successfully stitched in " +  str(delta) + "sec!")
+    self.progress['value'] = 0
+    self.actionbutton['state'] = "normal"
+  
+  def run_stitch_process_async(self, *args):
+    workthread = threading.Thread(target=self.run_stitch_process)
+    workthread.start()
+        
+
+SmartStitchGUI().mainloop()
