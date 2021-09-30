@@ -1,5 +1,5 @@
 <div align="center">
-  <a href="https://github.com/MahApps/MahApps.Metro">
+  <a href="https://github.com/MechTechnology/SmartStitch">
     <img alt="SmartStitch.Logo" width="200" heigth="200" src="https://github.com/MechTechnology/SmartStitch/blob/2fa9a190d94280003b3ac2f42fa9372025ccf3cb/SmartStitchLogo.png">
   </a>
   <h1>SmartStitch</h1>
