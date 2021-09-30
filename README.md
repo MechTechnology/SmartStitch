@@ -85,7 +85,7 @@ These are settings for more tech savvy people, or people that find themselves in
 ### Object Detection Senstivity (Percentage)
 Before slicing at a specific height, the program checks the row of pixels it will slice at if there is bubbles/sfx/whatever, it compares neighbouring pixels for any drastic jump in value, (the allowed tolarence for jumps in pixel is the Object Detection Senstivity)
 
-if there is too big of a jump in value between the pixels, that means there is something that shouldn't be cut, so it move up a pixel row and repeat. For 100 Senstivity will mean if entire pixel row does not have the same exact pixel value/color, it will not splice at it. For 0 Senstivity being it does not care about the pixel values and will cut there, essentially turning the program into a normal Dumb Image Slicer.
+if there is too big of a jump in value between the pixels, that means there is something that shouldn't be cut, so it move up a pixel row and repeat. For 100 Senstivity will mean if entire pixel row does not have the same exact pixel value/color, it will not slice at it. For 0 Senstivity being it does not care about the pixel values and will cut there, essentially turning the program into a normal Dumb Image Slicer.
 
 *Default: 90* --- *Value Range: 0-100* --- *Console Parameter Name: senstivity*
 
@@ -94,7 +94,7 @@ So essentially it's very straightforward. It adds a setting to select one of thr
 0 => No Enforcement, where you load the files as is, and work on them, if they vary in size, you will get some black lines in the side (Highest quality as there is no changes to the pixel values)
 1 => Automatic uniform width, where you force all files to have the same width as the smallest file in the input folder.
 2 => User Customized width, where the user specifies the width they want, that is the Custom Width parameter.
-(Please just use waifu2x for upscaling raws, do not use)
+(Please just use waifu2x for upscaling raws, do not use this mode for it.)
 
 *Default: 0* --- *Value Range: 0-2* --- *Console Parameter Name: width_enforce_type*
 *Default: 720* --- *Console Parameter Name: custom_width*
