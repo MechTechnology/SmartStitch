@@ -59,12 +59,12 @@ And since it's just one person maintaining this application, only accepted ticke
 You can also contact me at Discord if you don't want to you the GitHub Issue system. (MechTechnology#5466)
 
 # Documentation
-Here the complete documentation for the application, it is broken down into 3 sections, basic settings, advanced settings and how to build your own verison.
+Here the complete documentation for the application, it is broken down into 4 sections, basic settings, advanced settings, how to build your own version, how to run the console version.
 
 ## Basic Settings
 As Mentioned in the quick how to use section, these are the most important settings that almost all user care about.
 
-## Rough Panel Height
+### Rough Panel Height
 This is should the size that most panel will roughly be, since the program uses it as a guide when it does decide to slice the images, however it IS ROUGH, meaning if the program finds bubbles/sfx/whatever at that specific pixel length, it will adjust itself and the output size of each image will vary, but they all will be roughly around this size.
 
 *Default: 5000* --- *Console Parameter Name: split_height*
@@ -125,7 +125,7 @@ Red being the area ignored because of the Ignorable Border Pixels, and the blue 
 1. install PyInstaller if you haven't yet with the following command: pip install pyinstaller
 2. then to create a build do: pyinstaller SmartStitchGUI_SingleFile.spec
 
-### Want to run the console version?
+## Want to run the console version?
 Well you have to know python first of all, and then do the follow:
 1. pip install all the needed packages in SmartStitchCore
 2. open SmartStitchConsole, and call the stitch_process function and give it the needed required and optional parameters as you desire.
