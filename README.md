@@ -4,10 +4,10 @@
   </a>
   <h1>SmartStitch</h1>
   <p>
-    A small yet powerful program for stitching together webtoons/manhwa/manhua raws into whatever size you wish for.
+    A small yet powerful program for stitching and cutting webtoons/manhwa/manhua raws.
   </p>
   <p>
-    GUI Version supports most verison of Windows, Console Version should work on any platform with Python Installed on it.
+    GUI Version supports most versions of Windows, Console Version should work on any platform with Python Installed on it.
   </p>
   <a href="https://github.com/MechTechnology/SmartStitch/releases/latest">
     <img src="https://img.shields.io/github/release/MechTechnology/SmartStitch.svg?style=flat-square">
@@ -29,7 +29,7 @@
 ## What is SmartStitch?
 A small yet powerful program for stitching together webtoons/manhwa/manhua raws then slicing them down to the whatever size you wish for.
 
-The smart part of the name comes from the fact that it uses some simple pixel calculation to stop itself from cutting/slicing through sfx or speech or drawings. it making life easy for the team working on the combined images. [Both CLRD and TS will thank you alot].
+The smart part of the name comes from the fact that it uses some simple pixel calculation to stop itself from cutting/slicing through sfx or speech or drawings. it making life much easier for the team working on those raw images. [Both CLRD and TS will thank you a lot].
 
 *It's not fancy, and does not use AI, but it's fast, robust, simple and more importantly works for me. (So i decided to share it with you!)*
 
@@ -52,30 +52,30 @@ The smart part of the name comes from the fact that it uses some simple pixel ca
 - Your file will be ordered the same way they are in your file explorer, so make sure everything is in order. (sort by name in file explorer)
 
 ## Reporting Bugs [2.0+]:
-A logging system has been implemented in the GUI verison of SmartStitch, when an error occur the application will inform you about it, and leaves the details in a file called 'crashreport.log', you can open an issue ticket here and attach the file, so it can be easily debugged and fixed. 
+A logging system has been implemented in the GUI version of SmartStitch, when an error occur the application will inform you about it, and leaves the details in a file called 'crashreport.log', you can open an issue ticket here and attach the file, so it can be easily debugged and fixed. 
 
 And since it's just one person maintaining this application, only accepted tickets will be for version 2.0 and above. Please don't open tickets for lower versions, since your problem could have been already solved.
 
-You can also contact me at Discord if you don't want to you the GitHub Issue system. (MechTechnology#5466)
+You can also contact me at Discord if you don't want to use the GitHub Issue System. (MechTechnology#5466)
 
 # Documentation
-Here the complete documentation for the application, it is broken down into 4 sections, basic settings, advanced settings, how to build your own version, how to run the console version.
+Here is the complete documentation for the application, it is broken down into 4 sections, basic settings, advanced settings, how to build your own version, how to run the console version.
 
 ## Basic Settings
-As Mentioned in the quick how to use section, these are the most important settings that almost all user care about.
+These are the required settings that all users should be mindful of. 
 
 ### Rough Panel Height
-This is should the size that most panel will roughly be, since the program uses it as a guide when it does decide to slice the images, however it IS ROUGH, meaning if the program finds bubbles/sfx/whatever at that specific pixel length, it will adjust itself and the output size of each image will vary, but they all will be roughly around this size.
+Here you set the size that you want most panel to roughly be, the program will uses it as a guide to see where to slice/cut the images, however it IS ROUGH, meaning if the program finds bubbles/sfx/whatever at that specific pixel length, it will try to find the next closest position where it can cut the image. Thus the output size of each image will vary because of that, but they all will be roughly around this size.
 
 *Default: 5000* --- *Console Parameter Name: split_height*
 
 ### Output type
-The default output type is png since it is lossless, however you can always change to other types, such as jpg and the program does save in jpg 100 quality, so there should be not noticable loss in quality but it is up to the user what format they want.
+The default output type is png since it is lossless, however you can always change to other types, such as jpg, the program does save jpg at 100 quality, so there should be not noticable loss in quality but it is up to the user what format they want.
 
 *Default: .png* --- *Supported Types: png, jpg, webp, bmp, tiff, tga* --- *Console Parameter Name: output_files_type*
 
 ### Batch Mode
-You can have multiple chapter folders in the input folder, and when you turn on batch mode, the program will treat every folder within the input folder as its own chapter and will work on them. It will skip folders with no images, and if batch mode is enabled and no subfolders were found with the input folder/path, it will not run. And it will show the associated message for each of those problems.
+You can have multiple chapter folders in the input folder, when you turn on batch mode. The program will treat every folder within the input folder as its own chapter and will work on them. It will skip folders with no images, and if batch mode is enabled and no subfolders were found with the input folder/path, it will not run. It will show the associated message for each of those problems.
 
 *Default: false* --- *Console Parameter Name: batch_mode*
 
@@ -105,7 +105,7 @@ This is essentially the value of border pixels that you want the program to igno
 *Default: 0* --- *Console Parameter Name: ignorable_pixels*
 
 ### Scan Line Step [2.0+]
-This is the step at which the program moves if it find the line it's on to be unsuitable to be sliced, meaning when it move on to the next line, it moves down X number of pixels to a new line, where it begins it's scan algorithm once again. This X number of pixels is the scan line step. Smaller steps should give better results but larger ones do save computational power.
+This is the step at which the program moves if it find the line it's on to be unsuitable to be sliced, meaning when it move on to the next line, it moves up/down X number of pixels to a new line, then it begins its scan algorithm once again. This X number of pixels is the scan line step. Smaller steps should give better results but larger ones do save computational power.
 
 *Default: 5* --- *Value Range: 1-20* --- *Console Parameter Name: scan_line_step*
 
@@ -117,17 +117,17 @@ Red being the area ignored because of the Ignorable Border Pixels, and the blue 
 
 ## Want to build your own GUI Verison?
 
-### How to built --Windows
+### How to build GUI package --Windows
 1. install PyInstaller if you haven't yet with the following command: pip install pyinstaller
 2. then to create a build do: pyinstaller SmartStitchGUI.spec
 
-### How single file --Windows
+### How to build a Single File GUI package --Windows
 1. install PyInstaller if you haven't yet with the following command: pip install pyinstaller
 2. then to create a build do: pyinstaller SmartStitchGUI_SingleFile.spec
 
-## Want to run the console version?
+## Want to run the Console Version?
 Well you have to know python first of all, and then do the follow:
 1. pip install all the needed packages in SmartStitchCore
-2. open SmartStitchConsole, and call the stitch_process function and give it the needed required and optional parameters as you desire.
-refer to this documentation if you are confused on how what each parameter does and what values it can take.
+2. open SmartStitchConsole, and call the stitch_process function and give it the required and optional parameters you desire.
+refer to this documentation if you are confused on what each parameter does and what values it can take.
 
