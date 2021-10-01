@@ -39,7 +39,7 @@ The smart part of the name comes from the fact that it uses some simple pixel ca
 <img alt="screenshot02" src="https://i.imgur.com/nA1CZSL.png">
 </div>
 
-## Quick Get Started:
+## Quick Get Started (GUI Edition):
 1. Download it from the release section in this github
 2. Put the raws you wish to stitch in a folder
 3. Open the application
@@ -64,20 +64,25 @@ Here is the complete documentation for the application, it is broken down into 4
 ## Basic Settings
 These are the required settings that all users should be mindful of. 
 
+### Input Folder Path
+Here you have to set the path for the Input Folder which contains the raws that will be processed by the program. If batch mode is enabled, it will search for subfolder within the given input path. So make sure your folder and files are in order.
+
+*Console Parameter Name: --input_folder, -i*
+
 ### Rough Panel Height
 Here you set the size that you want most panel to roughly be, the program will uses it as a guide to see where to slice/cut the images, however it IS ROUGH, meaning if the program finds bubbles/sfx/whatever at that specific pixel length, it will try to find the next closest position where it can cut the image. Thus the output size of each image will vary because of that, but they all will be roughly around this size.
 
-*Default: 5000* --- *Console Parameter Name: split_height*
+*Default: 5000* --- *Console Parameter Name: --split_height, -H*
 
 ### Output type
 The default output type is png since it is lossless, however you can always change to other types, such as jpg, the program does save jpg at 100 quality, so there should be not noticable loss in quality but it is up to the user what format they want.
 
-*Default: .png* --- *Supported Types: png, jpg, webp, bmp, tiff, tga* --- *Console Parameter Name: output_files_type*
+*Default: .png* --- *Supported Types: png, jpg, webp, bmp, tiff, tga* --- *Console Parameter Name: --output_files_type, -t*
 
 ### Batch Mode
 You can have multiple chapter folders in the input folder, when you turn on batch mode. The program will treat every folder within the input folder as its own chapter and will work on them. It will skip folders with no images, and if batch mode is enabled and no subfolders were found with the input folder/path, it will not run. It will show the associated message for each of those problems.
 
-*Default: false* --- *Console Parameter Name: batch_mode*
+*Default: false* --- *Console Parameter Name: --batch_mode, -b*
 
 ## Advanced Settings
 These are settings for more tech savvy people, or people that find themselves in a special case that need some fine tuning of the settings.
@@ -87,7 +92,7 @@ Before slicing at a specific height, the program checks the row of pixels it wil
 
 if there is too big of a jump in value between the pixels, that means there is something that shouldn't be cut, so it move up a pixel row and repeat. For 100 Senstivity will mean if entire pixel row does not have the same exact pixel value/color, it will not slice at it. For 0 Senstivity being it does not care about the pixel values and will cut there, essentially turning the program into a normal Dumb Image Slicer.
 
-*Default: 90* --- *Value Range: 0-100* --- *Console Parameter Name: senstivity*
+*Default: 90* --- *Value Range: 0-100* --- *Console Parameter Name: --senstivity, -s*
 
 ### Width Enforcement Mode and Custom Width [1.8+]
 So essentially it's very straightforward. It adds a setting to select one of three modes to enforce change on the image width.
@@ -96,18 +101,18 @@ So essentially it's very straightforward. It adds a setting to select one of thr
 2 => User Customized width, where the user specifies the width they want, that is the Custom Width parameter.
 (Please just use waifu2x for upscaling raws, do not use this mode for it.)
 
-*Default: 0* --- *Value Range: 0-2* --- *Console Parameter Name: width_enforce_type*
-*Default: 720* --- *Console Parameter Name: custom_width*
+*Default: 0* --- *Value Range: 0-2* --- *Console Parameter Name: --width_enforce_type, -w*
+*Default: 720* --- *Console Parameter Name: --custom_width, -cw*
 
 ### Ignorable Border Pixels [2.0+]
-This is essentially the value of border pixels that you want the program to ignore when doing its object detection. Why you might ask, Borders do not make the detection algorithm happy, so in some cases you want it to start its detection only inside said border, be careful to what value you want it to be since if it's larger that image it will case the program to crash/stop its operation.
+This gives the option to ignore pixels on the border of the image when checking for bubbles/sfw/whatever. Why you might ask, Borders do not make the detection algorithm happy, so in some cases you want it to start its detection only inside said border, be careful to what value you want it to be since if it's larger that image it will case the program to crash/stop its operation.
 
-*Default: 0* --- *Console Parameter Name: ignorable_pixels*
+*Default: 0* --- *Console Parameter Name: --ignorable_pixels, -ip*
 
 ### Scan Line Step [2.0+]
 This is the step at which the program moves if it find the line it's on to be unsuitable to be sliced, meaning when it move on to the next line, it moves up/down X number of pixels to a new line, then it begins its scan algorithm once again. This X number of pixels is the scan line step. Smaller steps should give better results but larger ones do save computational power.
 
-*Default: 5* --- *Value Range: 1-20* --- *Console Parameter Name: scan_line_step*
+*Default: 5* --- *Value Range: 1-20* --- *Console Parameter Name: --scan_line_step, -sl*
 
 ### Visualization of Ignorable Border Pixels and Scan Line Step
 Red being the area ignored because of the Ignorable Border Pixels, and the blue lines would be the lines that application test for where it can slice (This example does not the default values for those parameters)
@@ -126,8 +131,42 @@ Red being the area ignored because of the Ignorable Border Pixels, and the blue 
 2. then to create a build do: pyinstaller SmartStitchGUI_SingleFile.spec
 
 ## Want to run the Console Version?
-Well you have to know python first of all, and then do the follow:
-1. pip install all the needed packages in SmartStitchCore
-2. open SmartStitchConsole, and call the stitch_process function and give it the required and optional parameters you desire.
-refer to this documentation if you are confused on what each parameter does and what values it can take.
+Well you have to inntall python first of all, and then do the follow:
+1. install all the following packages
+```
+pip install numpy
+pip install pillow
+pip install natsort
+```
+2. Then run the command as per the usage details below.
 
+### Console Version Usage
+```
+python SmartStitchConsole.py [-h] -i INPUT_FOLDER
+                                  [-H SPLIT_HEIGHT]
+                                  [-t OUTPUT_FILES_TYPE]
+                                  [-b]
+                                  [-w {0,1,2}]
+                                  [-cw CUSTOM_WIDTH]
+                                  [-s [0-100]]
+                                  [-ip IGNORABLE_PIXELS]
+                                  [-sl [1-20]]
+required arguments:
+    --input_folder INPUT_FOLDER, -i INPUT_FOLDER               Sets the path of Input Folder
+optional arguments:
+  -h, --help                                                   Shows the help message and Exits
+  --split_height SPLIT_HEIGHT, -H SPLIT_HEIGHT                 Sets the value of the Rough Panel Height
+  --output_files_type OUTPUT_FILES_TYPE, -t OUTPUT_FILES_TYPE  Sets the type/format of the Output Image Files
+  --batch_mode, -b                                             Enables Batch Mode
+  --width_enforce_type {0,1,2}, -w {0,1,2}                     Selects the Ouput Image Width Enforcement Mode
+  --custom_width CUSTOM_WIDTH, -cw CUSTOM_WIDTH                Selects the Custom Image Width For Width Enforcement Mode 2
+  --senstivity [0-100], -s [0-100]                             Sets the Object Detection Senstivity Percentage
+  --ignorable_pixels IGNORABLE_PIXELS, -ip IGNORABLE_PIXELS    Sets the value of Ignorable Border Pixels
+  --scan_line_step [1-20], -sl [1-20]                          Scan Line Step
+```
+
+### Console Version Command Example
+```
+python SmartStitchConsole.py -i "Review me" -H 7500 -t ".png" -b
+# This will Run the application on for input_folder of "./Review me" with split_height of 7500 and output_tyoe of ".png" and batch_mode enabled
+```
