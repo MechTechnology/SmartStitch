@@ -39,7 +39,7 @@ class SmartStitchGUI(Tk):
     self.width_enforce_types = ['No Width Enforcement', 'Automatic Uniform Width', 'User Customized Width']
     # Application StartUp Sequence
     self.load_app_settings()
-    self.setup_window(app_maintainer="MechTechnology", app_version="2.1")
+    self.setup_window(app_maintainer="MechTechnology", app_version="2.1.1")
     self.setup_paths_frame().grid(row=0, column=0, padx=(10), sticky="new")
     self.setup_basic_settings_frame().grid(row=1, column=0, padx=(10), pady=(5,0), sticky="new")
     self.setup_advanced_settings_frame().grid(row=2, column=0, padx=(10), pady=(5,0), sticky="new")
@@ -221,7 +221,7 @@ class SmartStitchGUI(Tk):
     subprocess_arguments_label.grid(row = 3, column = 0, sticky="new")
     subprocess_arguments_field.grid(row = 4, column = 0, columnspan=2, pady=(2,0), sticky="new")
     # Setup of Back Mode Selector/Checkbox.
-    argument_hint_label = ttk.Label(subprocess_frame, foreground='blue', text = 'If you want to pass the stitch output file directory as an argument, use the expression [output_folder]', justify=LEFT, wraplength=380)
+    argument_hint_label = ttk.Label(subprocess_frame, foreground='blue', text = 'To pass the stitch output directory use the argument [stitched], to pass a custom process output directory use the argument [processed]', justify=LEFT, wraplength=380)
     argument_hint_label.grid(row=5, column=0, columnspan=2, pady=(2,0), sticky="new")
     output_label = ttk.Label(subprocess_frame, text = 'Subprocess Console Output')
     # Setup of the Subprocess Console.
@@ -393,9 +393,11 @@ class SmartStitchGUI(Tk):
       ssc.save_data(final_images, path[1], self.output_files_type.get(), self.update_saving_progress)
       if (self.enable_subprocess_execution.get()):
         self.status.set("Working - Running Subprocess on Finalized Images!")
+        processed_path = path[1]+ " [Processed]"
         command = self.subprocess_path.get() + " " + self.subprocess_arguments.get()
-        command = command.replace('[output_folder]', "\"" + path[1]+ "\"")
-        ssc.call_external_func(command, self.update_subprocess_console)
+        command = command.replace('[stitched]', "\"" + path[1]+ "\"")
+        command = command.replace('[processed]', "\"" + processed_path + "\"")
+        ssc.call_external_func(command, self.update_subprocess_console, processed_path)
     return "complete"
 
   def run_stitch_process(self):

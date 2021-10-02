@@ -126,12 +126,13 @@ Red being the area ignored because of the Ignorable Border Pixels, and the blue 
   2. Enable the Show Subprocess Settings
   3. Enable the run subprocess after completion flag.
   4. Set the process path/location, you can essentially browse to the process' exe file
-  5. Set the arguments you want to pass to the process (Use the argument [output_folder] to pass the output directory to your process).
+  5. Set the arguments you want to pass to the process (Use the argument [stitched] to pass the output directory to your process).
+  5. Optional: Use the argument [processed] to pass a custom output directory to your process for those that can't create their own output.
 
 #### Visualization of After Completion Subprocess (Setup for waifu2x-caffe)
 Of course you can use whatever version of waifu2x or process that you want, this is just an example of what i setup for myself.
 <div align="center">
-  <img alt="screenshot04" src="https://i.imgur.com/FQpRjja.png">
+  <img alt="screenshot04" src="https://i.imgur.com/Vpl59rT.png">
 </div>
 
 
@@ -144,8 +145,7 @@ Of course you can use whatever version of waifu2x or process that you want, this
 ### How to build a Single File GUI package --Windows
 1. install PyInstaller if you haven't yet with the following command: pip install pyinstaller
 2. then to create a build do: pyinstaller SmartStitchGUI_SingleFile.spec
-
-## Want to run the Console Version?
+~~~
 Well you have to inntall python first of all, and then do the follow:
 1. install all the following packages
 ```

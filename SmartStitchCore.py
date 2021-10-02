@@ -141,13 +141,17 @@ def save_data(data, foldername, outputformat, progress_func = None):
     imageIndex += 1
   return
 
-def call_external_func(cmd, display_output):
-  popen = subprocess.Popen(cmd, stdout=subprocess.PIPE, universal_newlines=True, shell=True)
+def call_external_func(cmd, display_output, processed_path):
+  if not os.path.exists(processed_path) and '[Processed]' in cmd:
+    os.makedirs(processed_path)
+  proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, shell=True)
   display_output("Subprocess started!\n")
-  for line in popen.stdout:
+  for line in proc.stdout:
+    display_output(line)
+  for line in proc.stderr:
     display_output(line)
   display_output("\nSubprocess finished successfully!")
-  popen.stdout.close()
-  return_code = popen.wait()
+  proc.stdout.close()
+  return_code = proc.wait()
   if return_code:
     raise subprocess.CalledProcessError(return_code, cmd)
