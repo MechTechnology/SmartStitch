@@ -39,7 +39,7 @@ class SmartStitchGUI(Tk):
     self.width_enforce_types = ['No Width Enforcement', 'Automatic Uniform Width', 'User Customized Width']
     # Application StartUp Sequence
     self.load_app_settings()
-    self.setup_window(app_maintainer="MechTechnology", app_version="2.1.1")
+    self.setup_window(app_maintainer="MechTechnology", app_version="2.1.2")
     self.setup_paths_frame().grid(row=0, column=0, padx=(10), sticky="new")
     self.setup_basic_settings_frame().grid(row=1, column=0, padx=(10), pady=(5,0), sticky="new")
     self.setup_advanced_settings_frame().grid(row=2, column=0, padx=(10), pady=(5,0), sticky="new")
@@ -210,7 +210,7 @@ class SmartStitchGUI(Tk):
     subprocess_path_label = ttk.Label(subprocess_frame, text = 'Subprocess File Location/Path')
     subprocess_path_field = ttk.Entry(subprocess_frame, textvariable=self.subprocess_path)
     subprocess_path_button = ttk.Button(subprocess_frame, text = 'Browse', command=self.browse_subprocess_path)
-    subprocess_path_field.bind("<Any-KeyRelease>", self.save_app_settings)
+    subprocess_path_field.bind("<Any-KeyRelease>", self.update_subprocess_path)
     subprocess_path_label.grid(row = 1,column = 0, sticky="new")
     subprocess_path_field.grid(row = 2, column = 0, pady=(2,0), sticky="new")
     subprocess_path_button.grid(row = 2,column = 1, padx=(15, 0), sticky="ne")
@@ -286,6 +286,18 @@ class SmartStitchGUI(Tk):
   def browse_subprocess_path(self):
     """Opens Browse Dialog and Gets path For the Subprocess File."""
     filename = filedialog.askopenfilename()
+    if ' ' in filename:
+      filename = "\"" + filename + "\""
+    self.subprocess_path.set(filename)
+    self.save_app_settings()
+
+  def update_subprocess_path(self, *args):
+    """Opens Browse Dialog and Gets path For the Subprocess File."""
+    filename = self.subprocess_path.get()
+    if ' ' in filename and not "\"" in filename:
+      filename = "\"" + filename + "\""
+    elif not ' ' in filename and "\"" in filename:
+      filename = filename.replace("\"", "")
     self.subprocess_path.set(filename)
     self.save_app_settings()
 

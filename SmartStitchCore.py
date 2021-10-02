@@ -150,7 +150,7 @@ def call_external_func(cmd, display_output, processed_path):
     display_output(line)
   for line in proc.stderr:
     display_output(line)
-  display_output("\nSubprocess finished successfully!")
+  display_output("\nSubprocess finished successfully!\n")
   proc.stdout.close()
   return_code = proc.wait()
   if return_code:
