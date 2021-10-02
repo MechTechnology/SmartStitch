@@ -115,7 +115,7 @@ This is the step at which the program moves if it find the line it's on to be un
 *Default: 5* --- *Value Range: 1-20* --- *Console Parameter Name: --scan_line_step, -sl*
 
 #### Visualization of Ignorable Border Pixels and Scan Line Step
-Red being the area ignored because of the Ignorable Border Pixels, and the blue lines would be the lines that application test for where it can slice (This example does not the default values for those parameters)
+Red being the area ignored because of the Ignorable Border Pixels, and the blue lines would be the lines that application test for where it can slice (This example does not use the default values for those parameters)
 <div align="center">
   <img alt="screenshot03" src="https://i.imgur.com/ipU6cJS.png">
 </div>
@@ -145,7 +145,6 @@ Of course you can use whatever version of waifu2x or process that you want, this
 ### How to build a Single File GUI package --Windows
 1. install PyInstaller if you haven't yet with the following command: pip install pyinstaller
 2. then to create a build do: pyinstaller SmartStitchGUI_SingleFile.spec
-~~~
 Well you have to inntall python first of all, and then do the follow:
 1. install all the following packages
 ```
