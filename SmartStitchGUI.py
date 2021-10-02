@@ -26,18 +26,24 @@ class SmartStitchGUI(Tk):
     self.scan_line_step = StringVar(value="5")
     self.width_enforce_type = StringVar(value="No Width Enforcement")
     self.custom_enforce_width = StringVar(value="720")
+    self.show_subprocess_settings = BooleanVar(False)
+    self.enable_subprocess_execution = BooleanVar(False)
+    self.subprocess_path = StringVar()
+    self.subprocess_arguments = StringVar()
     # GUI related Variables
     self.status = StringVar(value="Idle")
     self.num_of_inputs = 1
     self.progress = ""
+    self.progress = ""
+    self.subprocess_console = ""
     self.width_enforce_types = ['No Width Enforcement', 'Automatic Uniform Width', 'User Customized Width']
     # Application StartUp Sequence
     self.load_app_settings()
-    self.setup_window(app_maintainer="MechTechnology", app_version="2.0")
-    self.setup_paths_frame().grid(row=0, column=0, padx=(10), pady=(5,0), sticky="new")
+    self.setup_window(app_maintainer="MechTechnology", app_version="2.1")
+    self.setup_paths_frame().grid(row=0, column=0, padx=(10), sticky="new")
     self.setup_basic_settings_frame().grid(row=1, column=0, padx=(10), pady=(5,0), sticky="new")
     self.setup_advanced_settings_frame().grid(row=2, column=0, padx=(10), pady=(5,0), sticky="new")
-    self.setup_action_frame().grid(row=4, column=0, padx=(10), pady=(5), sticky="new")
+    self.setup_action_frame().grid(row=4, column=0, padx=(10), pady=(5), columnspan=2, sticky="new")
 
   def save_app_settings(self, *args):
     """Saves active application settings in a Pickle file."""
@@ -50,6 +56,10 @@ class SmartStitchGUI(Tk):
     app_settings.append(self.ignorable_edges_pixels.get())
     app_settings.append(self.width_enforce_type.get())
     app_settings.append(self.custom_enforce_width.get())
+    app_settings.append(self.show_subprocess_settings.get())
+    app_settings.append(self.enable_subprocess_execution.get())
+    app_settings.append(self.subprocess_path.get())
+    app_settings.append(self.subprocess_arguments.get())
     with open("settings.pickle", "wb") as app_settings_handler:
       pickle.dump(app_settings, app_settings_handler)
 
@@ -68,6 +78,10 @@ class SmartStitchGUI(Tk):
         self.ignorable_edges_pixels.set(saved_settings[5])
         self.width_enforce_type.set(saved_settings[6])
         self.custom_enforce_width.set(saved_settings[7])
+        self.show_subprocess_settings.set(saved_settings[8])
+        self.enable_subprocess_execution.set(saved_settings[9])
+        self.subprocess_path.set(saved_settings[10])
+        self.subprocess_arguments.set(saved_settings[11])
     
   def setup_window(self, app_maintainer, app_version):
     """Sets up Basic Attributes about the window such Application Logging, Title, Icon and Position on Start Up."""
@@ -166,20 +180,56 @@ class SmartStitchGUI(Tk):
     widthfield = ttk.Entry(shown_settings_frame, textvariable=self.custom_enforce_width, validate='all')
     widthfield.bind("<Any-KeyRelease>", self.save_app_settings)
     widthfield['validatecommand'] = (widthfield.register(self.validate_nums_only),'%P','%d','%s')
-    widthdisclamer = ttk.Label(shown_settings_frame, foreground='red', text = 'Disclaimer:', justify=LEFT, wraplength=380)
     # Setup of Width Enforcement Settings' Label, and Entry Field.
     width_enforce_label = ttk.Label(shown_settings_frame, text = 'Output Width Enforcement:')
     width_enforce_dropdown = ttk.Combobox(shown_settings_frame, textvariable=self.width_enforce_type, values=('No Width Enforcement', 'Automatic Uniform Width', 'User Customized Width'))
-    width_enforce_dropdown.bind("<<ComboboxSelected>>", lambda event: self.update_width_mode(widthfieldtitle, widthfield, widthdisclamer))
+    width_enforce_dropdown.bind("<<ComboboxSelected>>", lambda event: self.update_width_mode(widthfieldtitle, widthfield))
     width_enforce_label.grid(row = 2, column = 1, padx=(5, 0), sticky="new")
     width_enforce_dropdown.grid(row = 3, column = 1, padx=(5, 0), pady=(2,5), sticky="new")
+    # Setup of Toggle Button to show subprocess settings or not.
+    subprocess_setting_frame = self.setup_subprocess_frame()
+    show_subprocess_checkbox = ttk.Checkbutton(shown_settings_frame, variable=self.show_subprocess_settings, text = 'Show Subprocess Settings [For Experienced Users Only]', command=lambda: self.subprocess_setting_toggle(subprocess_setting_frame))
+    show_subprocess_checkbox.grid(row = 6, column = 0, columnspan=2,pady=(5), sticky="new") 
     # Setup of Toggle Button to show advanced settings or not.
-    show_advanced_checkbox = ttk.Checkbutton(advanced_settings_frame, variable=self.show_advanced_settings, text = 'Show Advanced Settings', command=lambda: self.advanced_settings_toggle(shown_settings_frame))
-    show_advanced_checkbox.grid(row = 0, column = 0, pady=(2,5), sticky="new")
+    show_advanced_checkbox = ttk.Checkbutton(advanced_settings_frame, variable=self.show_advanced_settings, text = 'Show Advanced Settings', command=lambda: self.advanced_settings_toggle(shown_settings_frame, subprocess_setting_frame))
+    show_advanced_checkbox.grid(row = 0, column = 0, columnspan=2, pady=(2,5), sticky="new")
     # On first setup decides to display or the needed elements.
-    self.advanced_settings_toggle(shown_settings_frame)
-    self.update_width_mode(widthfieldtitle, widthfield, widthdisclamer)
+    self.advanced_settings_toggle(shown_settings_frame, subprocess_setting_frame)
+    self.update_width_mode(widthfieldtitle, widthfield)
     return advanced_settings_frame
+
+  def setup_subprocess_frame(self):
+    """Setups the Fields for the Subprocess Parameters."""
+    # Browse Button and Input and Output Field
+    subprocess_frame = LabelFrame(self, text="Subprocess Settings", padx=(5))
+    subprocess_frame.columnconfigure(0, weight=1)
+    # Setup of Toggle Button to enable subprocess execution settings or not.
+    show_advanced_checkbox = ttk.Checkbutton(subprocess_frame, variable=self.enable_subprocess_execution, text = 'Run the following subprocess after stitching is complete', command=lambda: self.save_app_settings)
+    show_advanced_checkbox.grid(row = 0, column = 0, columnspan=2, pady=(2,5), sticky="new")
+    # Setup of Path Label, Entry Field, and Browse Button.
+    subprocess_path_label = ttk.Label(subprocess_frame, text = 'Subprocess File Location/Path')
+    subprocess_path_field = ttk.Entry(subprocess_frame, textvariable=self.subprocess_path)
+    subprocess_path_button = ttk.Button(subprocess_frame, text = 'Browse', command=self.browse_subprocess_path)
+    subprocess_path_field.bind("<Any-KeyRelease>", self.save_app_settings)
+    subprocess_path_label.grid(row = 1,column = 0, sticky="new")
+    subprocess_path_field.grid(row = 2, column = 0, pady=(2,0), sticky="new")
+    subprocess_path_button.grid(row = 2,column = 1, padx=(15, 0), sticky="ne")
+    # Setup of Arguments Label and Entry Field.
+    subprocess_arguments_label = ttk.Label(subprocess_frame, text = 'Subprocess Arguments')
+    subprocess_arguments_field = ttk.Entry(subprocess_frame, textvariable=self.subprocess_arguments)
+    subprocess_arguments_field.bind("<Any-KeyRelease>", self.save_app_settings)
+    subprocess_arguments_label.grid(row = 3, column = 0, sticky="new")
+    subprocess_arguments_field.grid(row = 4, column = 0, columnspan=2, pady=(2,0), sticky="new")
+    # Setup of Back Mode Selector/Checkbox.
+    argument_hint_label = ttk.Label(subprocess_frame, foreground='blue', text = 'If you want to pass the stitch output file directory as an argument, use the expression [output_folder]', justify=LEFT, wraplength=380)
+    argument_hint_label.grid(row=5, column=0, columnspan=2, pady=(2,0), sticky="new")
+    output_label = ttk.Label(subprocess_frame, text = 'Subprocess Console Output')
+    # Setup of the Subprocess Console.
+    output_label.grid(row=6, column=0, columnspan=2, pady=(5,0), sticky="new")
+    self.subprocess_console = Label(subprocess_frame, foreground="white",background="#333", height=12, anchor="sw", justify=LEFT)
+    self.subprocess_console.grid(row=7, column=0, columnspan=2, pady=(0,5), sticky="news")
+    # Inserting Text which is read only
+    return subprocess_frame
 
   def setup_action_frame(self):
     action_frame = LabelFrame(self, padx=(5))
@@ -197,30 +247,34 @@ class SmartStitchGUI(Tk):
     action_frame.columnconfigure(2, weight=1)
     return action_frame
 
-  def advanced_settings_toggle(self, frame):
+  def advanced_settings_toggle(self, frame, subframe):
     if (self.show_advanced_settings.get()):
       frame.grid(row = 1, column = 0, sticky="new")
     else:
       frame.grid_forget()
+      self.show_subprocess_settings.set(self.show_advanced_settings.get())
+    self.subprocess_setting_toggle(subframe)
     self.save_app_settings()
 
-  def update_width_mode(self, widthfieldtitle, widthfield, widthdisclamer):
+  def subprocess_setting_toggle(self, frame):
+    if (self.show_subprocess_settings.get()):
+      frame.grid(row = 0, column = 1, sticky="news",  padx=(0,10), rowspan=4)
+    else:
+      frame.grid_forget()
+    self.save_app_settings()
+
+  def update_width_mode(self, widthfieldtitle, widthfield):
     self.save_app_settings() 
     enforce_type = self.width_enforce_type.get()
     if enforce_type == 'Automatic Uniform Width':
       widthfieldtitle.grid_remove()
       widthfield.grid_remove()
-      widthdisclamer['text'] = 'Disclaimer: This width enforcement mode will cause files with a larger width to be resized down (using LANCZOS) to the width of smallest input file.'
-      widthdisclamer.grid(row = 6, column = 0, columnspan=2, pady=(5), sticky="new")
     elif enforce_type == 'User Customized Width':
       widthfieldtitle.grid(row = 4, column = 0, columnspan=2, sticky="new")
       widthfield.grid(row = 5, column = 0, columnspan=2, pady=(2,0), sticky="new")
-      widthdisclamer['text'] = 'Disclaimer: This width enforcement mode will cause all files to be resized (using LANCZOS) to the width you specify. Please use tools like waifu2x for large upscaling.'
-      widthdisclamer.grid(row = 6, column = 0, columnspan=2, pady=(5), sticky="new")
     else:
       widthfieldtitle.grid_remove()
       widthfield.grid_remove()
-      widthdisclamer.grid_remove()
 
   # These are all the necssary helper functions.
   def browse_input_path(self):
@@ -228,6 +282,12 @@ class SmartStitchGUI(Tk):
     foldername = filedialog.askdirectory()
     self.input_folder.set(foldername)
     self.output_folder.set(foldername + " [Stitched]")
+
+  def browse_subprocess_path(self):
+    """Opens Browse Dialog and Gets path For the Subprocess File."""
+    filename = filedialog.askopenfilename()
+    self.subprocess_path.set(filename)
+    self.save_app_settings()
 
   def update_output_path(self, *args):
     """Opens Browse Dialog and Gets Directory For the Input and Updates Output."""
@@ -264,6 +324,9 @@ class SmartStitchGUI(Tk):
     """Updates the progress value according to the number of files being saved."""
     self.progress['value'] += ((60 * 1/num_of_data) / self.num_of_inputs)
     Tk.update_idletasks(self)
+
+  def update_subprocess_console(self, console_line):
+    self.subprocess_console["text"] = self.subprocess_console["text"] + console_line
 
   def pre_process_check(self):
     """Checks if all the settings and parameters are ready for the operation to start."""
@@ -302,6 +365,7 @@ class SmartStitchGUI(Tk):
     """Runs the stitch process using the SS core functions, and updates the progress on the UI."""
     self.status.set("Working - Loading Image Files!")
     self.progress['value'] = 0
+    self.subprocess_console['text'] = ""
     folder_paths = ssc.get_folder_paths(self.enable_batch_mode.get(),self.input_folder.get(), self.output_folder.get())
     # Sets the number of folders as a global variable, so it can be used in other update related functions.
     self.num_of_inputs = len(folder_paths)
@@ -326,7 +390,12 @@ class SmartStitchGUI(Tk):
       self.update_gui_progress("Working - Saving Finalized Images!", (20 / self.num_of_inputs))
       # The reason a function called update_saving_progress is passed is so the UI can be updated about the saving progress
       # since it is one of the longest, if not the longest stage in this process.
-      ssc.SaveData(final_images, path[1], self.output_files_type.get(), self.update_saving_progress)
+      ssc.save_data(final_images, path[1], self.output_files_type.get(), self.update_saving_progress)
+      if (self.enable_subprocess_execution.get()):
+        self.status.set("Working - Running Subprocess on Finalized Images!")
+        command = self.subprocess_path.get() + " " + self.subprocess_arguments.get()
+        command = command.replace('[output_folder]', "\"" + path[1]+ "\"")
+        ssc.call_external_func(command, self.update_subprocess_console)
     return "complete"
 
   def run_stitch_process(self):

@@ -30,7 +30,7 @@ def run_stitch_process(input_folder, split_height=5000, output_files_type=".png"
     print("Working - Slicing Combined Image into Finalized Images!")
     final_images = ssc.split_image(combined_image, split_height, senstivity, ignorable_pixels, scan_line_step)
     print("Working - Saving Finalized Images!")
-    ssc.SaveData(final_images, path[1], output_files_type)
+    ssc.save_data(final_images, path[1], output_files_type)
     print(path[1] + " Has Been Successfully Complete.")
     print("Process Ended")
 

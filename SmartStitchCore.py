@@ -2,6 +2,7 @@ from PIL import ImageFile, Image as pil
 from natsort import natsorted
 import numpy as np
 import os
+import subprocess
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 def get_folder_paths(batch_mode_enabled, given_input_folder, given_output_folder):
@@ -127,7 +128,7 @@ def split_image(combined_img, split_height, senstivity, ignorable_pixels, scan_s
     images.append(split_image)
   return images
 
-def SaveData(data, foldername, outputformat, progress_func = None):
+def save_data(data, foldername, outputformat, progress_func = None):
   """Saves the given images/date in the output folder."""
   new_folder = str(foldername)
   if not os.path.exists(new_folder):
@@ -139,3 +140,14 @@ def SaveData(data, foldername, outputformat, progress_func = None):
     image.save(new_folder + '/' + str(f'{imageIndex:02}') + outputformat, quality=100)
     imageIndex += 1
   return
+
+def call_external_func(cmd, display_output):
+  popen = subprocess.Popen(cmd, stdout=subprocess.PIPE, universal_newlines=True, shell=True)
+  display_output("Subprocess started!\n")
+  for line in popen.stdout:
+    display_output(line)
+  display_output("\nSubprocess finished successfully!")
+  popen.stdout.close()
+  return_code = popen.wait()
+  if return_code:
+    raise subprocess.CalledProcessError(return_code, cmd)

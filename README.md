@@ -35,8 +35,8 @@ The smart part of the name comes from the fact that it uses some simple pixel ca
 
 ## Screenshots
 <div align="center">
-<img alt="screenshot01" src="https://i.imgur.com/iwiaDwD.png">
-<img alt="screenshot02" src="https://i.imgur.com/nA1CZSL.png">
+<img alt="screenshot01" src="https://i.imgur.com/QOPQQOU.png">
+<img alt="screenshot02" src="https://i.imgur.com/QpdbJli.png">
 </div>
 
 ## Quick Get Started (GUI Edition):
@@ -114,11 +114,26 @@ This is the step at which the program moves if it find the line it's on to be un
 
 *Default: 5* --- *Value Range: 1-20* --- *Console Parameter Name: --scan_line_step, -sl*
 
-### Visualization of Ignorable Border Pixels and Scan Line Step
+#### Visualization of Ignorable Border Pixels and Scan Line Step
 Red being the area ignored because of the Ignorable Border Pixels, and the blue lines would be the lines that application test for where it can slice (This example does not the default values for those parameters)
 <div align="center">
-  <img alt="screenshot01" src="https://i.imgur.com/ipU6cJS.png">
+  <img alt="screenshot03" src="https://i.imgur.com/ipU6cJS.png">
 </div>
+
+### After Completion Subprocess [2.1+]
+(GUI Only) With this option, one can set a specific console process to be fire on the output files of the application. For example, you can set it to fire waifu2x on the output files, so you can have the best raw processing experience. So how do we set that up,
+  1. Enable the Show Advanced Settings
+  2. Enable the Show Subprocess Settings
+  3. Enable the run subprocess after completion flag.
+  4. Set the process path/location, you can essentially browse to the process' exe file
+  5. Set the arguments you want to pass to the process (Use the argument [output_folder] to pass the output directory to your process).
+
+#### Visualization of After Completion Subprocess (Setup for waifu2x-caffe)
+Of course you can use whatever version of waifu2x or process that you want, this is just an example of what i setup for myself.
+<div align="center">
+  <img alt="screenshot04" src="https://i.imgur.com/FQpRjja.png">
+</div>
+
 
 ## Want to build your own GUI Verison?
 
