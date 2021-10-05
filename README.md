@@ -136,7 +136,7 @@ Of course you can use whatever version of waifu2x or process that you want, this
 </div>
 
 
-## Want to build your own GUI Verison?
+## Want to build your own GUI Version?
 
 ### How to build GUI package --Windows
 1. install PyInstaller if you haven't yet with the following command: pip install pyinstaller
@@ -145,6 +145,10 @@ Of course you can use whatever version of waifu2x or process that you want, this
 ### How to build a Single File GUI package --Windows
 1. install PyInstaller if you haven't yet with the following command: pip install pyinstaller
 2. then to create a build do: pyinstaller SmartStitchGUI_SingleFile.spec
+
+
+## Want to run the Console Version?
+
 Well you have to inntall python first of all, and then do the follow:
 1. install all the following packages
 ```
