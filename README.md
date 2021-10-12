@@ -39,24 +39,40 @@ The smart part of the name comes from the fact that it uses some simple pixel ca
 <img alt="screenshot02" src="https://i.imgur.com/QpdbJli.png">
 </div>
 
-## Quick Get Started (GUI Edition):
-1. Download it from the release section in this github
-2. Put the raws you wish to stitch in a folder
-3. Open the application
-4. Browse to your raw folder
-5. Set the Rough Panel Height of the output files
-7. Select a the output file type. (Supported types: png, jpg, webp, bmp, tiff, tga)
-8. Click start process
-9. Done, Enjoy
+## Quick Get Started GUI Version
+1. Open the application.
+2. Browse to your raw folder.
+3. Set the Rough Panel Height of the output files.
+4. Select a the output file type. (Supported types: png, jpg, webp, bmp, tiff, tga)
+5. Click start process.
+6. Done, Enjoy!
 
 - Your file will be ordered the same way they are in your file explorer, so make sure everything is in order. (sort by name in file explorer)
+- You can explore the advanced settings after reading documentation to have an better stitcher experience.
+
+### How to launch the GUI Version (For Windows Users):
+1. Download the program zip file of the latest release (Found in the releases section in this github)
+2. Unzip the file to a suitable place on your device.
+4. Put the raws you wish to stitch in a folder
+5. Now the application will launch, and you can proceed with the Quick get started steps.
+
+### How to launch the GUI Version (For Mac & Linux Users):
+1. Download the source code zip file of the latest release (Found in the releases section in this github)
+2. Unzip the file to a suitable place on your device.
+3. Install python edition suitable for your machine. (Python 3.7 is recommended)
+4. Open a terminal and send the following command: pip install numpy pillow natsort
+5. From the terminal, navigate to the directory where the source code was unzipped and send the following command: python SmartStitchGUI.py
+6. Now the application will launch, and you can proceed with the Quick get started steps.
 
 ## Reporting Bugs [2.0+]:
 A logging system has been implemented in the GUI version of SmartStitch, when an error occur the application will inform you about it, and leaves the details in a file called 'crashreport.log', you can open an issue ticket here and attach the file, so it can be easily debugged and fixed. 
 
 And since it's just one person maintaining this application, only accepted tickets will be for version 2.0 and above. Please don't open tickets for lower versions, since your problem could have been already solved.
 
+Please keep in mind that, if the issue is critical enough, it may require a copy of the raws files you used as input, but that will be for debugging special case issue, and will be requested if required.
+
 You can also contact me at Discord if you don't want to use the GitHub Issue System. (MechTechnology#5466)
+
 
 # Documentation
 Here is the complete documentation for the application, it is broken down into 4 sections, basic settings, advanced settings, how to build your own version, how to run the console version.
@@ -135,28 +151,12 @@ Of course you can use whatever version of waifu2x or process that you want, this
   <img alt="screenshot04" src="https://i.imgur.com/Vpl59rT.png">
 </div>
 
-
-## Want to build your own GUI Version?
-
-### How to build GUI package --Windows
-1. install PyInstaller if you haven't yet with the following command: pip install pyinstaller
-2. then to create a build do: pyinstaller SmartStitchGUI.spec
-
-### How to build a Single File GUI package --Windows
-1. install PyInstaller if you haven't yet with the following command: pip install pyinstaller
-2. then to create a build do: pyinstaller SmartStitchGUI_SingleFile.spec
-
-
-## Want to run the Console Version?
-
-Well you have to inntall python first of all, and then do the follow:
-1. install all the following packages
-```
-pip install numpy
-pip install pillow
-pip install natsort
-```
-2. Then run the command as per the usage details below.
+## How to run the Console Version (For Windows, Mac, Linux Users)
+1. Download the source code zip file of the latest release (Found in the releases section in this github)
+2. Unzip the file to a suitable place on your device.
+3. Install python edition suitable for your machine. (Python 3.7 is recommended)
+4. Open a terminal and send the following command: pip install numpy pillow natsort
+5. From the terminal, navigate to the directory where the source code was unzipped and run the command as per the usage details below
 
 ### Console Version Usage
 ```
@@ -188,3 +188,16 @@ optional arguments:
 python SmartStitchConsole.py -i "Review me" -H 7500 -t ".png" -b
 # This will Run the application on for input_folder of "./Review me" with split_height of 7500 and output_tyoe of ".png" and batch_mode enabled
 ```
+
+## How to build/compile your own GUI Version?
+
+### How to compile GUI package --Windows
+1. install PyInstaller if you haven't yet with the following command: pip install pyinstaller
+2. then to create a build do: pyinstaller SmartStitchGUI.spec
+
+### How to compile a Single File GUI package --Windows
+1. install PyInstaller if you haven't yet with the following command: pip install pyinstaller
+2. then to create a build do: pyinstaller SmartStitchGUI_SingleFile.spec
+
+- The output compiled application will not need python installed to run, but will only run on the platform it was built/compiled on.
+
