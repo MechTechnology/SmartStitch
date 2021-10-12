@@ -87,8 +87,7 @@ class SmartStitchGUI(Tk):
     """Sets up Basic Attributes about the window such Application Logging, Title, Icon and Position on Start Up."""
     # Sets up Title and Logo
     self.title("SmartStitch by " + app_maintainer + " [" + app_version + "]")
-    icon_abs_path = os.path.join(os.path.dirname(__file__), "SmartStitchLogo.ico")
-    self.iconbitmap(icon_abs_path)
+    self.iconphoto(False, PhotoImage(file="SmartStitchLogo.png"))
     # Configures logging to save into a log file.
     logging.basicConfig(filename="crashreport.log", level=logging.WARNING)
     # Centers the window on Launch and Disables Resize.
