@@ -27,9 +27,9 @@ exe = EXE(pyz,
           bootloader_ignore_signals=False,
           strip=False,
           upx=True,
-          console=False , icon='SmartStitchLogo.ico')
+          console=False)
 coll = COLLECT(exe,
-               a.binaries + [('SmartStitchLogo.png', 'SmartStitchLogo.png', 'DATA'), ('SmartStitchLogo.ico', 'SmartStitchLogo.ico', 'DATA')],
+               a.binaries + [('SmartStitchLogo.png', 'SmartStitchLogo.png', 'DATA')],
                a.zipfiles,
                a.datas,
                strip=False,

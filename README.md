@@ -60,8 +60,8 @@ The smart part of the name comes from the fact that it uses some simple pixel ca
 1. Download the source code zip file of the latest release (Found in the releases section in this github)
 2. Unzip the file to a suitable place on your device.
 3. Install python edition suitable for your machine. (Python 3.7 is recommended)
-4. Open a terminal and send the following command: pip install numpy pillow natsort
-5. From the terminal, navigate to the directory where the source code was unzipped and send the following command: python SmartStitchGUI.py
+4. Open a terminal and send the following command: ```pip install numpy pillow natsort```
+5. From the terminal, navigate to the directory where the source code was unzipped and send the following command: ```python SmartStitchGUI.py```
 6. Now the application will launch, and you can proceed with the Quick get started steps.
 
 ## Reporting Bugs [2.0+]:
@@ -191,13 +191,13 @@ python SmartStitchConsole.py -i "Review me" -H 7500 -t ".png" -b
 
 ## How to build/compile your own GUI Version?
 
-### How to compile GUI package --Windows
-1. install PyInstaller if you haven't yet with the following command: pip install pyinstaller
-2. then to create a build do: pyinstaller SmartStitchGUI.spec
+### How to compile GUI package (For Windows Users)
+1. Open a terminal and send the following command: ```pip install pyinstaller```
+2. From the terminal, navigate to the directory where the source code was unzipped and run: ```pyinstaller SmartStitchGUI.spec```
 
-### How to compile a Single File GUI package --Windows
-1. install PyInstaller if you haven't yet with the following command: pip install pyinstaller
-2. then to create a build do: pyinstaller SmartStitchGUI_SingleFile.spec
+### How to compile GUI package (For Mac & Linux Users)
+1. install PyInstaller if you haven't yet with the following command: ```pip install pyinstaller```
+2. From the terminal, navigate to the directory where the source code was unzipped and run: ```pyinstaller SmartStitchGUI_NoIcon.spec```
 
 - The output compiled application will not need python installed to run, but will only run on the platform it was built/compiled on.
-
+- Mac and Linux Compiling was not tested by me, so uh... good luck xD
