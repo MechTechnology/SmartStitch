@@ -82,13 +82,12 @@ class SmartStitchGUI(Tk):
         self.enable_subprocess_execution.set(saved_settings[9])
         self.subprocess_path.set(saved_settings[10])
         self.subprocess_arguments.set(saved_settings[11])
-    
+
   def setup_window(self, app_maintainer, app_version):
     """Sets up Basic Attributes about the window such Application Logging, Title, Icon and Position on Start Up."""
     # Sets up Title and Logo
     self.title("SmartStitch by " + app_maintainer + " [" + app_version + "]")
-    icon_abs_path = os.path.join(os.path.dirname(__file__), "SmartStitchLogo.ico")
-    self.iconbitmap(icon_abs_path)
+    self.iconphoto(False, PhotoImage(file="SmartStitchLogo.png"))
     # Configures logging to save into a log file.
     logging.basicConfig(filename="crashreport.log", level=logging.WARNING)
     # Centers the window on Launch and Disables Resize.
@@ -189,7 +188,7 @@ class SmartStitchGUI(Tk):
     # Setup of Toggle Button to show subprocess settings or not.
     subprocess_setting_frame = self.setup_subprocess_frame()
     show_subprocess_checkbox = ttk.Checkbutton(shown_settings_frame, variable=self.show_subprocess_settings, text = 'Show Subprocess Settings [For Experienced Users Only]', command=lambda: self.subprocess_setting_toggle(subprocess_setting_frame))
-    show_subprocess_checkbox.grid(row = 6, column = 0, columnspan=2,pady=(5), sticky="new") 
+    show_subprocess_checkbox.grid(row = 6, column = 0, columnspan=2,pady=(5), sticky="new")
     # Setup of Toggle Button to show advanced settings or not.
     show_advanced_checkbox = ttk.Checkbutton(advanced_settings_frame, variable=self.show_advanced_settings, text = 'Show Advanced Settings', command=lambda: self.advanced_settings_toggle(shown_settings_frame, subprocess_setting_frame))
     show_advanced_checkbox.grid(row = 0, column = 0, columnspan=2, pady=(2,5), sticky="new")
@@ -264,7 +263,7 @@ class SmartStitchGUI(Tk):
     self.save_app_settings()
 
   def update_width_mode(self, widthfieldtitle, widthfield):
-    self.save_app_settings() 
+    self.save_app_settings()
     enforce_type = self.width_enforce_type.get()
     if enforce_type == 'Automatic Uniform Width':
       widthfieldtitle.grid_remove()
@@ -307,21 +306,21 @@ class SmartStitchGUI(Tk):
 
   def validate_nums_only(self,P,d,s):
     """Allows only numbers to be written in the Entry Field."""
-    if d == '1': 
+    if d == '1':
       if not (P.isdigit()):
         return False
     return True
 
   def validate_percentage_only(self,P,d,s):
     """Allows only percentages to be written in the Entry Field."""
-    if d == '1': 
+    if d == '1':
       if not (P.isdigit() and len(s) < 3 and int(P)<=100):
         return False
     return True
 
   def validate_onetotwenty_only(self,P,d,s):
     """Allows only percentages to be written in the Entry Field."""
-    if d == '1': 
+    if d == '1':
       if not (P.isdigit() and len(s) < 3 and 20>=int(P)>=1):
         return False
     return True
@@ -434,10 +433,10 @@ class SmartStitchGUI(Tk):
       self.status.set("Idle - Files successfully stitched in " +  str(delta) + "sec!")
     self.progress['value'] = 0
     self.actionbutton['state'] = "normal"
-  
+
   def run_stitch_process_async(self, *args):
     workthread = threading.Thread(target=self.run_stitch_process)
     workthread.start()
-        
+
 
 SmartStitchGUI().mainloop()
