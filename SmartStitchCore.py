@@ -144,12 +144,12 @@ def save_data(data, foldername, outputformat, progress_func = None):
 def call_external_func(cmd, display_output, processed_path):
   if not os.path.exists(processed_path) and '[Processed]' in cmd:
     os.makedirs(processed_path)
-  proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, shell=True)
+  proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding='utf-8', errors='replace', universal_newlines=True, shell=True)
   display_output("Subprocess started!\n")
   for line in proc.stdout:
     display_output(line)
-  for line in proc.stderr:
-    display_output(line)
+  # for line in proc.stderr:
+  #   display_output(line)
   display_output("\nSubprocess finished successfully!\n")
   proc.stdout.close()
   return_code = proc.wait()

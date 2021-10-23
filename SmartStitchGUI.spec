@@ -3,11 +3,18 @@
 
 block_cipher = None
 
+added_files = [
+              ( './gui_theme/light/*', 'gui_theme/light' ),
+              ( './gui_theme/light.tcl', 'gui_theme' ),
+              ( './gui_theme/modern_theme.tcl', 'gui_theme' ),
+              ( './SmartStitchLogo.png', '.' ),
+              ( './SmartStitchLogo.ico', '.' ),
+              ]
 
 a = Analysis(['SmartStitchGUI.py'],
              pathex=['.'],
              binaries=[],
-             datas = [],
+             datas = added_files,
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],
@@ -29,7 +36,7 @@ exe = EXE(pyz,
           upx=True,
           console=False , icon='SmartStitchLogo.ico')
 coll = COLLECT(exe,
-               a.binaries + [('SmartStitchLogo.png', 'SmartStitchLogo.png', 'DATA'), ('SmartStitchLogo.ico', 'SmartStitchLogo.ico', 'DATA')],
+               a.binaries,
                a.zipfiles,
                a.datas,
                strip=False,

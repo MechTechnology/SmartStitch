@@ -34,12 +34,12 @@ class SmartStitchGUI(Tk):
     self.status = StringVar(value="Idle")
     self.num_of_inputs = 1
     self.progress = ""
-    self.progress = ""
+    self.console_canvas = ""
     self.subprocess_console = ""
     self.width_enforce_types = ['No Width Enforcement', 'Automatic Uniform Width', 'User Customized Width']
     # Application StartUp Sequence
     self.load_app_settings()
-    self.setup_window(app_maintainer="MechTechnology", app_version="2.1.2")
+    self.setup_window(app_maintainer="MechTechnology", app_version="2.2")
     self.setup_paths_frame().grid(row=0, column=0, padx=(10), sticky="new")
     self.setup_basic_settings_frame().grid(row=1, column=0, padx=(10), pady=(5,0), sticky="new")
     self.setup_advanced_settings_frame().grid(row=2, column=0, padx=(10), pady=(5,0), sticky="new")
@@ -90,13 +90,15 @@ class SmartStitchGUI(Tk):
     self.iconphoto(False, PhotoImage(file="SmartStitchLogo.png"))
     # Configures logging to save into a log file.
     logging.basicConfig(filename="crashreport.log", level=logging.WARNING)
+    # Configure Modern Application Theme
+    self.call("source", "./gui_theme/modern_theme.tcl")
     # Centers the window on Launch and Disables Resize.
     window_width = self.winfo_width()
     window_height = self.winfo_height()
     screen_width = self.winfo_screenwidth()
     screen_height = self.winfo_screenheight()
-    x = (self.winfo_screenwidth()/2) - (window_height/2) - 120
-    y = (self.winfo_screenheight()/2) - (window_width/2) - 120
+    x = (screen_width/2) - (window_height/2) - 140
+    y = (screen_height/2) - (window_width/2) - 220
     self.geometry('+%d+%d' % (x, y))
     self.columnconfigure(0, weight=1)
     self.resizable(False, False)
@@ -104,7 +106,7 @@ class SmartStitchGUI(Tk):
   def setup_paths_frame(self):
     """Setups the Fields for the Input and Output Paths."""
     # Browse Button and Input and Output Field
-    paths_frame = LabelFrame(self, text="Input/Output Settings", padx=(5))
+    paths_frame = ttk.LabelFrame(self, text="Input/Output Settings", padding=(5,0))
     paths_frame.columnconfigure(0, weight=1)
     # Setup of Input Label, Entry Field, and Browse Button.
     input_label = ttk.Label(paths_frame, text = 'Input Path')
@@ -113,7 +115,7 @@ class SmartStitchGUI(Tk):
     input_button = ttk.Button(paths_frame, text = 'Browse', command=self.browse_input_path)
     input_label.grid(row = 0,column = 0, sticky="new")
     input_field.grid(row = 1, column = 0, pady=(2,0), sticky="new")
-    input_button.grid(row = 1,column = 1, padx=(15, 0), sticky="ne")
+    input_button.grid(row = 1,column = 1, padx=(5,0), pady=(2,0), sticky="ne")
     # Setup of Output Label and Entry Field.
     output_label = ttk.Label(paths_frame, text = 'Output Path')
     output_field = ttk.Entry(paths_frame, textvariable=self.output_folder)
@@ -126,7 +128,7 @@ class SmartStitchGUI(Tk):
 
   def setup_basic_settings_frame(self):
     """Setups the basic settings controls that most user would need."""
-    basic_settings_frame = LabelFrame(self, text="Basic Settings", padx=(5))
+    basic_settings_frame = ttk.LabelFrame(self, text="Basic Settings", padding=(5,0))
     basic_settings_frame.columnconfigure(0, weight=1, uniform="equal")
     basic_settings_frame.columnconfigure(1, weight=1, uniform="equal")
     # Setup of Split Height Label, Entry Field, and Browse Button.
@@ -140,8 +142,8 @@ class SmartStitchGUI(Tk):
     type_label = ttk.Label(basic_settings_frame, text = 'Output Images Type:')
     type_dropdown = ttk.Combobox(basic_settings_frame, textvariable=self.output_files_type, values=('.png', '.jpg', '.webp', '.bmp', '.tiff', '.tga'))
     type_dropdown.bind("<<ComboboxSelected>>", self.save_app_settings)
-    type_label.grid(row = 0, column = 1, padx=(5,0), sticky="new")
-    type_dropdown.grid(row = 1, column = 1,  padx=(5, 0), pady=(2,10), sticky="new")
+    type_label.grid(row = 0, column = 1, sticky="new")
+    type_dropdown.grid(row = 1, column = 1, pady=(2,10), sticky="new")
     return basic_settings_frame
 
   def setup_advanced_settings_frame(self):
@@ -150,7 +152,7 @@ class SmartStitchGUI(Tk):
     advanced_settings_frame = Frame(self)
     advanced_settings_frame.columnconfigure(0, weight=1)
     # Setup of a Frame That holds the settings is toggleable by a checkbox
-    shown_settings_frame = LabelFrame(advanced_settings_frame, text="Advanced Settings", padx=(5))
+    shown_settings_frame = ttk.LabelFrame(advanced_settings_frame, text="Advanced Settings", padding=(5,0))
     shown_settings_frame.columnconfigure(0, weight=1, uniform="equal")
     shown_settings_frame.columnconfigure(1, weight=1, uniform="equal")
     # Setup of Slice Senstivity Settings' Label, and Entry Field.
@@ -165,8 +167,8 @@ class SmartStitchGUI(Tk):
     ignorable_pixels_field = ttk.Entry(shown_settings_frame, textvariable=self.ignorable_edges_pixels, validate='all')
     ignorable_pixels_field.bind("<Any-KeyRelease>", self.save_app_settings)
     ignorable_pixels_field['validatecommand'] = (ignorable_pixels_field.register(self.validate_nums_only),'%P','%d','%s')
-    ignorable_pixels_label.grid(row = 0, column = 1, padx=(5, 0), sticky="new")
-    ignorable_pixels_field.grid(row = 1, column = 1, padx=(5, 0), pady=(2,5), sticky="new")
+    ignorable_pixels_label.grid(row = 0, column = 1, sticky="new")
+    ignorable_pixels_field.grid(row = 1, column = 1, pady=(2,5), sticky="new")
     # Setup of Scan Line Step Settings' Label, and Entry Field.
     scan_line_label = ttk.Label(shown_settings_frame, text = 'Scan Line Step:')
     scan_line_field = ttk.Entry(shown_settings_frame, textvariable=self.scan_line_step, validate='all')
@@ -183,8 +185,8 @@ class SmartStitchGUI(Tk):
     width_enforce_label = ttk.Label(shown_settings_frame, text = 'Output Width Enforcement:')
     width_enforce_dropdown = ttk.Combobox(shown_settings_frame, textvariable=self.width_enforce_type, values=('No Width Enforcement', 'Automatic Uniform Width', 'User Customized Width'))
     width_enforce_dropdown.bind("<<ComboboxSelected>>", lambda event: self.update_width_mode(widthfieldtitle, widthfield))
-    width_enforce_label.grid(row = 2, column = 1, padx=(5, 0), sticky="new")
-    width_enforce_dropdown.grid(row = 3, column = 1, padx=(5, 0), pady=(2,5), sticky="new")
+    width_enforce_label.grid(row = 2, column = 1, sticky="new")
+    width_enforce_dropdown.grid(row = 3, column = 1, pady=(2,5), sticky="new")
     # Setup of Toggle Button to show subprocess settings or not.
     subprocess_setting_frame = self.setup_subprocess_frame()
     show_subprocess_checkbox = ttk.Checkbutton(shown_settings_frame, variable=self.show_subprocess_settings, text = 'Show Subprocess Settings [For Experienced Users Only]', command=lambda: self.subprocess_setting_toggle(subprocess_setting_frame))
@@ -200,8 +202,9 @@ class SmartStitchGUI(Tk):
   def setup_subprocess_frame(self):
     """Setups the Fields for the Subprocess Parameters."""
     # Browse Button and Input and Output Field
-    subprocess_frame = LabelFrame(self, text="Subprocess Settings", padx=(5))
+    subprocess_frame = ttk.LabelFrame(self, text="Subprocess Settings", padding=(5,0))
     subprocess_frame.columnconfigure(0, weight=1)
+    subprocess_frame.rowconfigure(6, weight=1)
     # Setup of Toggle Button to enable subprocess execution settings or not.
     show_advanced_checkbox = ttk.Checkbutton(subprocess_frame, variable=self.enable_subprocess_execution, text = 'Run the following subprocess after stitching is complete', command=lambda: self.save_app_settings)
     show_advanced_checkbox.grid(row = 0, column = 0, columnspan=2, pady=(2,5), sticky="new")
@@ -212,7 +215,7 @@ class SmartStitchGUI(Tk):
     subprocess_path_field.bind("<Any-KeyRelease>", self.update_subprocess_path)
     subprocess_path_label.grid(row = 1,column = 0, sticky="new")
     subprocess_path_field.grid(row = 2, column = 0, pady=(2,0), sticky="new")
-    subprocess_path_button.grid(row = 2,column = 1, padx=(15, 0), sticky="ne")
+    subprocess_path_button.grid(row = 2,column = 1, padx=(5,0), pady=(2,0), sticky="ne")
     # Setup of Arguments Label and Entry Field.
     subprocess_arguments_label = ttk.Label(subprocess_frame, text = 'Subprocess Arguments')
     subprocess_arguments_field = ttk.Entry(subprocess_frame, textvariable=self.subprocess_arguments)
@@ -220,27 +223,41 @@ class SmartStitchGUI(Tk):
     subprocess_arguments_label.grid(row = 3, column = 0, sticky="new")
     subprocess_arguments_field.grid(row = 4, column = 0, columnspan=2, pady=(2,0), sticky="new")
     # Setup of Back Mode Selector/Checkbox.
-    argument_hint_label = ttk.Label(subprocess_frame, foreground='blue', text = 'To pass the stitch output directory use the argument [stitched], to pass a custom process output directory use the argument [processed]', justify=LEFT, wraplength=380)
+    argument_hint_label = ttk.Label(subprocess_frame, foreground='blue', text = 'Use [stitched] to pass the stitcher output directory, Use [processed] to pass a custom process output directory ', justify=LEFT, wraplength=400)
     argument_hint_label.grid(row=5, column=0, columnspan=2, pady=(2,0), sticky="new")
-    output_label = ttk.Label(subprocess_frame, text = 'Subprocess Console Output')
     # Setup of the Subprocess Console.
-    output_label.grid(row=6, column=0, columnspan=2, pady=(5,0), sticky="new")
-    self.subprocess_console = Label(subprocess_frame, foreground="white",background="#333", height=12, anchor="sw", justify=LEFT)
-    self.subprocess_console.grid(row=7, column=0, columnspan=2, pady=(0,5), sticky="news")
-    # Inserting Text which is read only
+    subprocess_console_frame = self.setup_console_frame(subprocess_frame)
+    subprocess_console_frame.grid(row=6, column=0, columnspan=2, pady=(0,5), sticky="news")
     return subprocess_frame
 
+  def setup_console_frame(self, Frame):
+    console_main_frame = ttk.LabelFrame(Frame, text="Subprocess Console Output")
+    self.console_canvas = Canvas(console_main_frame, height=12)
+    console_vertical_scroll = ttk.Scrollbar(console_main_frame, orient=VERTICAL, command=self.console_canvas.yview)
+    console_vertical_scroll.pack(side=RIGHT, fill=Y, pady=(8,8))
+    console_horizental_scroll = ttk.Scrollbar(console_main_frame, orient=HORIZONTAL, command=self.console_canvas.xview)
+    console_horizental_scroll.pack(side=BOTTOM, fill=X, padx=(8,0))
+    self.console_canvas.pack(side=TOP, fill=BOTH, expand=1)
+    self.console_canvas.configure(yscrollcommand=console_vertical_scroll.set)
+    self.console_canvas.configure(xscrollcommand=console_horizental_scroll.set)
+    self.console_canvas.bind('<Configure>', lambda e: self.console_canvas.configure(scrollregion = self.console_canvas.bbox("all")))
+    self.set_mousewheel(self.console_canvas, lambda e: self.console_canvas.yview_scroll(self.mousewheel_handler(e), "units"))
+    console_second_frame = ttk.Frame(self.console_canvas)
+    console_second_frame.columnconfigure(0, weight=1)
+    self.console_canvas.create_window((0,0), window=console_second_frame, anchor="nw")
+    self.subprocess_console = ttk.Label(console_second_frame)
+    self.subprocess_console.grid(row=0)
+    return console_main_frame
+
   def setup_action_frame(self):
-    action_frame = LabelFrame(self, padx=(5))
-    status_label = ttk.Label(action_frame, text='Current Status:')
+    action_frame = ttk.LabelFrame(self, text='Current Status', padding=(5,0))
     status_field = ttk.Entry(action_frame, textvariable=self.status)
     status_field.config(state=DISABLED)
-    status_label.grid(row = 0, column=0, columnspan=3, sticky="new")
-    status_field.grid(row = 1, column=0, columnspan=3, pady=(2,5), sticky="new")
+    status_field.grid(row = 0, column=0, columnspan=2, pady=(0,5), sticky="new")
     self.progress = ttk.Progressbar(action_frame)
-    self.actionbutton = ttk.Button(action_frame, text = 'Start Process', command=self.run_stitch_process_async)
-    self.progress.grid(row = 2, column=0, columnspan=2, pady=(1,5), sticky="new")
-    self.actionbutton.grid(row = 2, column = 2, padx=(5,0), pady=(0,5), sticky="new")
+    self.actionbutton = ttk.Button(action_frame, text = 'Start Process', style="Accent.TButton", command=self.run_stitch_process_async)
+    self.actionbutton.grid(row = 0, column = 2, padx=(5,0), pady=(0,5), sticky="new")
+    self.progress.grid(row = 1, column=0, columnspan=3, pady=(1,5), sticky="new")
     action_frame.columnconfigure(0, weight=1)
     action_frame.columnconfigure(1, weight=1)
     action_frame.columnconfigure(2, weight=1)
@@ -325,6 +342,20 @@ class SmartStitchGUI(Tk):
         return False
     return True
 
+  def mousewheel_handler(self, event):
+    """Handles the status of the scroll bar depending on the mouse"""
+    units = 0
+    if event.num == 5 or event.delta == -120:
+      units = 1
+    elif event.num == 4 or event.delta == 120:
+      units = -1
+    return units
+
+  def set_mousewheel(self, widget, command):
+    """Activate / deactivate mousewheel scrolling when cursor is over / not over the widget respectively."""
+    widget.bind("<Enter>", lambda _: widget.bind_all('<MouseWheel>', command))
+    widget.bind("<Leave>", lambda _: widget.unbind_all('<MouseWheel>'))
+
   def update_gui_progress(self, status_message, progress_increase):
     """Updates/Increments the progress value with the given value"""
     self.status.set(status_message)
@@ -338,6 +369,8 @@ class SmartStitchGUI(Tk):
 
   def update_subprocess_console(self, console_line):
     self.subprocess_console["text"] = self.subprocess_console["text"] + console_line
+    self.console_canvas.configure(scrollregion = self.console_canvas.bbox("all"))
+    self.console_canvas.yview_moveto('1.0')
 
   def pre_process_check(self):
     """Checks if all the settings and parameters are ready for the operation to start."""

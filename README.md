@@ -35,8 +35,8 @@ The smart part of the name comes from the fact that it uses some simple pixel ca
 
 ## Screenshots
 <div align="center">
-<img alt="screenshot01" src="https://i.imgur.com/QOPQQOU.png">
-<img alt="screenshot02" src="https://i.imgur.com/QpdbJli.png">
+<img alt="screenshot01" src="https://i.imgur.com/CEnMPvI.png">
+<img alt="screenshot02" src="https://i.imgur.com/eLjHZXx.png">
 </div>
 
 ## Quick Get Started GUI Version
