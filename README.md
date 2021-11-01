@@ -61,11 +61,11 @@ The smart part of the name comes from the fact that it uses some simple pixel ca
 2. Unzip the file to a suitable place on your device.
 3. Install python edition suitable for your machine. (Python 3.7 is recommended)
 4. Open a terminal and send the following command: ```pip install numpy pillow natsort```
-5. From the terminal, navigate to the directory where the source code was unzipped and send the following command: ```python SmartStitchGUI.py```
+5. From the terminal, navigate to the directory where the source code was unzipped and send the following command: ```python3 SmartStitchGUI.py```
 6. Now the application will launch, and you can proceed with the Quick get started steps.
 
 ## Reporting Bugs [2.0+]:
-A logging system has been implemented in the GUI version of SmartStitch, when an error occur the application will inform you about it, and leaves the details in a file called 'crashreport.log', you can open an issue ticket here and attach the file, so it can be easily debugged and fixed. 
+A logging system has been implemented in the GUI version of SmartStitch, when an error occur the application will inform you about it, and leaves the details in a file called 'crashreport.log', you can open an issue ticket here and attach the file, so it can be easily debugged and fixed.
 
 And since it's just one person maintaining this application, only accepted tickets will be for version 2.0 and above. Please don't open tickets for lower versions, since your problem could have been already solved.
 
@@ -78,7 +78,7 @@ You can also contact me at Discord if you don't want to use the GitHub Issue Sys
 Here is the complete documentation for the application, it is broken down into 4 sections, basic settings, advanced settings, how to build your own version, how to run the console version.
 
 ## Basic Settings
-These are the required settings that all users should be mindful of. 
+These are the required settings that all users should be mindful of.
 
 ### Input Folder Path
 Here you have to set the path for the Input Folder which contains the raws that will be processed by the program. If batch mode is enabled, it will search for subfolder within the given input path. So make sure your folder and files are in order.
