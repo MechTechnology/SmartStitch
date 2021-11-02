@@ -1,0 +1,13 @@
+modulegraph/__init__.py,sha256=qZNYBPCf5y9eOSOCnc71mXgsDo0Xwb9v1HTFq7X3sdU,23
+modulegraph/__main__.py,sha256=QIYu3Y-WKyWCNGC6aRPGrPk1ZjANEnuKxodSBe1SOj8,2872
+modulegraph/find_modules.py,sha256=2q4-XHmhGzSUy4gKLkwh0TvXB7dNhQuPqCAU34RVBCM,10006
+modulegraph/modulegraph.py,sha256=svZyukGzQp-Qteb2Q8cWUVbrFpdcEvdYMFUv3FfDX4E,77681
+modulegraph/util.py,sha256=KMs-69JlBcxfaDZEU8-cY6WBoUVuTZvLPodjGZMTx40,3262
+modulegraph/zipio.py,sha256=1OtMKmS1XtCEyJeDF4B5jKXfW-ArmsieVHPyIfE6aho,9252
+modulegraph-0.19.2.dist-info/LICENSE,sha256=xw0Hv3o9k14Fxi6AvA_TApLXGCzZq2lffH3de8rDklY,907
+modulegraph-0.19.2.dist-info/METADATA,sha256=XgBSVmCIU4i1vn8G3JCLeMIb3DW-ZcSTpNEMFmLm4gE,13801
+modulegraph-0.19.2.dist-info/WHEEL,sha256=Z-nyYpwrcSqxfdux5Mbn_DQ525iP7J2DG3JgGvOYyTQ,110
+modulegraph-0.19.2.dist-info/entry_points.txt,sha256=sK0mFgQQnZW8r6D01ryJQhfuVcgs1PMqL_wXnJ2asNI,59
+modulegraph-0.19.2.dist-info/top_level.txt,sha256=FZ2h5Q5jJj4o3jS2f45osrH-tqQk5jMxXDwMzHBCxsM,12
+modulegraph-0.19.2.dist-info/zip-safe,sha256=AbpHGcgLb-kRsJGnwFEktk7uzpZOCcBY74-YBdrKVGs,1
+modulegraph-0.19.2.dist-info/RECORD,,

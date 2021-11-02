@@ -43,5 +43,5 @@ exe = EXE(pyz,
           entitlements_file=None )
 app = BUNDLE(exe,
              name='SmartStitchGUI.app',
-             icon=SmartStitchLogo.icns,
+             icon='SmartStitchLogo.icns',
              bundle_identifier=None)
