@@ -196,8 +196,9 @@ python SmartStitchConsole.py -i "Review me" -H 7500 -t ".png" -b
 2. From the terminal, navigate to the directory where the source code was unzipped and run: ```pyinstaller SmartStitchGUI.spec```
 
 ### How to compile GUI package (For Mac & Linux Users)
-1. install PyInstaller if you haven't yet with the following command: ```pip install pyinstaller```
-2. From the terminal, navigate to the directory where the source code was unzipped and run: ```pyinstaller SmartStitchGUI_NoIcon.spec```
+1. install py2app using ```pip3 install py2app```
+2. From the terminal, navigate to the directory where the source code was unzipped and run: ```python3 build.py py2app --iconfile SmartStitchLogo.icns```
 
 - The output compiled application will not need python installed to run, but will only run on the platform it was built/compiled on.
 - Mac and Linux Compiling was not tested by me, so uh... good luck xD
+- P.S. macOS compilation does work using py2app, but cannot be shared for some reason or else it breaks 
