@@ -8,8 +8,8 @@ Usage:
 from setuptools import setup
 
 APP = ['SmartStitchGUI.py']
-DATA_FILES = ['SmartStitchLogo.png', './gui_theme']
-OPTIONS = {}
+DATA_FILES = [('images',["SmartStitchLogo.png", "SmartStitchLogo.ico", "SmartStitchLogo.icns"]), './gui_theme']
+OPTIONS = {'iconfile':'SmartStitchLogo.icns'}
 
 setup(
     app=APP,

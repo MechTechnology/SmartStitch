@@ -197,7 +197,7 @@ python SmartStitchConsole.py -i "Review me" -H 7500 -t ".png" -b
 
 ### How to compile GUI package (For Mac users)
 1. install py2app using ```pip3 install py2app```
-2. From the terminal, navigate to the directory where the source code was unzipped and run: ```python3 build.py py2app --iconfile SmartStitchLogo.icns```
+2. From the terminal, navigate to the directory where the source code was unzipped and run: ```python3 build.py py2app``
 3. A folder will show up in the same directory called dist. Go in there and there will be SmartStitchGUI.app. You can run this by clicking on it.
 4. You can drag this app to your Applications directory if you want.
 
