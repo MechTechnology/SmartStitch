@@ -31,6 +31,7 @@ class SmartStitchGUI(Tk):
     self.subprocess_path = StringVar()
     self.subprocess_arguments = StringVar()
     # GUI related Variables
+    self.last_input_folder = ""
     self.status = StringVar(value="Idle")
     self.num_of_inputs = 1
     self.progress = ""
@@ -39,7 +40,7 @@ class SmartStitchGUI(Tk):
     self.width_enforce_types = ['No Width Enforcement', 'Automatic Uniform Width', 'User Customized Width']
     # Application StartUp Sequence
     self.load_app_settings()
-    self.setup_window(app_maintainer="MechTechnology", app_version="2.2")
+    self.setup_window(app_maintainer="MechTechnology", app_version="2.3")
     self.setup_paths_frame().grid(row=0, column=0, padx=(10), sticky="new")
     self.setup_basic_settings_frame().grid(row=1, column=0, padx=(10), pady=(5,0), sticky="new")
     self.setup_advanced_settings_frame().grid(row=2, column=0, padx=(10), pady=(5,0), sticky="new")
@@ -60,6 +61,10 @@ class SmartStitchGUI(Tk):
     app_settings.append(self.enable_subprocess_execution.get())
     app_settings.append(self.subprocess_path.get())
     app_settings.append(self.subprocess_arguments.get())
+    if self.input_folder.get() == "":
+      app_settings.append(self.last_input_folder)
+    else:
+      app_settings.append(self.input_folder.get())
     with open("settings.pickle", "wb") as app_settings_handler:
       pickle.dump(app_settings, app_settings_handler)
 
@@ -82,6 +87,7 @@ class SmartStitchGUI(Tk):
         self.enable_subprocess_execution.set(saved_settings[9])
         self.subprocess_path.set(saved_settings[10])
         self.subprocess_arguments.set(saved_settings[11])
+        self.last_input_folder = saved_settings[12]
 
   def setup_window(self, app_maintainer, app_version):
     """Sets up Basic Attributes about the window such Application Logging, Title, Icon and Position on Start Up."""
@@ -231,6 +237,7 @@ class SmartStitchGUI(Tk):
     return subprocess_frame
 
   def setup_console_frame(self, Frame):
+    """Setups the virtual console for the subprocess."""
     console_main_frame = ttk.LabelFrame(Frame, text="Subprocess Console Output")
     self.console_canvas = Canvas(console_main_frame, height=12)
     console_vertical_scroll = ttk.Scrollbar(console_main_frame, orient=VERTICAL, command=self.console_canvas.yview)
@@ -250,6 +257,7 @@ class SmartStitchGUI(Tk):
     return console_main_frame
 
   def setup_action_frame(self):
+    """Setups the action frame that holds the status field, progress bar and launch button"""
     action_frame = ttk.LabelFrame(self, text='Current Status', padding=(5,0))
     status_field = ttk.Entry(action_frame, textvariable=self.status)
     status_field.config(state=DISABLED)
@@ -295,9 +303,10 @@ class SmartStitchGUI(Tk):
   # These are all the necssary helper functions.
   def browse_input_path(self):
     """Opens Browse Dialog and Gets Directory For the Input and Updates Output."""
-    foldername = filedialog.askdirectory()
+    foldername = filedialog.askdirectory(initialdir=self.last_input_folder)
     self.input_folder.set(foldername)
     self.output_folder.set(foldername + " [Stitched]")
+    self.save_app_settings()
 
   def browse_subprocess_path(self):
     """Opens Browse Dialog and Gets path For the Subprocess File."""
@@ -320,6 +329,7 @@ class SmartStitchGUI(Tk):
   def update_output_path(self, *args):
     """Opens Browse Dialog and Gets Directory For the Input and Updates Output."""
     self.output_folder.set(self.input_folder.get() + " [Stitched]")
+    self.save_app_settings()
 
   def validate_nums_only(self,P,d,s):
     """Allows only numbers to be written in the Entry Field."""
@@ -364,7 +374,10 @@ class SmartStitchGUI(Tk):
 
   def update_saving_progress(self, num_of_data):
     """Updates the progress value according to the number of files being saved."""
-    self.progress['value'] += ((60 * 1/num_of_data) / self.num_of_inputs)
+    if self.enable_subprocess_execution.get():
+      self.progress['value'] += ((40 * 1/num_of_data) / self.num_of_inputs)
+    else:
+      self.progress['value'] += ((60 * 1/num_of_data) / self.num_of_inputs)
     Tk.update_idletasks(self)
 
   def update_subprocess_console(self, console_line):
@@ -442,6 +455,7 @@ class SmartStitchGUI(Tk):
         command = command.replace('[stitched]', "\"" + path[1]+ "\"")
         command = command.replace('[processed]', "\"" + processed_path + "\"")
         ssc.call_external_func(command, self.update_subprocess_console, processed_path)
+        self.progress['value'] += (20 / self.num_of_inputs)
     return "complete"
 
   def run_stitch_process(self):

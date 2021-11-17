@@ -71,18 +71,18 @@ def combine_images(images):
       combine_offset += image.size[1]
   return new_image
 
-
 def adjust_split_location(combined_pixels, split_height, split_offset, senstivity, ignorable_pixels, scan_step):
   """Where the smart magic happens, compares pixels of each row, to decide if it's okay to cut there."""
   threshold = int(255 * (1-(senstivity/100)))
-  adjust_in_progress = True
   new_split_height = split_height
   last_row = len(combined_pixels) - 1
-  split_row = split_offset + new_split_height
+  adjust_in_progress = True
   countdown = True
-  while (adjust_in_progress and split_row < last_row):
+  while (adjust_in_progress):
     adjust_in_progress = False
     split_row = split_offset + new_split_height
+    if (split_row > last_row):
+      break
     pixel_row = combined_pixels[split_row]
     prev_pixel = int(pixel_row[ignorable_pixels])
     for x in range((ignorable_pixels+1), len(pixel_row)-(ignorable_pixels)):
@@ -96,7 +96,7 @@ def adjust_split_location(combined_pixels, split_height, split_offset, senstivit
         adjust_in_progress = True
         break
       current_pixel = prev_pixel
-    if (new_split_height < 0.5*split_height):
+    if (new_split_height < 0.4*split_height):
       new_split_height = split_height
       countdown = False
       adjust_in_progress = True
