@@ -38,7 +38,7 @@ def load_images(foldername):
 
 def resize_images(images, width_enforce_type, custom_width=720):
   """Resizes the images according to what enforcement mode you have."""
-  enforce_type = width_enforce_type
+
   if width_enforce_type == 0:
     return images
   else:
@@ -55,6 +55,8 @@ def resize_images(images, width_enforce_type, custom_width=720):
       else:
         ratio = float(image.size[1] / image.size[0])
         new_image_height = int(ratio * new_image_width)
+        if new_image_height == 0:
+          continue
         new_image = image.resize((new_image_width, new_image_height), pil.ANTIALIAS)
         resized_images.append(new_image)
     return resized_images

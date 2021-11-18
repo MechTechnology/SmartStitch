@@ -40,7 +40,7 @@ class SmartStitchGUI(Tk):
     self.width_enforce_types = ['No Width Enforcement', 'Automatic Uniform Width', 'User Customized Width']
     # Application StartUp Sequence
     self.load_app_settings()
-    self.setup_window(app_maintainer="MechTechnology", app_version="2.3")
+    self.setup_window(app_maintainer="MechTechnology", app_version="2.3.1")
     self.setup_paths_frame().grid(row=0, column=0, padx=(10), sticky="new")
     self.setup_basic_settings_frame().grid(row=1, column=0, padx=(10), pady=(5,0), sticky="new")
     self.setup_advanced_settings_frame().grid(row=2, column=0, padx=(10), pady=(5,0), sticky="new")
