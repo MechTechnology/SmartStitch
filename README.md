@@ -57,10 +57,10 @@ The smart part of the name comes from the fact that it uses some simple pixel ca
 5. Now the application will launch, and you can proceed with the Quick get started steps.
 
 ### How to launch the GUI Version (For Mac & Linux Users):
-1. Do ```git clone https://github.com/AbhiMayadam/SmartStitch/```
+1. Do ```git clone https://github.com/AbhiMayadam/SmartStitch/``` in a directory that you'd like.
 2. Install python edition suitable for your machine. (Python 3.7 is recommended)
-3. Open a terminal and send the following command: ```pip install numpy pillow natsort```
-4. From the terminal, navigate to the directory where the source code was unzipped and send the following command: ```python3 SmartStitchGUI.py```
+3. Open a terminal and send the following command: ```pip3 install numpy pillow natsort```
+4. From the terminal, navigate to the directory and write the following command: ```python3 SmartStitchGUI.py```
 5. Now the application will launch, and you can proceed with the Quick get started steps.
 
 ## Reporting Bugs [2.0+]:
@@ -197,7 +197,7 @@ python SmartStitchConsole.py -i "Review me" -H 7500 -t ".png" -b
 ### How to compile GUI package (For Mac users)
 1. Install py2app using ```pip3 install py2app```
 1a. Install numpy pillow natsort if you haven't with ```pip3 install numpy pillow natsort```
-2. From the terminal, navigate to the directory where the source code was unzipped and run: ```python3 build.py py2app```
+2. From the terminal, navigate to the directory where the source code is and run: ```python3 build.py py2app```
 3. A folder will show up in the same directory called dist. Go in there and there will be SmartStitchGUI.app. You can run this by clicking on it.
 4. You can drag this app to your Applications directory if you want.
 
