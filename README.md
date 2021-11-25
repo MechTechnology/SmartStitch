@@ -57,12 +57,11 @@ The smart part of the name comes from the fact that it uses some simple pixel ca
 5. Now the application will launch, and you can proceed with the Quick get started steps.
 
 ### How to launch the GUI Version (For Mac & Linux Users):
-1. Download the source code zip file of the latest release (Found in the releases section in this github)
-2. Unzip the file to a suitable place on your device.
-3. Install python edition suitable for your machine. (Python 3.7 is recommended)
-4. Open a terminal and send the following command: ```pip install numpy pillow natsort```
-5. From the terminal, navigate to the directory where the source code was unzipped and send the following command: ```python3 SmartStitchGUI.py```
-6. Now the application will launch, and you can proceed with the Quick get started steps.
+1. Do ```git clone https://github.com/AbhiMayadam/SmartStitch/```
+2. Install python edition suitable for your machine. (Python 3.7 is recommended)
+3. Open a terminal and send the following command: ```pip install numpy pillow natsort```
+4. From the terminal, navigate to the directory where the source code was unzipped and send the following command: ```python3 SmartStitchGUI.py```
+5. Now the application will launch, and you can proceed with the Quick get started steps.
 
 ## Reporting Bugs [2.0+]:
 A logging system has been implemented in the GUI version of SmartStitch, when an error occur the application will inform you about it, and leaves the details in a file called 'crashreport.log', you can open an issue ticket here and attach the file, so it can be easily debugged and fixed.
@@ -196,8 +195,9 @@ python SmartStitchConsole.py -i "Review me" -H 7500 -t ".png" -b
 2. From the terminal, navigate to the directory where the source code was unzipped and run: ```pyinstaller SmartStitchGUI.spec```
 
 ### How to compile GUI package (For Mac users)
-1. install py2app using ```pip3 install py2app```
-2. From the terminal, navigate to the directory where the source code was unzipped and run: ```python3 build.py py2app``
+1. Install py2app using ```pip3 install py2app```
+1a. Install numpy pillow natsort if you haven't with ```pip3 install numpy pillow natsort```
+2. From the terminal, navigate to the directory where the source code was unzipped and run: ```python3 build.py py2app```
 3. A folder will show up in the same directory called dist. Go in there and there will be SmartStitchGUI.app. You can run this by clicking on it.
 4. You can drag this app to your Applications directory if you want.
 
