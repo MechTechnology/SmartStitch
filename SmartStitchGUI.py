@@ -93,10 +93,9 @@ class SmartStitchGUI(Tk):
     """Sets up Basic Attributes about the window such Application Logging, Title, Icon and Position on Start Up."""
     # Sets up Title and Logo
     self.title("SmartStitch by " + app_maintainer + " [" + app_version + "]")
-        if platform == "darwin": #mac
-            dir_path = os.getcwd()+"/images";
-        else dir_path = os.getcwd()+"/images";
-    self.iconphoto(False, PhotoImage(file="SmartStitchLogo.png"))
+    #if platform == "darwin": #mac
+    #    dir_path = os.getcwd()+"/images";
+    #self.iconphoto(False, PhotoImage(file="SmartStitchLogo.png"))
     # Configures logging to save into a log file.
     logging.basicConfig(filename="crashreport.log", level=logging.WARNING)
     # Configure Modern Application Theme
