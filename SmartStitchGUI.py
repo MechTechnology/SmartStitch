@@ -61,19 +61,25 @@ class SmartStitchGUI(Tk):
     app_settings.append(self.enable_subprocess_execution.get())
     app_settings.append(self.subprocess_path.get())
     app_settings.append(self.subprocess_arguments.get())
-    if self.input_folder.get() == "":
+    dir_path= "";
+    if platform == "darwin": #mac
+        dir_path = os.getcwd();
       app_settings.append(self.last_input_folder)
     else:
       app_settings.append(self.input_folder.get())
-    with open("settings.pickle", "wb") as app_settings_handler:
+    with open(dir_path+"/settings.pickle", "wb") as app_settings_handler:
       pickle.dump(app_settings, app_settings_handler)
 
   def load_app_settings(self):
     """Loads application settings from a Pickle file."""
-    if not os.path.exists("settings.pickle"):
+    dir_path = "";
+    if platform == "darwin": #mac
+        dir_path = os.getcwd();
+    print(dir_path+"settings.pickle")
+    if not os.path.exists(dir_path+"/settings.pickle"):
       self.save_app_settings()
     else:
-      with open("settings.pickle", 'rb') as app_settings_handler:
+      with open(dir_path+"/settings.pickle", 'rb') as app_settings_handler:
         saved_settings = pickle.load(app_settings_handler)
         self.enable_batch_mode.set(saved_settings[0])
         self.split_height.set(saved_settings[1])
@@ -93,13 +99,17 @@ class SmartStitchGUI(Tk):
     """Sets up Basic Attributes about the window such Application Logging, Title, Icon and Position on Start Up."""
     # Sets up Title and Logo
     self.title("SmartStitch by " + app_maintainer + " [" + app_version + "]")
-    #if platform == "darwin": #mac
-    #    dir_path = os.getcwd()+"/images";
-    #self.iconphoto(False, PhotoImage(file="SmartStitchLogo.png"))
+    dir_path = "";
+    if platform == "darwin": #mac
+        dir_path = os.getcwd()+"/images";
+    self.iconphoto(False, PhotoImage(file=dir_path+"/SmartStitchLogo.png"))
     # Configures logging to save into a log file.
     logging.basicConfig(filename="crashreport.log", level=logging.WARNING)
     # Configure Modern Application Theme
-    self.call("source", "./gui_theme/modern_theme.tcl")
+    dir_path = "";
+    if platform == "darwin": #mac
+        dir_path = os.getcwd()+"/gui_theme";
+    self.call("source", dir_path+"/modern_theme.tcl")
     # Centers the window on Launch and Disables Resize.
     window_width = self.winfo_width()
     window_height = self.winfo_height()
