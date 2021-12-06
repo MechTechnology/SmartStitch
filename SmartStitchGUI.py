@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import ttk, filedialog
 from datetime import datetime
 from time import time
+from sys import platform
 import os
 import pickle
 import logging
@@ -62,6 +63,7 @@ class SmartStitchGUI(Tk):
     app_settings.append(self.subprocess_path.get())
     app_settings.append(self.subprocess_arguments.get())
     dir_path= "";
+ def platform(self)
     if platform == "darwin": #mac
         dir_path = os.getcwd();
          app_settings.append(self.last_input_folder)
