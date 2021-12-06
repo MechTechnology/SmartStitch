@@ -64,7 +64,7 @@ class SmartStitchGUI(Tk):
     dir_path= "";
     if platform == "darwin": #mac
         dir_path = os.getcwd();
-      app_settings.append(self.last_input_folder)
+         app_settings.append(self.last_input_folder)
     else:
       app_settings.append(self.input_folder.get())
     with open(dir_path+"/settings.pickle", "wb") as app_settings_handler:
