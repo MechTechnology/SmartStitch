@@ -1,0 +1,49 @@
+import functools
+import logging
+from datetime import datetime
+from os import makedirs, path
+from core.utils.constants import LOG_REL_DIR
+
+def configureGlobalLogger():
+  """Initalizes and Configures Logging Service"""
+  if not path.exists(LOG_REL_DIR):
+    makedirs(LOG_REL_DIR)
+  current_date = datetime.now()
+  log_filename = current_date.strftime('log-%Y-%m-%d.log')
+  log_filename = path.join(LOG_REL_DIR, log_filename)
+
+  log_level = logging.DEBUG
+  log_format = '%(levelname)s:%(asctime)s:%(message)s'
+  logging.basicConfig(format=log_format, filename=log_filename, level=log_level)
+  logging.debug('GlobalLogger:Logger Initalized')
+
+def log_warning(msg, caller='GlobalLogger', *args, **kwargs):
+  log_msg = str(caller)+':'+ msg
+  logging.warning(log_msg, *args, **kwargs)
+
+def log_debug(msg, caller='GlobalLogger', *args, **kwargs):
+  log_msg = str(caller)+':'+ msg
+  logging.debug(log_msg, *args, **kwargs)
+
+def logFunc(func=None, inclass=False):
+  if func is None:
+      return functools.partial(logFunc, inclass=inclass)
+  @functools.wraps(func)
+  def wrapper(*args, **kwargs):
+    caller_class = "GlobalLogger"
+    args_repr = [repr(a) for a in args]
+    if (inclass):
+      caller_class = type(args[0]).__name__
+      args_repr = [repr(args[i]) for i in range(1,len(args))]
+    kwargs_repr = [f"{k}={v!r}" for k, v in kwargs.items()]
+    signature = ", ".join(args_repr + kwargs_repr)
+    logging.debug(f'{caller_class}:{func.__name__}:args:{signature}')
+    try:
+      result = func(*args, **kwargs)
+      return result
+    except Exception as e:
+      logging.exception(f"Exception raised in {func.__name__}. exception: {str(e)}")
+      raise e
+  return wrapper
+
+configureGlobalLogger()
