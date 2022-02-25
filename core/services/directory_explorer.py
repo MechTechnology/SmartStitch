@@ -1,4 +1,5 @@
 from os import path, walk
+from typing import List
 from natsort import natsorted
 from core.models.work_directory import WorkDirectory
 from core.services.global_logger import logFunc
@@ -12,7 +13,7 @@ class DirectoryExplorer:
     return working_directories
 
   @logFunc(inclass=True)
-  def get_main_directory(self, input, **kwargs):
+  def get_main_directory(self, input: str, **kwargs: str) -> WorkDirectory:
     """Gets the main working directory for a given input path"""
     input_path = path.abspath(input)
     output_path = kwargs.get('output', input_path + OUTPUT_SUFFIX)
@@ -20,7 +21,7 @@ class DirectoryExplorer:
     return WorkDirectory(input_path, output_path, subprocess_path)
 
   @logFunc(inclass=True)
-  def explore_directories(self, main_directory):
+  def explore_directories(self, main_directory: WorkDirectory) -> List[WorkDirectory]:
     """Gets all the possible working directories from main paths"""
     work_directories = []
     for (dir_root, folders, files) in walk(main_directory.input_path, topdown=True):
