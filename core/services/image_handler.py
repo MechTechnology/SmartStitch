@@ -16,10 +16,12 @@ class ImageHandler():
     return img_objs
   
   @logFunc(inclass=True)
-  def save(self, workdirectory: WorkDirectory, img_objs: List[pil.Image], img_format: str='.jpg'):
+  def save(self, workdirectory: WorkDirectory, img_objs: List[pil.Image], img_format: str='.jpg') -> WorkDirectory:
     if not path.exists(workdirectory.output_path):
       makedirs(workdirectory.output_path)
     img_index = 1
     for img in img_objs:
       img.save(workdirectory.output_path + '/' + str(f'{img_index:02}') + img_format, quality=100)
+      workdirectory.output_files.append(str(f'{img_index:02}') + img_format)
       img_index += 1
+    return workdirectory
