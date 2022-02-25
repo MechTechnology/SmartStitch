@@ -16,6 +16,9 @@ def configureGlobalLogger():
   log_format = '%(levelname)s:%(asctime)s:%(message)s'
   logging.basicConfig(format=log_format, filename=log_filename, level=log_level)
   logging.debug('GlobalLogger:Logger Initalized')
+  # Removes the pil logging from polluting the Debug Level.
+  pil_logger = logging.getLogger('PIL')
+  pil_logger.setLevel(logging.INFO)
 
 def log_warning(msg, caller='GlobalLogger', *args, **kwargs):
   log_msg = str(caller)+':'+ msg
