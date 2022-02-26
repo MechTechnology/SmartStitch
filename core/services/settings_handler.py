@@ -2,15 +2,18 @@ import pickle
 from os import path
 from typing import Any
 from core.models.app_settings import AppSettings
+from core.services.global_logger import logFunc
 
 class SettingsHandler():
   def __init__(self):
     self.current_settings = self.load_all()
 
+  @logFunc(inclass=True)
   def load(self, key: str) -> Any:
     """Loads the value of a single setting key"""
     return self.current_settings.__dict__[key]
 
+  @logFunc(inclass=True)
   def save(self, key: str, value):
     """Updates a single setting value"""
     self.current_settings.__dict__[key] = value
