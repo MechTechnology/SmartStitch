@@ -1,11 +1,13 @@
+from typing import List
+
 class WorkDirectory:
   """Model for holding Working Directory Information"""
   def __init__(self, input, output, subprocess):
-    self.input_path = input
-    self.output_path = output
-    self.subprocess_path = subprocess
-    self.input_files = []
-    self.output_files = []
+    self.input_path: str = input
+    self.output_path: str = output
+    self.subprocess_path: str = subprocess
+    self.input_files: List = []
+    self.output_files: List = []
   
   # This dictates how it will look in the log file.
   def __repr__(self):
