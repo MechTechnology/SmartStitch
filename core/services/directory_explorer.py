@@ -6,6 +6,7 @@ from core.services.global_logger import logFunc
 from core.utils.constants import OUTPUT_SUFFIX, SUBPROCESS_SUFFIX, SUPPORTTED_IMG_TYPES
 from core.utils.errors import DirectoryException
 
+
 class DirectoryExplorer:
   def run(self, input, **kwargs):
     main_directory = self.get_main_directory(input, **kwargs)

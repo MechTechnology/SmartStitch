@@ -3,9 +3,10 @@ from PIL import Image as pil
 from core.services.global_logger import logFunc
 from core.utils.constants import WIDTH_ENFORCEMENT
 
+
 class ImageManipulator():
   @logFunc(inclass=True)
-  def resize(self, img_objs: List[pil.Image], enforce_setting: WIDTH_ENFORCEMENT, custom_width:int=720) -> List[pil.Image]:
+  def resize(self, img_objs: List[pil.Image], enforce_setting: WIDTH_ENFORCEMENT, custom_width: int = 720) -> List[pil.Image]:
     """Resizes all given images according to the set enforcement setting."""
     if enforce_setting == WIDTH_ENFORCEMENT.NONE:
       return img_objs
@@ -37,8 +38,8 @@ class ImageManipulator():
     combined_img = pil.new('RGB', (combined_img_width, combined_img_height))
     combine_offset = 0
     for img in img_objs:
-        combined_img.paste(img, (0, combine_offset))
-        combine_offset += img.size[1]
+      combined_img.paste(img, (0, combine_offset))
+      combine_offset += img.size[1]
     return combined_img
 
   @logFunc(inclass=True)
@@ -47,7 +48,7 @@ class ImageManipulator():
     max_width = combined_img.size[0]
     img_objs = []
     for index in range(1, len(slice_locations)):
-      upper_limit = slice_locations[index-1]
+      upper_limit = slice_locations[index - 1]
       lower_limit = slice_locations[index]
       slice_bounderies = (0, upper_limit, max_width, lower_limit)
       img_slice = combined_img.crop(slice_bounderies)

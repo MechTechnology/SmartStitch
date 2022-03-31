@@ -6,7 +6,7 @@ from core.services.global_logger import logFunc
 
 class ImageHandler():
   @logFunc(inclass=True)
-  def load(self, workdirectory: WorkDirectory) -> List[pil.Image]:
+  def load(self, workdirectory: WorkDirectory) -> list[pil.Image]:
     """Loads all image files in a given work into a list of PIL image objects."""
     img_objs = []
     for imgFile in workdirectory.input_files:
