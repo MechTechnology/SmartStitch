@@ -1,6 +1,8 @@
+.vscode/
 __pycache__/
 dist/
 build/
-logs/
+__logs__/
+__settings__/
 *.pickle
 *.log
