@@ -16,9 +16,8 @@ SUPPORTTED_IMG_TYPES = (
     '.tga',
 )
 
+
 # Static Enums
-
-
 class WIDTH_ENFORCEMENT(IntEnum):
     NONE = 0
     AUTOMATIC = 1
