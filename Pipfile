@@ -3,13 +3,18 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 name = "pypi"
 
+[scripts]
+format = "python ./scripts/formatter.py"
+
 [packages]
 natsort = "*"
 pillow = "*"
 numpy = "*"
 
 [dev-packages]
-autopep8 = "*"
+flake8 = "*"
+black = "*"
+isort = "*"
 
 [requires]
 python_version = "3.10"
