@@ -4,7 +4,7 @@ from core.utils.constants import WIDTH_ENFORCEMENT
 class AppSettings:
     """Model for holding Application Settings"""
 
-    def __init__(self, dict: dict[str, any] = None):
+    def __init__(self, json_dict: dict[str, any] = None):
         # Core Settings
         self.split_height: int = 5000
         self.output_type: str = '.png'
@@ -16,6 +16,6 @@ class AppSettings:
         self.subprocess_app: str = ""
         self.subprocess_arguments: str = ""
 
-        if dict is not None:
-            for key, value in dict.items():
+        if json_dict is not None:
+            for key, value in json_dict.items():
                 setattr(self, key, value)
