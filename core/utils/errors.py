@@ -1,2 +1,2 @@
 class DirectoryException(Exception):
-  pass
+    pass
