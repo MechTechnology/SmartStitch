@@ -10,7 +10,6 @@ class DirectSlicingDetector:
     def run(self, combined_img: pil.Image, split_height: int, **kwargs) -> List[int]:
         # Changes from a pil image to an numpy pixel array
         last_row = combined_img.size[1]
-        print(last_row)
         # Initializes some variables
         slice_locations = [0]
         row = split_height
