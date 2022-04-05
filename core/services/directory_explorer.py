@@ -5,6 +5,7 @@ from natsort import natsorted
 
 from core.models.work_directory import WorkDirectory
 from core.services.global_logger import logFunc
+from core.services.global_tracker import trackFunc
 from core.utils.constants import OUTPUT_SUFFIX, SUBPROCESS_SUFFIX, SUPPORTTED_IMG_TYPES
 from core.utils.errors import DirectoryException
 
@@ -16,6 +17,7 @@ class DirectoryExplorer:
         return working_directories
 
     @logFunc(inclass=True)
+    @trackFunc(inclass=True)
     def get_main_directory(self, input: str, **kwargs: str) -> WorkDirectory:
         """Gets the main working directory for a given input path"""
         input_path = path.abspath(input)
@@ -24,6 +26,7 @@ class DirectoryExplorer:
         return WorkDirectory(input_path, output_path, subprocess_path)
 
     @logFunc(inclass=True)
+    @trackFunc(inclass=True)
     def explore_directories(self, main_directory: WorkDirectory) -> List[WorkDirectory]:
         """Gets all the possible working directories from main paths"""
         work_directories = []

@@ -1,5 +1,12 @@
 from .directory_explorer import DirectoryExplorer
 from .global_logger import configureGlobalLogger, log_debug, log_warning, logFunc
+from .global_tracker import (
+    addGloballyObservedService,
+    addGlobalSubscriber,
+    resetGlobalTracker,
+    trackFunc,
+    trackIterableFunc,
+)
 from .image_handler import ImageHandler
 from .image_manipulator import ImageManipulator
 from .profile_handler import ProfileHandler
@@ -15,4 +22,9 @@ __all__ = [
     'ImageManipulator',
     'SettingsHandler',
     'ProfileHandler',
+    'trackFunc',
+    'trackIterableFunc',
+    'resetGlobalTracker',
+    'addGloballyObservedService',
+    'addGlobalSubscriber',
 ]
