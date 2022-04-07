@@ -5,28 +5,31 @@ from natsort import natsorted
 
 from core.models.work_directory import WorkDirectory
 from core.services.global_logger import logFunc
-from core.services.global_tracker import trackFunc
+from core.services.global_tracker import GlobalTracker
 from core.utils.constants import OUTPUT_SUFFIX, SUBPROCESS_SUFFIX, SUPPORTTED_IMG_TYPES
 from core.utils.errors import DirectoryException
 
 
 class DirectoryExplorer:
+    def __init__(self) -> None:
+        GlobalTracker.track_func('get_main_directory', 5.0)
+        GlobalTracker.track_func('explore_directories', 10.0)
+
     def run(self, input, **kwargs):
         main_directory = self.get_main_directory(input, **kwargs)
         working_directories = self.explore_directories(main_directory)
         return working_directories
 
     @logFunc(inclass=True)
-    @trackFunc(inclass=True)
     def get_main_directory(self, input: str, **kwargs: str) -> WorkDirectory:
         """Gets the main working directory for a given input path"""
         input_path = path.abspath(input)
         output_path = kwargs.get('output', input_path + OUTPUT_SUFFIX)
         subprocess_path = kwargs.get('output', input_path + SUBPROCESS_SUFFIX)
+        GlobalTracker.update()
         return WorkDirectory(input_path, output_path, subprocess_path)
 
     @logFunc(inclass=True)
-    @trackFunc(inclass=True)
     def explore_directories(self, main_directory: WorkDirectory) -> List[WorkDirectory]:
         """Gets all the possible working directories from main paths"""
         work_directories = []
@@ -45,4 +48,5 @@ class DirectoryExplorer:
                 work_directories.append(directory)
         if not (work_directories):
             raise DirectoryException('No valid work directories were found!')
+        GlobalTracker.update()
         return work_directories

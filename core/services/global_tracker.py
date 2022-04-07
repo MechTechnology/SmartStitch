@@ -1,89 +1,55 @@
-import functools
-
 from core.services.global_logger import logFunc
+from core.utils.funcs import get_classname_stack, get_funcname_stack, print_tracking
 
 
-class Tracker:
-    def __init__(self, process_count: int = 1):
-        # Array of functions subscribed on this tracker
-        self.subscribers = [print]
-        # Dict where tracked functions are the keys, and values is a list of track percentage (0), and message (1)
-        self.tracking_dict = {}
-        self.process_count = process_count
-        self.progress_track = 0
-        self.total_process = 0
+# Main GlobalTracker Class
+class GlobalTracker:
+    # Array of functions subscribed on this tracker
+    subscribers = [print_tracking]
+    # List of function that are being tracked/observed
+    tracking_dict = {}
+    process_count = 1
+    progress_track = 0
+    total_process = 0
 
+    @classmethod
     @logFunc(inclass=True)
     def reset(self, process_count: int = 1):
-        self.subscribers = [print]
+        self.subscribers = [print_tracking]
         self.tracking_dict = {}
         self.process_count = process_count
         self.progress_track = 0
         self.total_process = 0
 
+    @classmethod
     @logFunc(inclass=True)
-    def addSubscriber(self, subscriber_func: any):
+    def add_subscriber(self, subscriber_func: any):
         self.subscribers.append(subscriber_func)
         self.subscribers = list(set(self.subscribers))
-        print(self.subscribers)
 
-    @logFunc(inclass=True)
-    def addObservedService(self, service_name: str, tracking_details: list):
-        self.tracking_dict[service_name] = tracking_details
+    @classmethod
+    def track_func(self, func_name: str, value: float):
+        class_name = get_classname_stack(2)
+        if class_name:
+            func_name = class_name + '.' + func_name
+        self.tracking_dict[func_name] = value
         self.total_process = 0
-        for detail in self.tracking_dict.values():
-            self.total_process += float(detail[0])
-        print(self.total_process)
+        for value in self.tracking_dict.values():
+            self.total_process += value
 
-    # Update func is not logged so it does not spam the log file.
-    def update(self, service_name: str, iterations: int):
-        tracking_details = self.tracking_dict.get(service_name, None)
+    # Update & Message funcs is not logged so it does not spam the log file.
+    @classmethod
+    def update(self, message: str = None, fraction: float = 1):
+        class_name = get_classname_stack(2)
+        func_name = get_funcname_stack(2)
+        if class_name:
+            func_name = class_name + '.' + func_name
+        tracking_details = self.tracking_dict.get(func_name, None)
         if tracking_details:
-            value = float(tracking_details[0]) / (self.process_count * iterations)
+            value = (tracking_details * fraction) / self.process_count
             self.progress_track += value
+            percentage = float(self.progress_track / self.total_process) * 100
+            if not message:
+                message = func_name + ' ran sucessfully!'
             for subscriber in self.subscribers:
-                subscriber(
-                    self.progress_track, '% - ', self.tracking_dict.get(service_name)[1]
-                )
-
-
-def initGlobalTracker():
-    global _globalTrackerInstance
-    _globalTrackerInstance = Tracker()
-    return _globalTrackerInstance
-
-
-def resetGlobalTracker(process_count: int = 1):
-    _globalTrackerInstance.reset(process_count)
-
-
-def addGlobalSubscriber(subscriber_func: any):
-    _globalTrackerInstance.addSubscriber(subscriber_func)
-
-
-def addGloballyObservedService(service_name: str, tracking_details: list):
-    _globalTrackerInstance.addObservedService(service_name, tracking_details)
-
-
-def trackIterableFunc(service_name: str, iterations: int = 1):
-    _globalTrackerInstance.update(service_name, iterations)
-
-
-def trackFunc(func=None, inclass=False):
-    if func is None:
-        return functools.partial(trackFunc, inclass=inclass)
-
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        service_name = str(func.__name__)
-        if inclass:
-            caller_class = type(args[0]).__name__
-            service_name = f'{caller_class}.{func.__name__}'
-        result = func(*args, **kwargs)
-        trackIterableFunc(service_name)
-        return result
-
-    return wrapper
-
-
-initGlobalTracker()
+                subscriber(percentage, message)
