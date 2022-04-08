@@ -5,6 +5,7 @@ from datetime import datetime
 
 from core.utils.constants import LOG_REL_DIR
 
+
 class GlobalLogger:
     @classmethod
     def configureGlobalLogger(self):
