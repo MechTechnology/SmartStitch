@@ -7,7 +7,7 @@ from core.utils.constants import SETTINGS_REL_DIR
 
 
 class SettingsHandler:
-    def __init__(self, profile_name: str = "Default"):
+    def __init__(self):
         self.settings_file = os.path.join(SETTINGS_REL_DIR, 'settings.json')
         self.current_settings = self.load_all()
 
