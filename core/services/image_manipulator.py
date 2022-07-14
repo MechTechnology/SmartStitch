@@ -1,19 +1,17 @@
-from typing import List
-
 from PIL import Image as pil
 
-from core.services.global_logger import logFunc
-from core.utils.constants import WIDTH_ENFORCEMENT
+from ..utils.constants import WIDTH_ENFORCEMENT
+from .global_logger import logFunc
 
 
 class ImageManipulator:
     @logFunc(inclass=True)
     def resize(
         self,
-        img_objs: List[pil.Image],
+        img_objs: list[pil.Image],
         enforce_setting: WIDTH_ENFORCEMENT,
         custom_width: int = 720,
-    ) -> List[pil.Image]:
+    ) -> list[pil.Image]:
         """Resizes all given images according to the set enforcement setting."""
         if enforce_setting == WIDTH_ENFORCEMENT.NONE:
             return img_objs
@@ -37,7 +35,7 @@ class ImageManipulator:
         return resized_imgs
 
     @logFunc(inclass=True)
-    def combine(self, img_objs: List[pil.Image]) -> pil.Image:
+    def combine(self, img_objs: list[pil.Image]) -> pil.Image:
         """Combines given image objs to a single vertically stacked single image obj."""
         widths, heights = zip(*(img.size for img in img_objs))
         combined_img_width = max(widths)
@@ -47,12 +45,13 @@ class ImageManipulator:
         for img in img_objs:
             combined_img.paste(img, (0, combine_offset))
             combine_offset += img.size[1]
+            img.close()
         return combined_img
 
     @logFunc(inclass=True)
     def slice(
-        self, combined_img: pil.Image, slice_locations: List[int]
-    ) -> List[pil.Image]:
+        self, combined_img: pil.Image, slice_locations: list[int]
+    ) -> list[pil.Image]:
         """Combines given combined img to into multiple img slices given the slice locations."""
         max_width = combined_img.size[0]
         img_objs = []
@@ -62,4 +61,5 @@ class ImageManipulator:
             slice_bounderies = (0, upper_limit, max_width, lower_limit)
             img_slice = combined_img.crop(slice_bounderies)
             img_objs.append(img_slice)
+        combined_img.close()
         return img_objs

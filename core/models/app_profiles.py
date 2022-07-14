@@ -1,4 +1,4 @@
-from core.models.app_settings import AppSettings
+from .app_settings import AppSettings
 
 
 class AppProfiles:

@@ -1,9 +1,9 @@
 import json
 import os
 
-from core.models.app_settings import AppSettings
-from core.services.global_logger import logFunc
-from core.utils.constants import SETTINGS_REL_DIR
+from ..models import AppSettings
+from ..services import logFunc
+from ..utils.constants import SETTINGS_REL_DIR
 
 
 class SettingsHandler:

@@ -3,7 +3,7 @@ import logging
 import os
 from datetime import datetime
 
-from core.utils.constants import LOG_REL_DIR
+from ..utils.constants import LOG_REL_DIR
 
 
 class GlobalLogger:

@@ -4,7 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [scripts]
-format = "python ./scripts/formatter.py"
+format = "python -m ./scripts/formatter.py"
+console = "python -m SmartStitchConsole"
 
 [packages]
 natsort = "*"

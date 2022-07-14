@@ -1,4 +1,4 @@
-from core.utils.constants import WIDTH_ENFORCEMENT
+from ..utils.constants import WIDTH_ENFORCEMENT
 
 
 class AppSettings:

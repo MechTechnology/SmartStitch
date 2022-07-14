@@ -1,5 +1,3 @@
-from typing import List
-
 import numpy as np
 from PIL import Image as pil
 
@@ -8,7 +6,7 @@ from core.services.global_logger import logFunc
 
 class PixelComparsionDetector:
     @logFunc(inclass=True)
-    def run(self, combined_img: pil.Image, split_height: int, **kwargs) -> List[int]:
+    def run(self, combined_img: pil.Image, split_height: int, **kwargs) -> list[int]:
         """Uses Neighbouring pixels comparison to detect ideal slice locations"""
         # Changes from a pil Image to an numpy pixel array
         combined_img = np.array(combined_img.convert('L'))

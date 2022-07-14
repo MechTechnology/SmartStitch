@@ -1,5 +1,3 @@
-from typing import List
-
 from PIL import Image as pil
 
 from core.services.global_logger import logFunc
@@ -7,7 +5,7 @@ from core.services.global_logger import logFunc
 
 class DirectSlicingDetector:
     @logFunc(inclass=True)
-    def run(self, combined_img: pil.Image, split_height: int, **kwargs) -> List[int]:
+    def run(self, combined_img: pil.Image, split_height: int, **kwargs) -> list[int]:
         # Changes from a pil image to an numpy pixel array
         last_row = combined_img.size[1]
         # Initializes some variables

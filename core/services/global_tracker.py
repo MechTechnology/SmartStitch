@@ -1,5 +1,5 @@
-from core.services.global_logger import logFunc
-from core.utils.funcs import get_classname_stack, get_funcname_stack, print_tracking
+from ..utils.funcs import get_classname_stack, get_funcname_stack, print_tracking
+from .global_logger import logFunc
 
 
 # Main GlobalTracker Class
@@ -27,7 +27,7 @@ class GlobalTracker:
         self.update_total()
 
     @classmethod
-    def remove_tracking(self, func_name: str, value: float):
+    def add_tracking(self, func_name: str, value: float):
         class_name = get_classname_stack(2)
         if class_name:
             func_name = class_name + '.' + func_name
@@ -40,9 +40,8 @@ class GlobalTracker:
         if class_name:
             func_name = class_name + '.' + func_name
         self.tracking_dict.pop(func_name, None)
-        self.tracking_dict[func_name] = value
         self.update_total()
-    
+
     @classmethod
     def update_total(self):
         self.total_progress = 0

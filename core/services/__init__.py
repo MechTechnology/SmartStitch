@@ -7,12 +7,12 @@ from .profile_handler import ProfileHandler
 from .settings_handler import SettingsHandler
 
 __all__ = [
-    'logFunc',
-    'GlobalLogger',
-    'DirectoryExplorer',
-    'ImageHandler',
-    'ImageManipulator',
-    'SettingsHandler',
-    'ProfileHandler',
-    'GlobalTracker',
+    logFunc,
+    GlobalLogger,
+    DirectoryExplorer,
+    ImageHandler,
+    ImageManipulator,
+    SettingsHandler,
+    ProfileHandler,
+    GlobalTracker,
 ]

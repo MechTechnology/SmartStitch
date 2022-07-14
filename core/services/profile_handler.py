@@ -1,11 +1,10 @@
 import json
 import os
 
-from core.models.app_profiles import AppProfiles
-from core.models.app_settings import AppSettings
-from core.services.global_logger import logFunc
-from core.utils.constants import SETTINGS_REL_DIR
-from core.utils.errors import ProfileException
+from ..models import AppProfiles, AppSettings
+from ..services import logFunc
+from ..utils.constants import SETTINGS_REL_DIR
+from ..utils.errors import ProfileException
 
 
 class ProfileHandler:

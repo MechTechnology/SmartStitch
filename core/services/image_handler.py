@@ -1,10 +1,9 @@
-from os import makedirs, path
-from typing import List
+import os
 
 from PIL import Image as pil
 
-from core.models.work_directory import WorkDirectory
-from core.services.global_logger import logFunc
+from ..models import WorkDirectory
+from .global_logger import logFunc
 
 
 class ImageHandler:
@@ -13,7 +12,7 @@ class ImageHandler:
         """Loads all image files in a given work into a list of PIL image objects."""
         img_objs = []
         for imgFile in workdirectory.input_files:
-            imgPath = path.join(workdirectory.input_path, imgFile)
+            imgPath = os.path.join(workdirectory.input_path, imgFile)
             image = pil.open(imgPath)
             img_objs.append(image)
         return img_objs
@@ -22,17 +21,31 @@ class ImageHandler:
     def save(
         self,
         workdirectory: WorkDirectory,
-        img_objs: List[pil.Image],
-        img_format: str = '.jpg',
+        img_obj: pil.Image,
+        img_iteration: 1,
+        img_format: str = '.png',
+        quality=100,
+    ) -> str:
+        if not os.path.exists(workdirectory.output_path):
+            os.makedirs(workdirectory.output_path)
+        img_file_name = str(f'{img_iteration:02}') + img_format
+        img_obj.save(
+            workdirectory.output_path + '/' + img_file_name,
+            quality=quality,
+        )
+        img_obj.close()
+        workdirectory.output_files.append(img_file_name)
+        return img_file_name
+
+    def save_all(
+        self,
+        workdirectory: WorkDirectory,
+        img_objs: list[pil.Image],
+        img_format: str = '.png',
+        quality=100,
     ) -> WorkDirectory:
-        if not path.exists(workdirectory.output_path):
-            makedirs(workdirectory.output_path)
-        img_index = 1
+        img_iteration = 1
         for img in img_objs:
-            img.save(
-                workdirectory.output_path + '/' + str(f'{img_index:02}') + img_format,
-                quality=100,
-            )
-            workdirectory.output_files.append(str(f'{img_index:02}') + img_format)
-            img_index += 1
+            self.save(workdirectory, img, img_iteration, img_format, quality)
+            img_iteration += 1
         return workdirectory
