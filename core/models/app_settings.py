@@ -8,6 +8,7 @@ class AppSettings:
         # Core Settings
         self.split_height: int = 5000
         self.output_type: str = '.png'
+        self.lossy_quality: str = 100
         self.senstivity: int = 90
         self.ignorable_pixels: int = 0
         self.scan_step: int = 5
