@@ -4,13 +4,16 @@ verify_ssl = true
 name = "pypi"
 
 [scripts]
-format = "python -m ./scripts/formatter.py"
+format = "python -m scripts.formatter"
 console = "python -m SmartStitchConsole"
+gui = "python -m SmartStitchGUI"
 
 [packages]
 natsort = "*"
 pillow = "*"
 numpy = "*"
+pyside6 = "*"
+pyqtdarktheme = "*"
 
 [dev-packages]
 flake8 = "*"
