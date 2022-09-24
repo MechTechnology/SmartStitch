@@ -34,7 +34,7 @@
     <item>
      <widget class="QTabWidget" name="mainTabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="mainTab">
        <attribute name="title">
@@ -137,6 +137,9 @@
              <item>
               <widget class="QWidget" name="outputTypeWrapper" native="true">
                <layout class="QVBoxLayout" name="verticalLayout_13">
+                <property name="spacing">
+                 <number>4</number>
+                </property>
                 <property name="leftMargin">
                  <number>0</number>
                 </property>
@@ -199,6 +202,9 @@
              <item>
               <widget class="QWidget" name="lossyWrapper" native="true">
                <layout class="QVBoxLayout" name="lossyLayout">
+                <property name="spacing">
+                 <number>4</number>
+                </property>
                 <property name="leftMargin">
                  <number>0</number>
                 </property>
@@ -261,6 +267,9 @@
              <item>
               <widget class="QWidget" name="enforcementWrapper" native="true">
                <layout class="QVBoxLayout" name="enforcementLayout">
+                <property name="spacing">
+                 <number>4</number>
+                </property>
                 <property name="leftMargin">
                  <number>0</number>
                 </property>
@@ -305,6 +314,9 @@
              <item>
               <widget class="QWidget" name="customWidthWrapper" native="true">
                <layout class="QVBoxLayout" name="verticalLayout_16">
+                <property name="spacing">
+                 <number>4</number>
+                </property>
                 <property name="leftMargin">
                  <number>0</number>
                 </property>
@@ -357,7 +369,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="detectorTab">
+      <widget class="QWidget" name="advancedTab">
        <attribute name="title">
         <string>Advanced</string>
        </attribute>
@@ -378,7 +390,7 @@
          <number>6</number>
         </property>
         <item>
-         <widget class="QGroupBox" name="groupBox">
+         <widget class="QGroupBox" name="detectorGroupBox">
           <property name="title">
            <string>Detector Settings</string>
           </property>
@@ -406,7 +418,10 @@
             </widget>
            </item>
            <item>
-            <widget class="QComboBox" name="comboBox">
+            <widget class="QComboBox" name="detectorTypeDropdown">
+             <property name="currentText">
+              <string>Direct Slicing</string>
+             </property>
              <item>
               <property name="text">
                <string>Direct Slicing</string>
@@ -420,79 +435,116 @@
             </widget>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,1">
+            <layout class="QHBoxLayout" name="smartDetectorWrapper" stretch="0,0">
              <property name="bottomMargin">
               <number>0</number>
              </property>
              <item>
-              <layout class="QVBoxLayout" name="verticalLayout_9" stretch="0,1">
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-               <item>
-                <widget class="QLabel" name="label_2">
-                 <property name="text">
-                  <string>Object Detection Sensitivity  [1-100%]</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QSpinBox" name="spinBox">
-                 <property name="minimum">
-                  <number>1</number>
-                 </property>
-                 <property name="maximum">
-                  <number>100</number>
-                 </property>
-                </widget>
-               </item>
-              </layout>
+              <widget class="QWidget" name="detectorSensitvityWrapper" native="true">
+               <layout class="QVBoxLayout" name="detectorSensitvityWrapperL" stretch="0,1">
+                <property name="spacing">
+                 <number>4</number>
+                </property>
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>0</number>
+                </property>
+                <item>
+                 <widget class="QLabel" name="detectorSensitivityLabel">
+                  <property name="text">
+                   <string>Object Detection Sensitivity  [1-100%]</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QSpinBox" name="detectorSensitivityField">
+                  <property name="minimum">
+                   <number>1</number>
+                  </property>
+                  <property name="maximum">
+                   <number>100</number>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
              </item>
              <item>
-              <layout class="QVBoxLayout" name="verticalLayout_10">
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-               <item>
-                <widget class="QLabel" name="label_3">
-                 <property name="text">
-                  <string>Scan Line Step [1-25 in pixels]</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QSpinBox" name="spinBox_2">
-                 <property name="minimum">
-                  <number>1</number>
-                 </property>
-                 <property name="maximum">
-                  <number>25</number>
-                 </property>
-                </widget>
-               </item>
-              </layout>
+              <widget class="QWidget" name="scanStepWrapper" native="true">
+               <layout class="QVBoxLayout" name="scanLineWrapperL">
+                <property name="bottomMargin">
+                 <number>1</number>
+                </property>
+                <item>
+                 <widget class="QLabel" name="scanStepLabel">
+                  <property name="text">
+                   <string>Scan Line Step [1-25 in pixels]</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QSpinBox" name="scanStepField">
+                  <property name="minimum">
+                   <number>1</number>
+                  </property>
+                  <property name="maximum">
+                   <number>25</number>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
              </item>
             </layout>
            </item>
            <item>
-            <widget class="QLabel" name="label_4">
-             <property name="text">
-              <string>Ignoreable Horizontal Margins [in pixels]</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QSpinBox" name="spinBox_3">
-             <property name="maximum">
-              <number>999999</number>
-             </property>
+            <widget class="QWidget" name="ignoreMarginWrapper" native="true">
+             <layout class="QVBoxLayout" name="ignoreMarginWrapperL">
+              <property name="spacing">
+               <number>4</number>
+              </property>
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QLabel" name="ignoreMarginLabel">
+                <property name="text">
+                 <string>Ignoreable Horizontal Margins [in pixels]</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSpinBox" name="ignoreMarginField">
+                <property name="maximum">
+                 <number>999999</number>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </widget>
            </item>
           </layout>
          </widget>
         </item>
         <item>
-         <widget class="QGroupBox" name="groupBox_2">
+         <widget class="QGroupBox" name="profileGroupBox">
           <property name="title">
            <string>Configuration Profile Settings</string>
           </property>
@@ -513,14 +565,14 @@
             <number>6</number>
            </property>
            <item>
-            <widget class="QLabel" name="label_5">
+            <widget class="QLabel" name="currentProfileLabel">
              <property name="text">
               <string>Current Profile</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QComboBox" name="comboBox_2">
+            <widget class="QComboBox" name="currentProfileDropdown">
              <item>
               <property name="text">
                <string>Profile 1</string>
@@ -529,14 +581,14 @@
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="label_6">
+            <widget class="QLabel" name="currentProfileNameLabel">
              <property name="text">
               <string>Current Profile Name</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="lineEdit"/>
+            <widget class="QLineEdit" name="currentProfileName"/>
            </item>
           </layout>
          </widget>
@@ -556,7 +608,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="detectorTab22">
+      <widget class="QWidget" name="postProcessTab">
        <attribute name="title">
         <string>Post Process</string>
        </attribute>
@@ -577,7 +629,7 @@
          <number>6</number>
         </property>
         <item>
-         <widget class="QGroupBox" name="groupBox_2">
+         <widget class="QGroupBox" name="postProcessGroupBox">
           <property name="title">
            <string>Post Process Settings</string>
           </property>
@@ -598,26 +650,26 @@
             <number>6</number>
            </property>
            <item>
-            <widget class="QCheckBox" name="checkBox">
+            <widget class="QCheckBox" name="runProcessCheckbox">
              <property name="text">
               <string>Run post process after stitching process is complete</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="label_5">
+            <widget class="QLabel" name="postProcessAppLabel">
              <property name="text">
-              <string>Post process executable path</string>
+              <string>Post process application path</string>
              </property>
             </widget>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout" stretch="3,1">
+            <layout class="QHBoxLayout" name="postProcessExeLayout" stretch="3,1">
              <item>
-              <widget class="QLineEdit" name="postProcessExeField"/>
+              <widget class="QLineEdit" name="postProcessAppField"/>
              </item>
              <item>
-              <widget class="QPushButton" name="browsePostProcessButton">
+              <widget class="QPushButton" name="browsePostProcessAppButton">
                <property name="text">
                 <string>Browse</string>
                </property>
@@ -626,20 +678,20 @@
             </layout>
            </item>
            <item>
-            <widget class="QLabel" name="label_6">
+            <widget class="QLabel" name="postProcessArgsLabel">
              <property name="text">
               <string>Post process arguments</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="lineEdit"/>
+            <widget class="QLineEdit" name="postProcessArgsField"/>
            </item>
           </layout>
          </widget>
         </item>
         <item>
-         <widget class="QScrollArea" name="scrollArea">
+         <widget class="QScrollArea" name="processConsoleArea">
           <property name="widgetResizable">
            <bool>true</bool>
           </property>
@@ -648,8 +700,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>489</width>
-             <height>159</height>
+             <width>449</width>
+             <height>153</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -669,7 +721,7 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QTextEdit" name="textEdit">
+             <widget class="QTextEdit" name="processConsoleField">
               <property name="enabled">
                <bool>false</bool>
               </property>

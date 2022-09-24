@@ -139,6 +139,27 @@ QComboBox QAbstractItemView {
     selection-background-color: rgb(38, 120, 65);
     selection-color: #ffffff;
 }
+QProgressBar::chunk {
+    background: rgba(38, 238, 159, 1);
+}
+QCheckBox,
+QRadioButton {
+    border-top: 2px solid transparent;
+    border-bottom: 2px solid transparent;
+}
+QCheckBox:!window,
+QRadioButton:!window {
+    background: transparent;
+}
+QCheckBox:hover,
+QRadioButton:hover {
+    border-bottom: 2px solid transparent;
+}
+QCheckBox::indicator:checked,
+QGroupBox::indicator:checked,
+QAbstractItemView::indicator:checked {
+    image: url(./assets/CheckboxHighlight.svg);
+}
 
 """
 

@@ -1,4 +1,4 @@
-from ..utils.constants import WIDTH_ENFORCEMENT
+from ..utils.constants import DETECTION_TYPE, WIDTH_ENFORCEMENT
 
 
 class AppSettings:
@@ -9,13 +9,15 @@ class AppSettings:
         self.split_height: int = 5000
         self.output_type: str = '.png'
         self.lossy_quality: str = 100
+        self.detector_type: DETECTION_TYPE = DETECTION_TYPE.PIXEL_COMPARSION
         self.senstivity: int = 90
-        self.ignorable_pixels: int = 0
+        self.ignorable_pixels: int = 5
         self.scan_step: int = 5
         self.enforce_type: WIDTH_ENFORCEMENT = WIDTH_ENFORCEMENT.NONE
         self.enforce_width: int = 720
-        self.subprocess_app: str = ""
-        self.subprocess_arguments: str = ""
+        self.run_postprocess: bool = False
+        self.postprocess_app: str = ""
+        self.postprocess_args: str = ""
 
         if json_dict is not None:
             for key, value in json_dict.items():
