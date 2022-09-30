@@ -71,7 +71,7 @@ def on_load():
     MainWindow.ignoreMarginField.setValue(settings.load("ignorable_pixels"))
     MainWindow.runProcessCheckbox.setChecked(settings.load("run_postprocess"))
     MainWindow.postProcessAppField.setText(settings.load("postprocess_app"))
-    MainWindow.postProcessArgsField.setText(settings.load("postprocess_arguments"))
+    MainWindow.postProcessArgsField.setText(settings.load("postprocess_args"))
     output_type_changed(False)
     enforce_type_changed(False)
     detector_type_changed(False)
