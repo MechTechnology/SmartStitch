@@ -4,7 +4,7 @@ from enum import IntEnum
 LOG_REL_DIR = '__logs__'
 SETTINGS_REL_DIR = '__settings__'
 OUTPUT_SUFFIX = ' [stitched]'
-SUBPROCESS_SUFFIX = ' [processed]'
+POSTPROCESS_SUFFIX = ' [processed]'
 SUPPORTTED_IMG_TYPES = (
     '.png',
     '.webp',

@@ -3,7 +3,7 @@ import os
 from natsort import natsorted
 
 from ..models import WorkDirectory
-from ..utils.constants import OUTPUT_SUFFIX, SUBPROCESS_SUFFIX, SUPPORTTED_IMG_TYPES
+from ..utils.constants import OUTPUT_SUFFIX, POSTPROCESS_SUFFIX, SUPPORTTED_IMG_TYPES
 from ..utils.errors import DirectoryException
 from .global_logger import logFunc
 
@@ -17,10 +17,12 @@ class DirectoryExplorer:
     @logFunc(inclass=True)
     def get_main_directory(self, input: str, **kwargs: str) -> WorkDirectory:
         """Gets the main working directory for a given input path"""
+        if not input:
+            raise DirectoryException("Missing Input Directory")
         input_path = os.path.abspath(input)
         output_path = kwargs.get('output', input_path + OUTPUT_SUFFIX)
-        subprocess_path = kwargs.get('output', input_path + SUBPROCESS_SUFFIX)
-        return WorkDirectory(input_path, output_path, subprocess_path)
+        postprocess_path = kwargs.get('postprocess', input_path + POSTPROCESS_SUFFIX)
+        return WorkDirectory(input_path, output_path, postprocess_path)
 
     @logFunc(inclass=True)
     def explore_directories(self, main_directory: WorkDirectory) -> list[WorkDirectory]:
