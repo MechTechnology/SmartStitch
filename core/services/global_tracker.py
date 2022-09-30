@@ -3,6 +3,9 @@ from .global_logger import logFunc
 
 
 # Main GlobalTracker Class
+# This is an used service, that is not in use
+# It's mostly for experiemental use [Observer Pattern Tracker]
+# It's not implemented into either the gui or the console
 class GlobalTracker:
     # Array of functions subscribed on this tracker
     subscribers = [print_tracking]
