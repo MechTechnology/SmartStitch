@@ -2,6 +2,9 @@ import os
 
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import QDialog, QFileDialog
+from PySide6.QtGui import QPixmap, QIcon
+
+from assets.SmartStitchLogo import icon
 
 from core.services import SettingsHandler
 from core.utils.constants import OUTPUT_SUFFIX
@@ -12,10 +15,23 @@ SCRIPT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 def initalize_gui():
     global MainWindow
     global settings
+    global appVersion
+    global appAuthor
     MainWindow = QUiLoader().load(os.path.join(SCRIPT_DIRECTORY, 'layout.ui'))
     settings = SettingsHandler()
+    # Sets Window Title & Icon
+    pixmap = QPixmap()
+    pixmap.loadFromData(icon)
+    appIcon = QIcon(pixmap)
+    MainWindow.setWindowIcon(appIcon)
+    # Sets Window Title
+    appVersion = "3.0"
+    appAuthor = "MechTechnology"
+    MainWindow.setWindowTitle("SmartStitch By {0} [{1}]".format(appAuthor, appVersion))
+    # Controls Setup
     bind_signals()
     on_load()
+    # Show Window
     MainWindow.show()
 
 
