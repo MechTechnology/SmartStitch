@@ -11,7 +11,6 @@ class SettingsHandler:
         self.settings_file = os.path.join(SETTINGS_REL_DIR, 'settings.json')
         self.current_settings = self.load_all()
 
-    @logFunc(inclass=True)
     def load(self, key: str) -> any:
         """Loads the value of a single setting key"""
         return self.current_settings.__dict__[key]
