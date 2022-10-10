@@ -15,6 +15,7 @@ SCRIPT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 
 class ProcessThread(QThread):
     progress = Signal(int, str)
+    postProcessConsole = Signal(str)
 
     def __init__(self, parent):
         super(ProcessThread, self).__init__(parent)
@@ -25,6 +26,7 @@ class ProcessThread(QThread):
             input_path=MainWindow.inputField.text(),
             output_path=MainWindow.outputField.text(),
             status_func=self.progress.emit,
+            console_func=self.postProcessConsole.emit,
         )
 
 
@@ -51,6 +53,7 @@ def initalize_gui():
     # Sets up process thread
     processThread = ProcessThread(MainWindow)
     processThread.progress.connect(update_process_progress)
+    processThread.postProcessConsole.connect(update_postprocess_console)
     # Show Window
     MainWindow.show()
 
@@ -203,6 +206,10 @@ def update_process_progress(percentage: int, message: str):
     MainWindow.statusField.setText(message)
     MainWindow.statusProgressBar.setValue(percentage)
 
+def update_postprocess_console(message: str):
+    MainWindow.processConsoleField.append(message)
+
 
 def launch_process_async():
+    MainWindow.processConsoleField.clear()
     processThread.start()

@@ -139,6 +139,13 @@ QComboBox QAbstractItemView {
     selection-background-color: rgb(38, 120, 65);
     selection-color: #ffffff;
 }
+QTextEdit:focus,
+QTextEdit:selected,
+QPlainTextEdit:focus,
+QPlainTextEdit:selected {
+    border: 1px solid rgba(38, 238, 159, 1);
+    selection-background-color: rgb(38, 120, 65);
+}
 QProgressBar::chunk {
     background: rgba(38, 238, 159, 1);
 }

@@ -1,10 +1,10 @@
 class WorkDirectory:
     """Model for holding Working Directory Information"""
 
-    def __init__(self, input, output, subprocess):
+    def __init__(self, input, output, postprocess):
         self.input_path: str = input
         self.output_path: str = output
-        self.subprocess_path: str = subprocess
+        self.postprocess_path: str = postprocess
         self.input_files: list = []
         self.output_files: list = []
 
@@ -16,6 +16,6 @@ class WorkDirectory:
         stringRep += ", output_path:" + str(self.output_path)
         if self.output_files:
             stringRep += ", output_files:" + str(len(self.output_files))
-        stringRep += ", subprocess_path=" + str(self.subprocess_path)
+        stringRep += ", postprocess_path=" + str(self.postprocess_path)
         stringRep += "\'"
         return stringRep

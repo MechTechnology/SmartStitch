@@ -39,7 +39,7 @@ class DirectoryExplorer:
             if img_files:
                 rel_root = os.path.relpath(dir_root, main_directory.input_path)
                 dir_output = os.path.join(main_directory.output_path, rel_root)
-                dir_subprocess = os.path.join(main_directory.subprocess_path, rel_root)
+                dir_subprocess = os.path.join(main_directory.postprocess_path, rel_root)
                 directory = WorkDirectory(dir_root, dir_output, dir_subprocess)
                 directory.input_files = img_files
                 work_directories.append(directory)
