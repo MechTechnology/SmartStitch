@@ -7,6 +7,8 @@ name = "pypi"
 format = "python -m scripts.formatter"
 console = "python -m SmartStitchConsole"
 gui = "python -m SmartStitchGUI"
+build="pyinstaller Build.spec"
+build-no-icon="pyinstaller BuildNoIcon.spec"
 
 [packages]
 natsort = "*"
@@ -19,6 +21,7 @@ pyqtdarktheme = "*"
 flake8 = "*"
 black = "*"
 isort = "*"
+pyinstaller = "*"
 
 [requires]
 python_version = "3.10"
