@@ -6,8 +6,10 @@ class AppProfiles:
 
     def __init__(self, json_dict: dict[str, any] = None):
         # Core Settings
-        self.current_profile: str = 'default'
-        self.settings_profiles: dict[str, any] = {'default': vars(AppSettings())}
+        self.current: int = 0
+        self.profiles: list[dict[str, any]] = [
+            {"profile_name": "Settings Profile 1", **vars(AppSettings())}
+        ]
 
         if json_dict is not None:
             for key, value in json_dict.items():

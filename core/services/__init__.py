@@ -4,7 +4,6 @@ from .global_tracker import GlobalTracker
 from .image_handler import ImageHandler
 from .image_manipulator import ImageManipulator
 from .postprocess_runner import PostProcessRunner
-from .profile_handler import ProfileHandler
 from .settings_handler import SettingsHandler
 
 __all__ = [
@@ -14,7 +13,6 @@ __all__ = [
     ImageHandler,
     ImageManipulator,
     SettingsHandler,
-    ProfileHandler,
     GlobalTracker,
     PostProcessRunner,
 ]
