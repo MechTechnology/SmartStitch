@@ -58,7 +58,7 @@ def initalize_gui():
     MainWindow.show()
 
 
-def on_load():
+def on_load(load_profiles=True):
     # App Fields
     MainWindow.statusField.setText("Idle")
     MainWindow.statusProgressBar.setValue(0)
@@ -78,6 +78,10 @@ def on_load():
     output_type_changed(False)
     enforce_type_changed(False)
     detector_type_changed(False)
+    if load_profiles:
+        update_profiles_list()
+        MainWindow.currentProfileDropdown.setCurrentIndex(settings.get_current_index())
+        current_profile_changed(False)
 
 
 def bind_signals():
@@ -94,6 +98,12 @@ def bind_signals():
     )
     MainWindow.scanStepField.valueChanged.connect(scan_step_changed)
     MainWindow.ignoreMarginField.valueChanged.connect(ignorable_margin_changed)
+    MainWindow.currentProfileDropdown.currentTextChanged.connect(
+        current_profile_changed
+    )
+    MainWindow.currentProfileName.textChanged.connect(current_profile_name_changed)
+    MainWindow.addProfileButton.clicked.connect(add_profile)
+    MainWindow.removeProfileButton.clicked.connect(remove_profile)
     MainWindow.runProcessCheckbox.stateChanged.connect(run_postprocess_changed)
     MainWindow.browsePostProcessAppButton.clicked.connect(browse_postprocess_app)
     MainWindow.postProcessAppField.textChanged.connect(postprocess_app_changed)
@@ -177,6 +187,43 @@ def scan_step_changed():
 
 def ignorable_margin_changed():
     settings.save("ignorable_pixels", MainWindow.ignoreMarginField.value())
+
+
+def update_profiles_list():
+    profile_names = settings.get_profile_names()
+    MainWindow.currentProfileDropdown.clear()
+    for index in range(len(profile_names)):
+        MainWindow.currentProfileDropdown.insertItem(index, profile_names[index])
+    return len(profile_names)
+
+
+def current_profile_changed(save=True):
+    current_profile = MainWindow.currentProfileDropdown.currentIndex()
+    if save:
+        settings.set_current_index(current_profile)
+        on_load(False)
+    MainWindow.currentProfileName.setText(settings.get_current_profile_name())
+
+
+def current_profile_name_changed():
+    new_name = MainWindow.currentProfileName.text()
+    settings.set_current_profile_name(new_name)
+    current = MainWindow.currentProfileDropdown.currentIndex()
+    MainWindow.currentProfileDropdown.setItemText(current, new_name)
+
+
+def add_profile():
+    profile_name = settings.add_profile()
+    new_index = update_profiles_list() - 1
+    MainWindow.currentProfileDropdown.setCurrentIndex(new_index)
+    MainWindow.currentProfileName.setText(profile_name)
+
+
+def remove_profile():
+    current_profile = MainWindow.currentProfileDropdown.currentIndex()
+    settings.remove_profile(current_profile)
+    MainWindow.currentProfileDropdown.removeItem(current_profile)
+    MainWindow.currentProfileDropdown.setCurrentIndex(0)
 
 
 def run_postprocess_changed():
