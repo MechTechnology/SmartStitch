@@ -120,7 +120,9 @@ class GuiStitchProcess:
                     quality=settings.load("lossy_quality"),
                 )
                 img_iteration += 1
-                percentage += step_percentages.get("save") / (float(input_dirs_count) * float(img_count))
+                percentage += step_percentages.get("save") / (
+                    float(input_dirs_count) * float(img_count)
+                )
                 status_func(
                     percentage,
                     'Working - [{iteration}/{count}] {file} has been successfully saved'.format(
@@ -144,7 +146,9 @@ class GuiStitchProcess:
                     postprocess_args=settings.load("postprocess_args"),
                     console_func=console_func,
                 )
-                percentage += step_percentages.get("postprocess") / (float(input_dirs_count) * float(img_count))
+                percentage += step_percentages.get("postprocess") / (
+                    float(input_dirs_count) * float(img_count)
+                )
             dir_iteration += 1
         end_time = time()
         percentage = 100

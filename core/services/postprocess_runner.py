@@ -7,7 +7,12 @@ from core.services.global_logger import logFunc
 
 class PostProcessRunner:
     def run(self, workdirectory: WorkDirectory, **kwargs: dict[str:any]):
-        command = "\"" + kwargs.get("postprocess_app", "") + "\" " + kwargs.get("postprocess_args", "")
+        command = (
+            "\""
+            + kwargs.get("postprocess_app", "")
+            + "\" "
+            + kwargs.get("postprocess_args", "")
+        )
         console_func = kwargs.get("console_func", print)
         command = command.replace('[stitched]', "\"" + workdirectory.output_path + "\"")
         command = command.replace(
