@@ -2,7 +2,7 @@
   <a href="https://github.com/MechTechnology/SmartStitch">
     <img alt="SmartStitch.Logo" width="200" heigth="200" src="https://github.com/MechTechnology/SmartStitch/raw/dev/assets/SmartStitchLogo.png">
   </a>
-  <h1>SmartStitch [V3 Development Branch]</h1>
+  <h1>SmartStitch</h1>
   <p>
     A small yet powerful program for stitching and cutting webtoons/manhwa/manhua raws.
   </p>
