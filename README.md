@@ -159,15 +159,10 @@ This is setting is for convenience mainly for heavy users.
   5. Set the arguments you want to pass to the process (Use the argument [stitched] to pass the output directory to your process).
   5. Optional: Use the argument [processed] to pass a custom output directory to your process for those that can't create their own output.
 
-Example: These are my presonal settings for a waifu2x post process
-<div align="center">
-  <img alt="screenshot03" src="https://i.imgur.com/fZbP1sn.png">
-</div>
-
 #### Visualization of After Completion Subprocess (Setup for waifu2x-caffe)
 Of course you can use whatever version of waifu2x or process that you want, this is just an example of what i setup for myself.
 <div align="center">
-  <img alt="screenshot04" src="https://i.imgur.com/Vpl59rT.png">
+  <img alt="screenshot04" src="https://i.imgur.com/fZbP1sn.png">
 </div>
 
 ## How to run the Console Version (For Windows, Mac, Linux Users)
