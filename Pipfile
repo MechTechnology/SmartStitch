@@ -1,0 +1,27 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[scripts]
+format = "python -m scripts.formatter"
+console = "python -m SmartStitchConsole"
+gui = "python -m SmartStitchGUI"
+build="pyinstaller Build.spec"
+build-no-icon="pyinstaller BuildNoIcon.spec"
+
+[packages]
+natsort = "*"
+pillow = "*"
+numpy = "*"
+pyside6 = "*"
+pyqtdarktheme = "*"
+
+[dev-packages]
+flake8 = "*"
+black = "*"
+isort = "*"
+pyinstaller = "*"
+
+[requires]
+python_version = "3.10"
