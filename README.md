@@ -24,6 +24,8 @@
   <a href="https://github.com/MechTechnology/SmartStitch/blob/dev/LICENSE">
     <img src="https://img.shields.io/github/license/MechTechnology/SmartStitch">
   </a>
+  <p><strong>It's free, but any donation is appreciated</strong></p>
+  <a href='https://ko-fi.com/mechtechnology' target='_blank'><img height='35' style='border:0px;height:46px;' src='https://az743702.vo.msecnd.net/cdn/kofi3.png?v=0' border='0' alt='Buy Me a Coffee at ko-fi.com' />
 </div>
 
 ## What is SmartStitch?
