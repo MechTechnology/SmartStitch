@@ -19,7 +19,7 @@
     <img src="https://img.shields.io/github/downloads/MechTechnology/SmartStitch/total">
   </a>
   <a href="https://github.com/MechTechnology/SmartStitch/tree/dev">
-    <img src="https://img.shields.io/github/last-commit/MechTechnology/SmartStitch/dev">
+    <img src="https://img.shields.io/github/last-commit/MechTechnology/SmartStitch">
   </a>
   <a href="https://github.com/MechTechnology/SmartStitch/blob/dev/LICENSE">
     <img src="https://img.shields.io/github/license/MechTechnology/SmartStitch">
