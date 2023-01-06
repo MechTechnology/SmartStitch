@@ -117,12 +117,18 @@ def input_field_changed():
         MainWindow.outputField.setText(input_path + OUTPUT_SUFFIX)
     else:
         MainWindow.outputField.setText("")
+    if (os.path.exists(input_path)):
+        settings.save("last_browse_location", input_path)
 
 
 def browse_location():
+    start_directory = settings.load("last_browse_location")
+    if not start_directory or not os.path.exists(start_directory):
+        start_directory = os.path.expanduser("~")
     dialog = QFileDialog(
         MainWindow,
         'Select Input Directory Files',
+        directory=start_directory,
         FileMode=QFileDialog.FileMode.Directory,
     )
     if dialog.exec_() == QDialog.Accepted:

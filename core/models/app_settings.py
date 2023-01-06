@@ -18,6 +18,7 @@ class AppSettings:
         self.run_postprocess: bool = False
         self.postprocess_app: str = ""
         self.postprocess_args: str = ""
+        self.last_browse_location: str = ""
 
         if json_dict is not None:
             for key, value in json_dict.items():
