@@ -24,7 +24,7 @@ def launch():
         dest='output_type',
         type=str,
         default=".png",
-        choices=['.png', '.jpg', '.webp', '.bmp', '.tiff', '.tga'],
+        choices=['.png', '.jpg', '.webp', '.bmp', '.tiff', '.tga', '.psd'],
         help='Sets the type/format of the Output Image Files',
     )
     parser.add_argument(
