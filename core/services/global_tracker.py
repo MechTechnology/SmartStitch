@@ -64,6 +64,6 @@ class GlobalTracker:
             self.progress_track += value
             percentage = float(self.progress_track / self.total_progress) * 100
             if not message:
-                message = func_name + ' ran sucessfully!'
+                message = func_name + ' ran successfully!'
             for subscriber in self.subscribers:
                 subscriber(percentage, message)

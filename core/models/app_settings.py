@@ -9,7 +9,7 @@ class AppSettings:
         self.split_height: int = 5000
         self.output_type: str = '.png'
         self.lossy_quality: str = 100
-        self.detector_type: DETECTION_TYPE = DETECTION_TYPE.PIXEL_COMPARSION
+        self.detector_type: DETECTION_TYPE = DETECTION_TYPE.PIXEL_COMPARISON
         self.senstivity: int = 90
         self.ignorable_pixels: int = 5
         self.scan_step: int = 5

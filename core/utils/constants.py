@@ -5,7 +5,7 @@ LOG_REL_DIR = '__logs__'
 SETTINGS_REL_DIR = '__settings__'
 OUTPUT_SUFFIX = ' [stitched]'
 POSTPROCESS_SUFFIX = ' [processed]'
-SUPPORTTED_IMG_TYPES = (
+SUPPORTED_IMG_TYPES = (
     '.png',
     '.webp',
     '.jpg',
@@ -26,4 +26,4 @@ class WIDTH_ENFORCEMENT(IntEnum):
 
 class DETECTION_TYPE(IntEnum):
     NO_DETECTION = 0
-    PIXEL_COMPARSION = 1
+    PIXEL_COMPARISON = 1

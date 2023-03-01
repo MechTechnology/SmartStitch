@@ -3,7 +3,7 @@ import os
 from natsort import natsorted
 
 from ..models import WorkDirectory
-from ..utils.constants import OUTPUT_SUFFIX, POSTPROCESS_SUFFIX, SUPPORTTED_IMG_TYPES
+from ..utils.constants import OUTPUT_SUFFIX, POSTPROCESS_SUFFIX, SUPPORTED_IMG_TYPES
 from ..utils.errors import DirectoryException
 from .global_logger import logFunc
 
@@ -33,7 +33,7 @@ class DirectoryExplorer:
         ):
             img_files = []
             for file in files:
-                if file.lower().endswith(SUPPORTTED_IMG_TYPES):
+                if file.lower().endswith(SUPPORTED_IMG_TYPES):
                     img_files.append(file)
             img_files = natsorted(img_files)
             if img_files:
