@@ -9,7 +9,7 @@ from ..utils.constants import LOG_REL_DIR
 class GlobalLogger:
     @classmethod
     def configureGlobalLogger(self):
-        """Initalizes and Configures Logging Service"""
+        """Initializes and Configures Logging Service"""
         if not os.path.exists(LOG_REL_DIR):
             os.makedirs(LOG_REL_DIR)
         current_date = datetime.now()
@@ -19,7 +19,7 @@ class GlobalLogger:
         log_level = logging.DEBUG
         log_format = '%(levelname)s:%(asctime)s:%(message)s'
         logging.basicConfig(format=log_format, filename=log_filename, level=log_level)
-        logging.debug('GlobalLogger:Logger Initalized')
+        logging.debug('GlobalLogger:Logger Initialized')
         # Removes the pil logging from polluting the Debug Level.
         pil_logger = logging.getLogger('PIL')
         pil_logger.setLevel(logging.INFO)

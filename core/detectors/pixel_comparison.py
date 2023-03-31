@@ -4,13 +4,13 @@ from PIL import Image as pil
 from core.services.global_logger import logFunc
 
 
-class PixelComparsionDetector:
+class PixelComparisonDetector:
     @logFunc(inclass=True)
     def run(self, combined_img: pil.Image, split_height: int, **kwargs) -> list[int]:
         """Uses Neighbouring pixels comparison to detect ideal slice locations"""
         # Changes from a pil Image to an numpy pixel array
         combined_img = np.array(combined_img.convert('L'))
-        # Setting up rest of Detector Paramaters
+        # Setting up rest of Detector Parameters
         scan_step = kwargs.get('scan_step', 5)
         ignorable_pixels = kwargs.get('ignorable_pixels', 0)
         sensitivity = kwargs.get('sensitivity', 90)

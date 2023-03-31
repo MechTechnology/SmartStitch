@@ -1,6 +1,6 @@
 <div align="center">
   <a href="https://github.com/MechTechnology/SmartStitch">
-    <img alt="SmartStitch.Logo" width="200" heigth="200" src="https://github.com/MechTechnology/SmartStitch/raw/dev/assets/SmartStitchLogo.png">
+    <img alt="SmartStitch.Logo" width="200" height="200" src="https://github.com/MechTechnology/SmartStitch/raw/dev/assets/SmartStitchLogo.png">
   </a>
   <h1>SmartStitch</h1>
   <p>
@@ -71,7 +71,7 @@ The smart part of the name comes from the fact that it uses some simple pixel ca
 Keep in mind that this setup is only needed once, after running the setup.py, you can just launch ```SmartStitchGUI.py``` directly every time
 
 ## Reporting Bugs [New to 3.0+]:
-A very robust logging system has been implemented in the GUI version of SmartStitch for almost every interaction with the program, when an error occur the application will inform you about it, and leaves the details in a file called in the ```__logs__``` folder, There will be a file created for every day of usage. you can open an issue ticket here and attach the file, so it can be easily debugged and fixed. 
+A very robust logging system has been implemented in the GUI version of SmartStitch for almost every interaction with the program, when an error occur the application will inform you about it, and leaves the details in a file called in the ```__logs__``` folder, There will be a file created for every day of usage. you can open an issue ticket here and attach the file, so it can be easily debugged and fixed.
 
 And since it's just one person maintaining this application, only accepted tickets will be for version 3.0 and above. Please don't open tickets for lower versions, since your problem could have been already solved.
 
@@ -83,7 +83,7 @@ You can also contact me at Discord if you don't want to use the GitHub Issue Sys
 Here is the complete documentation for the application, it is broken down into 4 sections, basic settings, advanced settings, how to build your own version, how to run the console version.
 
 ## Basic Settings
-These are the required settings that all users should be mindful of. 
+These are the required settings that all users should be mindful of.
 
 ### Input Folder Path
 Here you have to set the path for the Input Folder which contains the raws that will be processed by the program. If batch mode is enabled, it will search for subfolder within the given input path. So make sure your folder and files are in order.
@@ -91,7 +91,7 @@ Here you have to set the path for the Input Folder which contains the raws that 
 *Console Parameter Name: --input_folder, -i*
 
 ### Output type
-The default output type is png since it is lossless, however you can always change to other types, such as jpg, the program does save jpg at 100 quality, so there should be not noticable loss in quality but it is up to the user what format they want.
+The default output type is png since it is lossless, however you can always change to other types, such as jpg, the program does save jpg at 100 quality, so there should be not noticeable loss in quality but it is up to the user what format they want.
 
 *Default: .png* --- *Supported Types: png, jpg, webp, bmp, tiff, tga* --- *Console Parameter Name: -t*
 
@@ -135,7 +135,7 @@ This is the step at which the program moves if it find the line it's on to be un
 
 *Default: 5* --- *Value Range: 1-100* --- *Console Parameter Name: -sl*
 
-### Ignorable Horizental Margins Pixels 
+### Ignorable Horizental Margins Pixels
 This gives the option to ignore pixels on the border of the image when checking for bubbles/sfw/whatever. Why you might ask, Borders do not make the detection algorithm happy, so in some cases you want it to start its detection only inside said border, be careful to what value you want it to be since if it's larger that image it will case the program to crash/stop its operation.
 
 *Default: 0* --- *Console Parameter Name: -ip*
@@ -174,14 +174,14 @@ Of course you can use whatever version of waifu2x or process that you want, this
 
 ### Console Version Usage
 ```
-python SmartStitchConsole.py [-h] -i INPUT_FOLDER 
-                                  -sh SPLIT_HEIGHT 
-                                  [-t {.png,.jpg,.webp,.bmp,.tiff,.tga}] 
-                                  [-cw CUSTOM_WIDTH] 
-                                  [-dt {none,pixel}] 
-                                  [-s [0-100]] 
-                                  [-lq [1-100]] 
-                                  [-ip IGNORABLE_PIXELS] 
+python SmartStitchConsole.py [-h] -i INPUT_FOLDER
+                                  -sh SPLIT_HEIGHT
+                                  [-t {.png,.jpg,.webp,.bmp,.tiff,.tga}]
+                                  [-cw CUSTOM_WIDTH]
+                                  [-dt {none,pixel}]
+                                  [-s [0-100]]
+                                  [-lq [1-100]]
+                                  [-ip IGNORABLE_PIXELS]
                                   [-sl [1-100]]
 required arguments:
     --input_folder INPUT_FOLDER, -i INPUT_FOLDER               Sets the path of Input Folder
@@ -202,7 +202,7 @@ optional arguments:
 ### Console Version Command Example
 ```
 python SmartStitchConsole.py -i "Review me" -sh 7500 -t ".png"
-# This will Run the application on for input_folder of "./Review me" with split_height of 7500 and output_tyoe of ".png"
+# This will Run the application on for input_folder of "./Review me" with split_height of 7500 and output_type of ".png"
 ```
 
 ## How to build/compile your own GUI Version?

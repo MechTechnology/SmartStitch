@@ -30,7 +30,7 @@ class ProcessThread(QThread):
         )
 
 
-def initalize_gui():
+def initialize_gui():
     global MainWindow
     global settings
     global appVersion
