@@ -91,7 +91,7 @@ Here you have to set the path for the Input Folder which contains the raws that 
 *Console Parameter Name: --input_folder, -i*
 
 ### Output type
-The default output type is png since it is lossless, however you can always change to other types, such as jpg, the program does save jpg at 100 quality, so there should be not noticeable loss in quality but it is up to the user what format they want. (You can also now use PSD files for convenience if you are a Photoshop user, however output files will not contain the layers of the original)
+The default output type is png since it is lossless, however you can always change to other types, such as jpg, the program does save jpg at 100 quality, so there should be not noticeable loss in quality but it is up to the user what format they want. (You can also now use PSD files for convenience if you are a Photoshop user, however output files will not contain the layers of the original input psd file)
 
 *Default: .png* --- *Supported Types: png, jpg, webp, bmp, psd, tiff, tga* --- *Console Parameter Name: -t*
 
