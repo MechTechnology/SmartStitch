@@ -46,7 +46,7 @@ The smart part of the name comes from the fact that it uses some simple pixel ca
 ## Basic Quick Get Started GUI Version
 1. Open the application.
 2. Browse to your raw folder.
-4. Select a the output file type. (Supported types: png, jpg, webp, bmp, tiff, tga)
+4. Select a the output file type. (Supported types: png, jpg, webp, bmp, psd, tiff, tga)
 3. Set the Rough Panel Height of the output files.
 5. Click start process.
 6. Done, Enjoy!
@@ -91,9 +91,9 @@ Here you have to set the path for the Input Folder which contains the raws that 
 *Console Parameter Name: --input_folder, -i*
 
 ### Output type
-The default output type is png since it is lossless, however you can always change to other types, such as jpg, the program does save jpg at 100 quality, so there should be not noticeable loss in quality but it is up to the user what format they want.
+The default output type is png since it is lossless, however you can always change to other types, such as jpg, the program does save jpg at 100 quality, so there should be not noticeable loss in quality but it is up to the user what format they want. (You can also now use PSD files for convenience if you are a Photoshop user, however output files will not contain the layers of the original)
 
-*Default: .png* --- *Supported Types: png, jpg, webp, bmp, tiff, tga* --- *Console Parameter Name: -t*
+*Default: .png* --- *Supported Types: png, jpg, webp, bmp, psd, tiff, tga* --- *Console Parameter Name: -t*
 
 ### Rough Output Height
 Here you set the size that you want most output panels to roughly be, the program will uses it as a guide to see where to slice/cut the images, however it IS ROUGH, meaning if the program finds bubbles/sfx/whatever at that specific pixel length, it will try to find the next closest position where it can cut the image. Thus the output size of each image will vary because of that, but they all will be roughly around this size.
@@ -176,7 +176,7 @@ Of course you can use whatever version of waifu2x or process that you want, this
 ```
 python SmartStitchConsole.py [-h] -i INPUT_FOLDER
                                   -sh SPLIT_HEIGHT
-                                  [-t {.png,.jpg,.webp,.bmp,.tiff,.tga}]
+                                  [-t {.png,.jpg,.webp,.bmp,.psd,.tiff,.tga}]
                                   [-cw CUSTOM_WIDTH]
                                   [-dt {none,pixel}]
                                   [-s [0-100]]
@@ -189,7 +189,7 @@ optional arguments:
   -h, --help            show this help message and exit
   -i INPUT_FOLDER       Sets the path of Input Folder
   -sh SPLIT_HEIGHT      Sets the value of the Rough Panel Height
-  -t {.png,.jpg,.webp,.bmp,.tiff,.tga}
+  -t {.png,.jpg,.webp,.bmp,.psd,.tiff,.tga}
                         Sets the type/format of the Output Image Files
   -cw CUSTOM_WIDTH      [Advanced] Forces Fixed Width for All Output Image Files, Default=None (Disabled)
   -dt {none,pixel}      [Advanced] Sets the type of Slice Location Detection, Default=pixel (Pixel Comparison)
