@@ -58,8 +58,8 @@ class ImageManipulator:
         for index in range(1, len(slice_locations)):
             upper_limit = slice_locations[index - 1]
             lower_limit = slice_locations[index]
-            slice_bounderies = (0, upper_limit, max_width, lower_limit)
-            img_slice = combined_img.crop(slice_bounderies)
+            slice_boundaries = (0, upper_limit, max_width, lower_limit)
+            img_slice = combined_img.crop(slice_boundaries)
             img_objs.append(img_slice)
         combined_img.close()
         return img_objs

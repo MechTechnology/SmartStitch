@@ -30,7 +30,7 @@ class ProcessThread(QThread):
         )
 
 
-def initalize_gui():
+def initialize_gui():
     global MainWindow
     global settings
     global appVersion
@@ -44,7 +44,7 @@ def initalize_gui():
     appIcon = QIcon(pixmap)
     MainWindow.setWindowIcon(appIcon)
     # Sets Window Title
-    appVersion = "3.0"
+    appVersion = "3.1"
     appAuthor = "MechTechnology"
     MainWindow.setWindowTitle("SmartStitch By {0} [{1}]".format(appAuthor, appVersion))
     # Controls Setup

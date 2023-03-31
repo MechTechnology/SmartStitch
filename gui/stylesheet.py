@@ -69,6 +69,14 @@ QTabBar::tab:top:hover {
 QTabBar::tab:top:selected:disabled {
     border-color: #dbe1de;
 }
+QTabBar::tab:selected:hover:enabled{
+    color: rgb(40, 83, 65);
+    background: rgba(38, 238, 159, 0.333);
+}
+QTabBar::tab:selected:enabled {
+    color: rgb(40, 83, 65);
+    background: rgba(38, 238, 159, 0.333);
+}
 QTabBar::tab:bottom {
     border-top: 2px solid #dbe1de;
 }

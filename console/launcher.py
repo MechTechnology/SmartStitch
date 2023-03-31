@@ -15,7 +15,7 @@ def launch():
     parser.add_argument(
         "-sh",
         dest='split_height',
-        type=postive_int,
+        type=positive_int,
         required=True,
         help='Sets the value of the Rough Panel Height',
     )
@@ -24,13 +24,13 @@ def launch():
         dest='output_type',
         type=str,
         default=".png",
-        choices=['.png', '.jpg', '.webp', '.bmp', '.tiff', '.tga'],
+        choices=['.png', '.jpg', '.webp', '.bmp', '.tiff', '.tga', '.psd'],
         help='Sets the type/format of the Output Image Files',
     )
     parser.add_argument(
         "-cw",
         dest='custom_width',
-        type=postive_int,
+        type=positive_int,
         default=-1,
         help='[Advanced] Forces Fixed Width for All Output Image Files, Default=None (Disabled)',
     )
@@ -63,7 +63,7 @@ def launch():
     parser.add_argument(
         "-ip",
         dest='ignorable_pixels',
-        type=postive_int,
+        type=positive_int,
         default=5,
         help='[Advanced] Sets the value of Ignorable Border Pixels, Default=5 (5px)',
     )
@@ -81,7 +81,7 @@ def launch():
     process.run(kwargs)
 
 
-def postive_int(value):
+def positive_int(value):
     ivalue = int(value)
     if ivalue <= 0:
         raise argparse.ArgumentTypeError("%s is an invalid positive int value" % value)
