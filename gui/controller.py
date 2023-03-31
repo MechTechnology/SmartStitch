@@ -44,7 +44,7 @@ def initialize_gui():
     appIcon = QIcon(pixmap)
     MainWindow.setWindowIcon(appIcon)
     # Sets Window Title
-    appVersion = "3.0"
+    appVersion = "3.1"
     appAuthor = "MechTechnology"
     MainWindow.setWindowTitle("SmartStitch By {0} [{1}]".format(appAuthor, appVersion))
     # Controls Setup
