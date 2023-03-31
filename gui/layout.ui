@@ -186,6 +186,11 @@
                   </item>
                   <item>
                    <property name="text">
+                    <string>.psd</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
                     <string>.tiff</string>
                    </property>
                   </item>

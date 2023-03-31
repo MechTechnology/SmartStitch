@@ -14,8 +14,14 @@ SUPPORTTED_IMG_TYPES = (
     '.bmp',
     '.tiff',
     '.tga',
+    '.psd',
+    '.psb',
 )
 
+PHOTOSHOP_FILE_TYPES = (
+    ".psd",
+    ".psb"
+)
 
 # Static Enums
 class WIDTH_ENFORCEMENT(IntEnum):
