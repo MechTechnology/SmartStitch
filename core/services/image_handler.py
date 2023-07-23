@@ -1,8 +1,6 @@
 import os
-
 from PIL import Image as pil
 from psd_tools import PSDImage
-
 from ..models import WorkDirectory
 from .global_logger import logFunc
 from ..utils.constants import PHOTOSHOP_FILE_TYPES
@@ -37,19 +35,16 @@ class ImageHandler:
     ) -> str:
         """Saves a single image object to the output path with a specified format and quality."""
         # Create the output directory if it doesn't exist
-        if not os.path.exists(workdirectory.output_path):
-            os.makedirs(workdirectory.output_path)
+        os.makedirs(workdirectory.output_path, exist_ok=True)
         
         # Generate the filename for the image using the img_iteration number and img_format
-        img_file_name = str(f'{img_iteration:02}') + img_format
+        img_file_name = f'{img_iteration:02}{img_format}'
         
         if img_format in PHOTOSHOP_FILE_TYPES:
             # If the output format is a Photoshop format, convert the PIL image to a PSDImage
             psd_obj = PSDImage.frompil(img_obj)
             # Save the PSDImage to the output path
-            psd_obj.save(
-                os.path.join(workdirectory.output_path, img_file_name),
-            )
+            psd_obj.save(os.path.join(workdirectory.output_path, img_file_name))
         else:
             # If the output format is not a Photoshop format, save the PIL image with the specified quality
             img_obj.save(

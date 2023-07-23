@@ -15,7 +15,7 @@ from core.services import (
 
 class GuiStitchProcess:
     @logFunc(inclass=True)
-    def run_with_error_msgs(self, **kwargs: dict[str:any]):
+    def run_with_error_msgs(self, **kwargs: dict[str, any]):
         # Function to run the stitching process with error handling
         # It logs any errors and re-raises them after displaying the error message.
         status_func = kwargs.get("status_func", print)
@@ -140,22 +140,13 @@ class GuiStitchProcess:
             img_count = len(imgs)
             for img in imgs:
                 # Save each sliced image to the temporary directory if use_waifu2x is True
-                if use_waifu2x:
-                    img_file_name = img_handler.save(
-                        dir,
-                        img,
-                        img_iteration,
-                        img_format=settings.load("output_type"),
-                        quality=settings.load("lossy_quality"),
-                    )
-                else:
-                    img_file_name = img_handler.save(
-                        dir,
-                        img,
-                        img_iteration,
-                        img_format=settings.load("output_type"),
-                        quality=settings.load("lossy_quality"),
-                    )
+                img_file_name = img_handler.save(
+                    dir,
+                    img,
+                    img_iteration,
+                    img_format=settings.load("output_type"),
+                    quality=settings.load("lossy_quality"),
+                )
                 img_iteration += 1
                 percentage += step_percentages.get("save") / (
                     float(input_dirs_count) * float(img_count)

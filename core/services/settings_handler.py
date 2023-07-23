@@ -7,6 +7,7 @@ from ..models import AppProfiles, AppSettings
 from ..services import logFunc
 from ..utils.constants import SETTINGS_REL_DIR
 
+
 class SettingsHandler:
     def __init__(self):
         # Define the path to the settings file
@@ -24,16 +25,14 @@ class SettingsHandler:
     def save(self, key: str, value: any):
         """Updates a single setting value"""
         # Update the setting value and save it
-        self.current_settings.__dict__[key] = value
+        setattr(self.current_settings, key, value)
         self.save_current_settings(self.current_settings)
 
     def load_current_settings(self) -> AppSettings:
         """Loads application settings from the current profile"""
         if not self.current_profiles.profiles:
             return AppSettings()
-        return AppSettings(
-            self.current_profiles.profiles[self.current_profiles.current]
-        )
+        return AppSettings(self.current_profiles.profiles[self.current_profiles.current])
 
     def save_current_settings(self, settings: AppSettings = None) -> AppSettings:
         """Saves application settings to the current profile"""
@@ -42,10 +41,7 @@ class SettingsHandler:
 
         # Update the settings for the current profile and save all profiles
         current_profile = self.current_profiles.profiles[self.current_profiles.current]
-        self.current_profiles.profiles[self.current_profiles.current] = {
-            **current_profile,
-            **vars(settings),
-        }
+        current_profile.update(vars(settings))
         self.save_all(self.current_profiles)
         return settings
 
@@ -78,21 +74,15 @@ class SettingsHandler:
 
     def get_profile_names(self) -> list[str]:
         """Returns a list of profile names"""
-        names = []
-        for profile in self.current_profiles.profiles:
-            names.append(profile.get("profile_name"))
-        return names
+        return [profile.get("profile_name") for profile in self.current_profiles.profiles]
 
     @logFunc(inclass=True)
     def add_profile(self, profile_name: str = None):
         """Adds a new settings profile to the collection"""
         if not profile_name:
-            profile_name = "Settings Profile " + str(
-                len(self.current_profiles.profiles) + 1
-            )
-        self.current_profiles.profiles.append(
-            {"profile_name": profile_name, **vars(self.current_settings)}
-        )
+            profile_name = "Settings Profile " + str(len(self.current_profiles.profiles) + 1)
+        new_profile = {"profile_name": profile_name, **vars(self.current_settings)}
+        self.current_profiles.profiles.append(new_profile)
         self.save_all(self.current_profiles)
         return profile_name
 

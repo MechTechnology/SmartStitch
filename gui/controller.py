@@ -1,10 +1,8 @@
 import os
-
 from PySide6.QtCore import QThread, Signal
 from PySide6.QtGui import QIcon, QPixmap
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import QDialog, QFileDialog
-
 from assets.SmartStitchLogo import icon
 from core.services import SettingsHandler
 from core.utils.constants import OUTPUT_SUFFIX
@@ -152,7 +150,7 @@ def input_field_changed():
         MainWindow.outputField.setText(input_path + OUTPUT_SUFFIX)
     else:
         MainWindow.outputField.setText("")
-    if (os.path.exists(input_path)):
+    if os.path.exists(input_path):
         settings.save("last_browse_location", input_path)
 
 # Function to browse for the input location
@@ -176,10 +174,7 @@ def output_type_changed(save=True):
     file_type = MainWindow.outputTypeDropdown.currentText()
     if save:
         settings.save("output_type", file_type)
-    if file_type in ['.jpg', '.webp']:
-        MainWindow.lossyWrapper.setHidden(False)
-    else:
-        MainWindow.lossyWrapper.setHidden(True)
+    MainWindow.lossyWrapper.setHidden(file_type not in ['.jpg', '.webp'])
 
 # Function to handle changes in the lossy quality field
 def lossy_quality_changed():
@@ -194,10 +189,7 @@ def enforce_type_changed(save=True):
     enforce_type = MainWindow.widthEnforcementDropdown.currentIndex()
     if save:
         settings.save("enforce_type", enforce_type)
-    if enforce_type == 2:
-        MainWindow.customWidthWrapper.setHidden(False)
-    else:
-        MainWindow.customWidthWrapper.setHidden(True)
+    MainWindow.customWidthWrapper.setHidden(enforce_type != 2)
 
 # Function to handle changes in the custom width field
 def custom_width_changed():
@@ -208,14 +200,9 @@ def detector_type_changed(save=True):
     detector_type = MainWindow.detectorTypeDropdown.currentIndex()
     if save:
         settings.save("detector_type", detector_type)
-    if detector_type == 1:
-        MainWindow.detectorSensitvityWrapper.setHidden(False)
-        MainWindow.scanStepWrapper.setHidden(False)
-        MainWindow.ignoreMarginWrapper.setHidden(False)
-    else:
-        MainWindow.detectorSensitvityWrapper.setHidden(True)
-        MainWindow.scanStepWrapper.setHidden(True)
-        MainWindow.ignoreMarginWrapper.setHidden(True)
+    MainWindow.detectorSensitvityWrapper.setHidden(detector_type != 1)
+    MainWindow.scanStepWrapper.setHidden(detector_type != 1)
+    MainWindow.ignoreMarginWrapper.setHidden(detector_type != 1)
 
 # Function to handle changes in the detector sensitivity field
 def detector_sensitivity_changed():
@@ -233,8 +220,7 @@ def ignorable_margin_changed():
 def update_profiles_list():
     profile_names = settings.get_profile_names()
     MainWindow.currentProfileDropdown.clear()
-    for index in range(len(profile_names)):
-        MainWindow.currentProfileDropdown.insertItem(index, profile_names[index])
+    MainWindow.currentProfileDropdown.addItems(profile_names)
     return len(profile_names)
 
 # Function to handle changes in the current profile dropdown

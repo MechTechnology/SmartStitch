@@ -1,38 +1,30 @@
 import os
 import subprocess
-
 from core.models.work_directory import WorkDirectory
 from core.services.global_logger import logFunc
 
 class PostProcessRunner:
     def run(self, workdirectory: WorkDirectory, **kwargs: dict[str:any]):
         # Construct the post-process command based on input parameters
-        command = (
-            "\""
-            + kwargs.get("postprocess_app", "")
-            + "\" "
-            + kwargs.get("postprocess_args", "")
-        )
+        postprocess_app = kwargs.get("postprocess_app", "")
+        postprocess_args = kwargs.get("postprocess_args", "")
+        command = f'"{postprocess_app}" {postprocess_args}'
+
         # Get the provided console function or use print as the default
         console_func = kwargs.get("console_func", print)
-        
+
         # Replace placeholders in the command with appropriate paths
-        command = command.replace('[stitched]', "\"" + workdirectory.output_path + "\"")
-        command = command.replace(
-            '[processed]', "\"" + workdirectory.postprocess_path + "\""
-        )
+        command = command.replace('[stitched]', f'"{workdirectory.output_path}"')
+        command = command.replace('[processed]', f'"{workdirectory.postprocess_path}"')
 
         # Call the external function and return its result
-        return self.call_external_func(
-            workdirectory.postprocess_path, command, console_func
-        )
+        return self.call_external_func(workdirectory.postprocess_path, command, console_func)
 
     # Decorator to log function calls in the class
     @logFunc(inclass=True)
     def call_external_func(self, processed_path, command, console_func):
         # Create the processed_path directory if it doesn't exist
-        if not os.path.exists(processed_path):
-            os.makedirs(processed_path)
+        os.makedirs(processed_path, exist_ok=True)
 
         # Launch the subprocess with the provided command
         proc = subprocess.Popen(
