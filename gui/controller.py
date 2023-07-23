@@ -91,9 +91,17 @@ def on_load(load_profiles=True):
     MainWindow.postProcessAppField.setText(settings.load("postprocess_app"))
     MainWindow.postProcessArgsField.setText(settings.load("postprocess_args"))
     MainWindow.waifu2xPathField.setText(settings.load("last_waifu2x_location"))
+    MainWindow.waifu2xCheckbox.setChecked(settings.load("waifu2x"))
+    MainWindow.noiseLevelSlider.setValue(settings.load("waifu2x_noise_level"))
+    MainWindow.noiseLevelLabel.setText(f"Noise Level: {MainWindow.noiseLevelSlider.value()}")
+    MainWindow.removeNoiseCheckbox.setChecked(settings.load("waifu2x_noise"))
+    MainWindow.enlargePhotoCheckbox.setChecked(settings.load("waifu2x_enlarge"))
+    MainWindow.scaleRatioField.setValue(settings.load("waifu2x_enlarge_level"))
+    MainWindow.profileDropdown.setCurrentText(settings.load("waifu2x_profile"))
     output_type_changed(False)
     enforce_type_changed(False)
     detector_type_changed(False)
+    waifu2x_changed()
     if load_profiles:
         update_profiles_list()
         MainWindow.currentProfileDropdown.setCurrentIndex(settings.get_current_index())
@@ -129,8 +137,11 @@ def bind_signals():
     # Waifu2X signals
     MainWindow.waifu2xCheckbox.stateChanged.connect(waifu2x_changed)
     MainWindow.browseWaifu2xPathButton.clicked.connect(browse_waifu2x_path)
+    MainWindow.removeNoiseCheckbox.stateChanged.connect(remove_noise_changed)
     MainWindow.noiseLevelSlider.valueChanged.connect(noise_level_changed)
     MainWindow.enlargePhotoCheckbox.stateChanged.connect(enlarge_photo_changed)
+    MainWindow.scaleRatioField.valueChanged.connect(enlarge_level_changed)
+    MainWindow.profileDropdown.currentIndexChanged.connect(handleProfileChange)
 
 # Function to handle changes in the input field
 def input_field_changed():
@@ -288,6 +299,7 @@ def update_postprocess_console(message: str):
 # Function to handle changes in the Waifu2X checkbox
 def waifu2x_changed():
     use_waifu2x = MainWindow.waifu2xCheckbox.isChecked()
+    settings.save("waifu2x", use_waifu2x)
     MainWindow.waifu2xPathField.setEnabled(use_waifu2x)
     MainWindow.browseWaifu2xPathButton.setEnabled(use_waifu2x)
     MainWindow.removeNoiseCheckbox.setEnabled(use_waifu2x)
@@ -312,10 +324,24 @@ def browse_waifu2x_path():
 def noise_level_changed():
     level = MainWindow.noiseLevelSlider.value()
     MainWindow.noiseLevelLabel.setText(f"Noise Level: {level}")
+    settings.save("waifu2x_noise_level", level)
 
 # Function to handle changes in the enlarge photo checkbox
 def enlarge_photo_changed():
     use_enlarge = MainWindow.enlargePhotoCheckbox.isChecked()
+    settings.save("waifu2x_enlarge", use_enlarge)
+
+def remove_noise_changed():
+    use_noise = MainWindow.removeNoiseCheckbox.isChecked()
+    settings.save("waifu2x_noise", use_noise)
+
+def enlarge_level_changed():
+    level_enlarge = float("{:.2f}".format(MainWindow.scaleRatioField.value()))
+    settings.save("waifu2x_enlarge_level", level_enlarge)
+
+def handleProfileChange():
+    profile = MainWindow.profileDropdown.currentText()
+    settings.save("waifu2x_profile", profile)
 
 # Function to launch the stitching process asynchronously
 def launch_process_async():

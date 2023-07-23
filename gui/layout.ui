@@ -515,6 +515,52 @@
              </property>
             </widget>
            </item>
+           <item>
+            <widget class="QLabel" name="profileLabel">
+             <property name="text">
+              <string>Profile</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="profileDropdown">
+             <item>
+              <property name="text">
+               <string>UpRGB</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>UpPhoto</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>RGB</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Anime</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Y</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>UpResNet10</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>CUnet</string>
+              </property>
+             </item>
+            </widget>
+           </item>
           </layout>
          </widget>
         </item>

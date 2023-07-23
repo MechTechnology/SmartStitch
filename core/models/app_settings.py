@@ -26,6 +26,7 @@ class AppSettings:
         self.waifu2x_enlarge: bool = False                                    # Flag if Waifu2x-Caffe enlarge photo is enabled
         self.waifu2x_noise_level: int = 0                                     # The last remove noise level set
         self.waifu2x_enlarge_level: float = 1.60                              # The last enlarge photo level set
+        self.waifu2x_profile: str = "CUnet"                                   # Profile Waifu2x-Caffe
 
         # If a JSON dictionary is provided, update the settings based on its contents
         if json_dict is not None:
