@@ -15,7 +15,7 @@ from core.services import (
 
 class GuiStitchProcess:
     @logFunc(inclass=True)
-    def run_with_error_msgs(self, **kwargs: dict[str, any]):
+    def run_with_error_msgs(self, **kwargs: dict[str:any]):
         # Function to run the stitching process with error handling
         # It logs any errors and re-raises them after displaying the error message.
         status_func = kwargs.get("status_func", print)
