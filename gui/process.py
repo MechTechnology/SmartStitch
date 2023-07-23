@@ -1,5 +1,6 @@
 import gc
 import subprocess
+import shutil
 from time import time
 
 from core.detectors import select_detector
@@ -68,7 +69,6 @@ class GuiStitchProcess:
             input_dirs = explorer.run(input=input_path, output_path=output_path + "/tmp")
         else:
             input_dirs = explorer.run(input=input_path, output_path=output_path)
-        print(input_dirs)
         input_dirs_count = len(input_dirs)
         status_func(
             percentage,
@@ -182,56 +182,49 @@ class GuiStitchProcess:
             dir_iteration += 1
 
         if use_waifu2x:
-            # Run waifu2x_path with specified parameters
             percentage = 95
             status_func(
                 percentage,
                 "Waifu2x-Caffe is processing"
             )
-            waifu2x_path = kwargs.get("waifu2x_path", "")
-            if waifu2x_path:
-                # Construct the command for waifu2x_path
-                command = [
-                    waifu2x_path,
-                    "-i",
-                    output_path + "/tmp",
-                    "-o",
-                    output_path,
-                    "-m",
-                    kwargs.get("mode", "noise_scale"),
-                    "-s",
-                    str(kwargs.get("scale_ratio", 2.0)),
-                    "-n",
-                    str(kwargs.get("noise_level", 0)),
-                    "-p",
-                    "cudnn",
-                    "-c",
-                    str(kwargs.get("crop_size", 128)),
-                    "-q",
-                    str(kwargs.get("output_quality", -1)),
-                    "-d",
-                    str(kwargs.get("output_depth", 8)),
-                    "-b",
-                    str(kwargs.get("batch_size", 1)),
-                    "--gpu",
-                    str(kwargs.get("gpu_device", 0)),
-                    "-t",
-                    str(kwargs.get("tta", 0)),
-                    "--model_dir",
-                    str("models/" + kwargs.get("profile", "cunet")),
-                ]
-
-                # Run the waifu2x_path command
-                result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-                end_time = time()
-                percentage = 100
-                status_func(
-                    percentage,
-                    "Idle - Process completed in {time:.3f} seconds".format(
-                        time=end_time - start_time
-                    ),
-                )
+            if str(kwargs.get("waifu2x_path", "")).endswith("cui.exe"):
+                waifu_type = "caffe"
+                kwargs_waifu = {
+                    "mode": kwargs.get("mode", "noise_scale"),
+                    "scale_ratio": str(kwargs.get("scale_ratio", 2.0)),
+                    "noise_level": str(kwargs.get("noise_level", 0)),
+                    "crop_size": str(kwargs.get("crop_size", 128)),
+                    "output_quality": str(kwargs.get("output_quality", -1)),
+                    "output_depth": str(kwargs.get("output_depth", 8)),
+                    "batch_size": str(kwargs.get("batch_size", 1)),
+                    "gpu_device": str(kwargs.get("gpu_device", 0)),
+                    "tta": str(kwargs.get("tta", 0)),
+                    "model": str("models/" + kwargs.get("profile", "cunet")),
+                    "path": str(kwargs.get("waifu2x_path", "")),
+                    "type": str(kwargs.get("output_type", ".png")),
+                    "processWaifu": str(kwargs.get("processWaifu", "cpu")),
+                }
+            elif str(kwargs.get("waifu2x_path", "")).endswith("vulkan.exe"):
+                waifu_type = "vulkan"
+                kwargs_waifu = {
+                    "noise_level": str(kwargs.get("noise_level", -1)),
+                    "scale_ratio": str(kwargs.get("scale_ratio", 1)),
+                    "tile_size": str(kwargs.get("tile", 0)),
+                    "gpu_id": str(-1 if str(kwargs.get("processWaifu", "cpu")) == "cpu" else 0),
+                    "output_format": str(kwargs.get("output_type", ".png")),
+                    "path": str(kwargs.get("waifu2x_path", "")),
+                    "model": str("models/" + kwargs.get("profile", "cunet")),
+                    "type": str(kwargs.get("output_type", ".png"))
+                }
+            run_waifu2x(output_path + "/tmp", output_path, waifu_type, **kwargs_waifu)
+            end_time = time()
+            percentage = 100
+            status_func(
+                percentage,
+                "Idle - Process completed in {time:.3f} seconds".format(
+                    time=end_time - start_time
+                ),
+            )
         else:
             end_time = time()
             percentage = 100
@@ -241,3 +234,49 @@ class GuiStitchProcess:
                     time=end_time - start_time
                 ),
             )
+
+def run_waifu2x(input_path, output_path, waifu_type, **kwargs):
+    waifu2x_path = kwargs.get("path", "")
+    if waifu_type == "caffe":
+        if waifu2x_path:
+            command = [
+                waifu2x_path,
+                "-i", input_path,
+                "-o", output_path,
+                "-e", str(kwargs.get("type")),
+                "-m", str(kwargs.get("mode", "noise_scale")),
+                "-s", str(kwargs.get("scale_ratio", 2.0)),
+                "-n", str(kwargs.get("noise_level", 0)),
+                "-p", str(kwargs.get("processWaifu", "cpu")),
+                "-c", str(kwargs.get("crop_size", 128)),
+                "-q", str(kwargs.get("output_quality", -1)),
+                "-d", str(kwargs.get("output_depth", 8)),
+                "-b", str(kwargs.get("batch_size", 1)),
+                "--gpu", str(kwargs.get("gpu_device", 0)),
+                "-t", str(kwargs.get("tta", 0)),
+            ]
+            try:
+                subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            except subprocess.CalledProcessError as e:
+                print("Error executing caffe command:", e.stderr)
+    elif waifu_type == "vulkan":
+        if waifu2x_path:
+            command = [
+                waifu2x_path,
+                "-i", input_path,
+                "-o", output_path,
+                "-n", str(kwargs.get("noise_level", -1)),
+                "-s", str(kwargs.get("scale_ratio", 1)),
+                "-t", str(kwargs.get("tile_size", 0)),
+                "-m", kwargs.get("model"),
+                "-g", str(kwargs.get("gpu_id", 0)),
+                "-x",
+                "-f", str(kwargs.get("output_format", "png"))
+            ]
+            try:
+                subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            except subprocess.CalledProcessError as e:
+                print("Error executing vulkan command:", e.stderr)
+
+    if waifu_type == "caffe" or waifu_type == "vulkan":
+        shutil.rmtree(input_path)

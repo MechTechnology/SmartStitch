@@ -32,7 +32,9 @@ class ProcessThread(QThread):
             enlarge_photo=MainWindow.enlargePhotoCheckbox.isChecked(),
             scale_ratio=MainWindow.scaleRatioField.value(),
             profile=MainWindow.profileDropdown.currentText(),
+            output_type=MainWindow.outputTypeDropdown.currentText(),
             mode=MainWindow.mode,  # Added mode field
+            processWaifu=MainWindow.processDropdown.currentText().lower(),
             status_func=self.progress.emit,
             console_func=self.postProcessConsole.emit,
         )
@@ -97,11 +99,12 @@ def on_load(load_profiles=True):
     MainWindow.removeNoiseCheckbox.setChecked(settings.load("waifu2x_noise"))
     MainWindow.enlargePhotoCheckbox.setChecked(settings.load("waifu2x_enlarge"))
     MainWindow.scaleRatioField.setValue(settings.load("waifu2x_enlarge_level"))
-    MainWindow.profileDropdown.setCurrentText(settings.load("waifu2x_profile"))
+    MainWindow.processDropdown.setCurrentText(settings.load("waifu2x_process"))
     output_type_changed(False)
     enforce_type_changed(False)
     detector_type_changed(False)
     waifu2x_changed()
+    load_profile_dropdown(MainWindow.waifu2xPathField.text())
     if load_profiles:
         update_profiles_list()
         MainWindow.currentProfileDropdown.setCurrentIndex(settings.get_current_index())
@@ -142,6 +145,7 @@ def bind_signals():
     MainWindow.enlargePhotoCheckbox.stateChanged.connect(enlarge_photo_changed)
     MainWindow.scaleRatioField.valueChanged.connect(enlarge_level_changed)
     MainWindow.profileDropdown.currentIndexChanged.connect(handleProfileChange)
+    MainWindow.processDropdown.currentIndexChanged.connect(handleProcessChange)
 
 # Function to handle changes in the input field
 def input_field_changed():
@@ -175,6 +179,11 @@ def output_type_changed(save=True):
     if save:
         settings.save("output_type", file_type)
     MainWindow.lossyWrapper.setHidden(file_type not in ['.jpg', '.webp'])
+    if file_type not in ['.png', '.jpg', '.jpeg', '.tif', '.tiff', '.bmp', '.tga']:
+        MainWindow.waifu2xCheckbox.setChecked(False)
+        MainWindow.waifu2xCheckbox.setEnabled(False)
+    else:
+        MainWindow.waifu2xCheckbox.setEnabled(True)
 
 # Function to handle changes in the lossy quality field
 def lossy_quality_changed():
@@ -302,11 +311,21 @@ def browse_waifu2x_path():
         'Select Waifu2X Path',
         FileMode=QFileDialog.FileMode.ExistingFile,
     )
-    dialog.setNameFilter("waifu2x-caffe-cui.exe")
+    dialog.setNameFilter("waifu2x-caffe-cui.exe waifu2x-ncnn-vulkan.exe")
     if dialog.exec_() == QDialog.Accepted:
         input_path = dialog.selectedFiles()[0] or ""
         MainWindow.waifu2xPathField.setText(input_path)
+        load_profile_dropdown(str(input_path))
         settings.save('last_waifu2x_location', input_path)
+
+def load_profile_dropdown(path: str):
+    if path.endswith("cui.exe"):
+        MainWindow.profileDropdown.clear()
+        MainWindow.profileDropdown.addItems(["anime_style_art", "anime_style_art_rgb", "photo", "ukbench", "upconv_7_anime_style_art_rgb", "upconv_7_photo", "upresnet10", "cunet"])
+    elif path.endswith("vulkan.exe"):
+        MainWindow.profileDropdown.clear()
+        MainWindow.profileDropdown.addItems(["models-cunet", "models-upconv_7_anime_style_art_rgb", "models-upconv_7_photo"])
+    MainWindow.profileDropdown.setCurrentText(settings.load("waifu2x_profile"))
 
 # Function to handle changes in the noise level slider
 def noise_level_changed():
@@ -330,6 +349,10 @@ def enlarge_level_changed():
 def handleProfileChange():
     profile = MainWindow.profileDropdown.currentText()
     settings.save("waifu2x_profile", profile)
+
+def handleProcessChange():
+    processWaifu = MainWindow.processDropdown.currentText()
+    settings.save("waifu2x_process", processWaifu)
 
 # Function to launch the stitching process asynchronously
 def launch_process_async():

@@ -20,13 +20,14 @@ class AppSettings:
         self.postprocess_app: str = ""                                        # The post-processing application to run
         self.postprocess_args: str = ""                                       # Arguments for the post-processing application
         self.last_browse_location: str = ""                                   # The last location browsed for input files
-        self.last_waifu2x_location: str = ""                                  # The last location selected Waifu2X-Caffe
-        self.waifu2x: bool = False                                            # Flag if Waifu2x-Caffe is enabled
-        self.waifu2x_noise: bool = False                                      # Flag if Waifu2x-Caffe remove noise is enabled
-        self.waifu2x_enlarge: bool = False                                    # Flag if Waifu2x-Caffe enlarge photo is enabled
+        self.last_waifu2x_location: str = ""                                  # The last location selected Waifu2X
+        self.waifu2x: bool = False                                            # Flag if Waifu2x is enabled
+        self.waifu2x_noise: bool = False                                      # Flag if Waifu2x remove noise is enabled
+        self.waifu2x_enlarge: bool = False                                    # Flag if Waifu2x enlarge photo is enabled
         self.waifu2x_noise_level: int = 0                                     # The last remove noise level set
         self.waifu2x_enlarge_level: float = 1.60                              # The last enlarge photo level set
-        self.waifu2x_profile: str = "CUnet"                                   # Profile Waifu2x-Caffe
+        self.waifu2x_profile: str = "CUnet"                                   # Profile Waifu2x
+        self.waifu2x_process: str = "cuDNN"                                   # Process Waifu2X
 
         # If a JSON dictionary is provided, update the settings based on its contents
         if json_dict is not None:
