@@ -1,4 +1,5 @@
 import gc
+import subprocess
 from time import time
 
 from core.detectors import select_detector
@@ -11,9 +12,10 @@ from core.services import (
     logFunc,
 )
 
+
 class GuiStitchProcess:
     @logFunc(inclass=True)
-    def run_with_error_msgs(self, **kwargs: dict[str:any]):
+    def run_with_error_msgs(self, **kwargs: dict[str, any]):
         # Function to run the stitching process with error handling
         # It logs any errors and re-raises them after displaying the error message.
         status_func = kwargs.get("status_func", print)
@@ -23,7 +25,7 @@ class GuiStitchProcess:
             status_func(0, "Idle - {0}".format(str(error)))
             raise error
 
-    def run(self, **kwargs: dict[str:any]):
+    def run(self, **kwargs: dict[str, any]):
         # Main function to run the stitching process
         # It combines and slices images from input directories and saves them to the output directory.
 
@@ -35,9 +37,10 @@ class GuiStitchProcess:
         postprocess_runner = PostProcessRunner()
         detector = select_detector(detection_type=settings.load("detector_type"))
         input_path = kwargs.get("input_path", "")
-        output_path = kwargs.get("input_path", "")
+        output_path = kwargs.get("output_path", "")
         status_func = kwargs.get("status_func", print)
         console_func = kwargs.get("console_func", print)
+        use_waifu2x = kwargs.get("use_waifu2x", False)
 
         # Define step percentages for progress tracking
         step_percentages = {
@@ -59,13 +62,17 @@ class GuiStitchProcess:
         # Starting Stitch Process
         start_time = time()
         percentage = 0.0
-        status_func(percentage, 'Exploring input directory for working directories')
+        status_func(percentage, "Exploring input directory for working directories")
         # Explore input directory to find working directories
-        input_dirs = explorer.run(input=input_path, output_path=output_path)
+        if use_waifu2x:
+            input_dirs = explorer.run(input=input_path, output_path=output_path + "/tmp")
+        else:
+            input_dirs = explorer.run(input=input_path, output_path=output_path)
+        print(input_dirs)
         input_dirs_count = len(input_dirs)
         status_func(
             percentage,
-            'Working - [{count}] Working directories were found'.format(
+            "Working - [{count}] Working directories were found".format(
                 count=input_dirs_count
             ),
         )
@@ -76,7 +83,7 @@ class GuiStitchProcess:
             # Process each working directory one by one
             status_func(
                 percentage,
-                'Working - [{iteration}/{count}] Preparing & loading images Into memory'.format(
+                "Working - [{iteration}/{count}] Preparing & loading images Into memory".format(
                     iteration=dir_iteration, count=input_dirs_count
                 ),
             )
@@ -85,12 +92,14 @@ class GuiStitchProcess:
             imgs = img_handler.load(dir)
             # Resize images based on specified settings
             imgs = img_manipulator.resize(
-                imgs, settings.load("enforce_type"), settings.load("enforce_width")
+                imgs,
+                settings.load("enforce_type"),
+                settings.load("enforce_width"),
             )
             percentage += step_percentages.get("load") / float(input_dirs_count)
             status_func(
                 percentage,
-                'Working - [{iteration}/{count}] Combining images into a single combined image'.format(
+                "Working - [{iteration}/{count}] Combining images into a single combined image".format(
                     iteration=dir_iteration, count=input_dirs_count
                 ),
             )
@@ -99,7 +108,7 @@ class GuiStitchProcess:
             percentage += step_percentages.get("combine") / float(input_dirs_count)
             status_func(
                 percentage,
-                'Working - [{iteration}/{count}] Detecting & selecting valid slicing points'.format(
+                "Working - [{iteration}/{count}] Detecting & selecting valid slicing points".format(
                     iteration=dir_iteration, count=input_dirs_count
                 ),
             )
@@ -114,7 +123,7 @@ class GuiStitchProcess:
             percentage += step_percentages.get("detect") / float(input_dirs_count)
             status_func(
                 percentage,
-                'Working - [{iteration}/{count}] Generating sliced output images in memory'.format(
+                "Working - [{iteration}/{count}] Generating sliced output images in memory".format(
                     iteration=dir_iteration, count=input_dirs_count
                 ),
             )
@@ -123,28 +132,37 @@ class GuiStitchProcess:
             percentage += step_percentages.get("slice") / float(input_dirs_count)
             status_func(
                 percentage,
-                'Working - [{iteration}/{count}] Saving output images to storage'.format(
+                "Working - [{iteration}/{count}] Saving output images to storage".format(
                     iteration=dir_iteration, count=input_dirs_count
                 ),
             )
             img_iteration = 1
             img_count = len(imgs)
             for img in imgs:
-                # Save each sliced image to storage
-                img_file_name = img_handler.save(
-                    dir,
-                    img,
-                    img_iteration,
-                    img_format=settings.load("output_type"),
-                    quality=settings.load("lossy_quality"),
-                )
+                # Save each sliced image to the temporary directory if use_waifu2x is True
+                if use_waifu2x:
+                    img_file_name = img_handler.save(
+                        dir,
+                        img,
+                        img_iteration,
+                        img_format=settings.load("output_type"),
+                        quality=settings.load("lossy_quality"),
+                    )
+                else:
+                    img_file_name = img_handler.save(
+                        dir,
+                        img,
+                        img_iteration,
+                        img_format=settings.load("output_type"),
+                        quality=settings.load("lossy_quality"),
+                    )
                 img_iteration += 1
                 percentage += step_percentages.get("save") / (
                     float(input_dirs_count) * float(img_count)
                 )
                 status_func(
                     percentage,
-                    'Working - [{iteration}/{count}] {file} has been successfully saved'.format(
+                    "Working - [{iteration}/{count}] {file} has been successfully saved".format(
                         iteration=dir_iteration,
                         count=input_dirs_count,
                         file=img_file_name,
@@ -156,7 +174,7 @@ class GuiStitchProcess:
                 # If post-processing is enabled, run the post-processing step
                 status_func(
                     percentage,
-                    'Working - [{iteration}/{count}] Running post process on output files'.format(
+                    "Working - [{iteration}/{count}] Running post process on output files".format(
                         iteration=dir_iteration,
                         count=input_dirs_count,
                     ),
@@ -172,11 +190,63 @@ class GuiStitchProcess:
                 )
             dir_iteration += 1
 
-        end_time = time()
-        percentage = 100
-        status_func(
-            percentage,
-            'Idle - Process completed in {time:.3f} seconds'.format(
-                time=end_time - start_time
-            ),
-        )
+        if use_waifu2x:
+            # Run waifu2x_path with specified parameters
+            percentage = 95
+            status_func(
+                percentage,
+                "Waifu2x-Caffe is processing"
+            )
+            waifu2x_path = kwargs.get("waifu2x_path", "")
+            if waifu2x_path:
+                # Construct the command for waifu2x_path
+                command = [
+                    waifu2x_path,
+                    "-i",
+                    output_path + "/tmp",
+                    "-o",
+                    output_path,
+                    "-m",
+                    kwargs.get("mode", "noise_scale"),
+                    "-s",
+                    str(kwargs.get("scale_ratio", 2.0)),
+                    "-n",
+                    str(kwargs.get("noise_level", 0)),
+                    "-p",
+                    "cudnn",
+                    "-c",
+                    str(kwargs.get("crop_size", 128)),
+                    "-q",
+                    str(kwargs.get("output_quality", -1)),
+                    "-d",
+                    str(kwargs.get("output_depth", 8)),
+                    "-b",
+                    str(kwargs.get("batch_size", 1)),
+                    "--gpu",
+                    str(kwargs.get("gpu_device", 0)),
+                    "-t",
+                    str(kwargs.get("tta", 0)),
+                    "--model_dir",
+                    str("models/" + kwargs.get("profile", "cunet")),
+                ]
+
+                # Run the waifu2x_path command
+                result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+                end_time = time()
+                percentage = 100
+                status_func(
+                    percentage,
+                    "Idle - Process completed in {time:.3f} seconds".format(
+                        time=end_time - start_time
+                    ),
+                )
+        else:
+            end_time = time()
+            percentage = 100
+            status_func(
+                percentage,
+                "Idle - Process completed in {time:.3f} seconds".format(
+                    time=end_time - start_time
+                ),
+            )

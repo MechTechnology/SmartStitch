@@ -33,6 +33,8 @@ class ProcessThread(QThread):
             noise_level=MainWindow.noiseLevelSlider.value(),
             enlarge_photo=MainWindow.enlargePhotoCheckbox.isChecked(),
             scale_ratio=MainWindow.scaleRatioField.value(),
+            profile=MainWindow.profileDropdown.currentText(),
+            mode=MainWindow.mode,  # Added mode field
             status_func=self.progress.emit,
             console_func=self.postProcessConsole.emit,
         )
@@ -346,4 +348,14 @@ def handleProfileChange():
 # Function to launch the stitching process asynchronously
 def launch_process_async():
     MainWindow.processConsoleField.clear()
+    remove_noise = MainWindow.removeNoiseCheckbox.isChecked()
+    enlarge_photo = MainWindow.enlargePhotoCheckbox.isChecked()
+    if remove_noise and enlarge_photo:
+        MainWindow.mode = "noise_scale"
+    elif remove_noise and not enlarge_photo:
+        MainWindow.mode = "noise"
+    elif not remove_noise and enlarge_photo:
+        MainWindow.mode = "scale"
+    else:
+        MainWindow.mode = ""  # Default mode
     processThread.start()

@@ -13,6 +13,9 @@ class DirectoryExplorer:
         working_directories = self.explore_directories(main_directory)
         return working_directories
 
+    def create_directory(self, path):
+        os.makedirs(path, exist_ok=True)
+
     @logFunc(inclass=True)
     def get_main_directory(self, input: str, **kwargs: str) -> WorkDirectory:
         """Gets the main working directory for a given input path"""
@@ -21,7 +24,7 @@ class DirectoryExplorer:
         if not input:
             raise DirectoryException("Missing Input Directory")
         input_path = os.path.abspath(input)
-        output_path = kwargs.get('output', input_path + OUTPUT_SUFFIX)
+        output_path = kwargs.get('output_path', input_path + OUTPUT_SUFFIX)
         postprocess_path = kwargs.get('postprocess', input_path + POSTPROCESS_SUFFIX)
         return WorkDirectory(input_path, output_path, postprocess_path)
 

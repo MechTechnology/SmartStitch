@@ -526,37 +526,42 @@
             <widget class="QComboBox" name="profileDropdown">
              <item>
               <property name="text">
-               <string>UpRGB</string>
+               <string>anime_style_art</string>
               </property>
              </item>
              <item>
               <property name="text">
-               <string>UpPhoto</string>
+               <string>anime_style_art_rgb</string>
               </property>
              </item>
              <item>
               <property name="text">
-               <string>RGB</string>
+               <string>photo</string>
               </property>
              </item>
              <item>
               <property name="text">
-               <string>Anime</string>
+               <string>ukbench</string>
               </property>
              </item>
              <item>
               <property name="text">
-               <string>Y</string>
+               <string>upconv_7_anime_style_art_rgb</string>
               </property>
              </item>
              <item>
               <property name="text">
-               <string>UpResNet10</string>
+               <string>upconv_7_photo</string>
               </property>
              </item>
              <item>
               <property name="text">
-               <string>CUnet</string>
+               <string>upresnet10</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>cunet</string>
               </property>
              </item>
             </widget>
