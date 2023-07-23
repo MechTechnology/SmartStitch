@@ -27,6 +27,12 @@ class ProcessThread(QThread):
         process.run_with_error_msgs(
             input_path=MainWindow.inputField.text(),
             output_path=MainWindow.outputField.text(),
+            use_waifu2x=MainWindow.waifu2xCheckbox.isChecked(),
+            waifu2x_path=MainWindow.waifu2xPathField.text(),
+            remove_noise=MainWindow.removeNoiseCheckbox.isChecked(),
+            noise_level=MainWindow.noiseLevelSlider.value(),
+            enlarge_photo=MainWindow.enlargePhotoCheckbox.isChecked(),
+            scale_ratio=MainWindow.scaleRatioField.value(),
             status_func=self.progress.emit,
             console_func=self.postProcessConsole.emit,
         )
@@ -84,6 +90,7 @@ def on_load(load_profiles=True):
     MainWindow.runProcessCheckbox.setChecked(settings.load("run_postprocess"))
     MainWindow.postProcessAppField.setText(settings.load("postprocess_app"))
     MainWindow.postProcessArgsField.setText(settings.load("postprocess_args"))
+    MainWindow.waifu2xPathField.setText(settings.load("last_waifu2x_location"))
     output_type_changed(False)
     enforce_type_changed(False)
     detector_type_changed(False)
@@ -118,6 +125,12 @@ def bind_signals():
     MainWindow.postProcessAppField.textChanged.connect(postprocess_app_changed)
     MainWindow.postProcessArgsField.textChanged.connect(postprocess_args_changed)
     MainWindow.startProcessButton.clicked.connect(launch_process_async)
+
+    # Waifu2X signals
+    MainWindow.waifu2xCheckbox.stateChanged.connect(waifu2x_changed)
+    MainWindow.browseWaifu2xPathButton.clicked.connect(browse_waifu2x_path)
+    MainWindow.noiseLevelSlider.valueChanged.connect(noise_level_changed)
+    MainWindow.enlargePhotoCheckbox.stateChanged.connect(enlarge_photo_changed)
 
 # Function to handle changes in the input field
 def input_field_changed():
@@ -159,11 +172,11 @@ def output_type_changed(save=True):
 def lossy_quality_changed():
     settings.save("lossy_quality", MainWindow.lossyField.value())
 
-
+# Function to handle changes in the split height field
 def split_height_changed():
     settings.save("split_height", MainWindow.heightField.value())
 
-
+# Function to handle changes in the enforce type dropdown
 def enforce_type_changed(save=True):
     enforce_type = MainWindow.widthEnforcementDropdown.currentIndex()
     if save:
@@ -173,11 +186,11 @@ def enforce_type_changed(save=True):
     else:
         MainWindow.customWidthWrapper.setHidden(True)
 
-
+# Function to handle changes in the custom width field
 def custom_width_changed():
     settings.save("enforce_width", MainWindow.customWidthField.value())
 
-
+# Function to handle changes in the detector type dropdown
 def detector_type_changed(save=True):
     detector_type = MainWindow.detectorTypeDropdown.currentIndex()
     if save:
@@ -191,15 +204,15 @@ def detector_type_changed(save=True):
         MainWindow.scanStepWrapper.setHidden(True)
         MainWindow.ignoreMarginWrapper.setHidden(True)
 
-
+# Function to handle changes in the detector sensitivity field
 def detector_sensitivity_changed():
     settings.save("senstivity", MainWindow.detectorSensitivityField.value())
 
-
+# Function to handle changes in the scan step field
 def scan_step_changed():
     settings.save("scan_step", MainWindow.scanStepField.value())
 
-
+# Function to handle changes in the ignorable margin field
 def ignorable_margin_changed():
     settings.save("ignorable_pixels", MainWindow.ignoreMarginField.value())
 
@@ -271,6 +284,38 @@ def update_process_progress(percentage: int, message: str):
 # Function to update the post-process console field
 def update_postprocess_console(message: str):
     MainWindow.processConsoleField.append(message)
+
+# Function to handle changes in the Waifu2X checkbox
+def waifu2x_changed():
+    use_waifu2x = MainWindow.waifu2xCheckbox.isChecked()
+    MainWindow.waifu2xPathField.setEnabled(use_waifu2x)
+    MainWindow.browseWaifu2xPathButton.setEnabled(use_waifu2x)
+    MainWindow.removeNoiseCheckbox.setEnabled(use_waifu2x)
+    MainWindow.noiseLevelSlider.setEnabled(use_waifu2x)
+    MainWindow.enlargePhotoCheckbox.setEnabled(use_waifu2x)
+    MainWindow.scaleRatioField.setEnabled(use_waifu2x)
+
+# Function to browse for the Waifu2X path
+def browse_waifu2x_path():
+    dialog = QFileDialog(
+        MainWindow,
+        'Select Waifu2X Path',
+        FileMode=QFileDialog.FileMode.ExistingFile,
+    )
+    dialog.setNameFilter("waifu2x-caffe-cui.exe")
+    if dialog.exec_() == QDialog.Accepted:
+        input_path = dialog.selectedFiles()[0] or ""
+        MainWindow.waifu2xPathField.setText(input_path)
+        settings.save('last_waifu2x_location', input_path)
+
+# Function to handle changes in the noise level slider
+def noise_level_changed():
+    level = MainWindow.noiseLevelSlider.value()
+    MainWindow.noiseLevelLabel.setText(f"Noise Level: {level}")
+
+# Function to handle changes in the enlarge photo checkbox
+def enlarge_photo_changed():
+    use_enlarge = MainWindow.enlargePhotoCheckbox.isChecked()
 
 # Function to launch the stitching process asynchronously
 def launch_process_async():
