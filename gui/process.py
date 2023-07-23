@@ -11,10 +11,11 @@ from core.services import (
     logFunc,
 )
 
-
 class GuiStitchProcess:
     @logFunc(inclass=True)
     def run_with_error_msgs(self, **kwargs: dict[str:any]):
+        # Function to run the stitching process with error handling
+        # It logs any errors and re-raises them after displaying the error message.
         status_func = kwargs.get("status_func", print)
         try:
             return self.run(**kwargs)
@@ -23,6 +24,9 @@ class GuiStitchProcess:
             raise error
 
     def run(self, **kwargs: dict[str:any]):
+        # Main function to run the stitching process
+        # It combines and slices images from input directories and saves them to the output directory.
+
         # Initialize Services
         settings = SettingsHandler()
         explorer = DirectoryExplorer()
@@ -34,6 +38,8 @@ class GuiStitchProcess:
         output_path = kwargs.get("input_path", "")
         status_func = kwargs.get("status_func", print)
         console_func = kwargs.get("console_func", print)
+
+        # Define step percentages for progress tracking
         step_percentages = {
             "explore": 5.0,
             "load": 15.0,
@@ -43,14 +49,18 @@ class GuiStitchProcess:
             "save": 30.0,
             "postprocess": 20.0,
         }
+
+        # Check if post-processing is enabled in settings
         has_postprocess = settings.load("run_postprocess")
         if not has_postprocess:
+            # If post-processing is disabled, allocate more progress percentage to the "save" step.
             step_percentages["save"] = 50.0
 
         # Starting Stitch Process
         start_time = time()
         percentage = 0.0
         status_func(percentage, 'Exploring input directory for working directories')
+        # Explore input directory to find working directories
         input_dirs = explorer.run(input=input_path, output_path=output_path)
         input_dirs_count = len(input_dirs)
         status_func(
@@ -60,15 +70,20 @@ class GuiStitchProcess:
             ),
         )
         percentage += step_percentages.get("explore")
+
         dir_iteration = 1
         for dir in input_dirs:
+            # Process each working directory one by one
             status_func(
                 percentage,
                 'Working - [{iteration}/{count}] Preparing & loading images Into memory'.format(
                     iteration=dir_iteration, count=input_dirs_count
                 ),
             )
+
+            # Load images from the current working directory
             imgs = img_handler.load(dir)
+            # Resize images based on specified settings
             imgs = img_manipulator.resize(
                 imgs, settings.load("enforce_type"), settings.load("enforce_width")
             )
@@ -79,6 +94,7 @@ class GuiStitchProcess:
                     iteration=dir_iteration, count=input_dirs_count
                 ),
             )
+            # Combine images into a single image
             combined_img = img_manipulator.combine(imgs)
             percentage += step_percentages.get("combine") / float(input_dirs_count)
             status_func(
@@ -87,6 +103,7 @@ class GuiStitchProcess:
                     iteration=dir_iteration, count=input_dirs_count
                 ),
             )
+            # Detect valid slicing points in the combined image
             slice_points = detector.run(
                 combined_img,
                 settings.load("split_height"),
@@ -101,6 +118,7 @@ class GuiStitchProcess:
                     iteration=dir_iteration, count=input_dirs_count
                 ),
             )
+            # Generate sliced output images based on the detected points
             imgs = img_manipulator.slice(combined_img, slice_points)
             percentage += step_percentages.get("slice") / float(input_dirs_count)
             status_func(
@@ -112,6 +130,7 @@ class GuiStitchProcess:
             img_iteration = 1
             img_count = len(imgs)
             for img in imgs:
+                # Save each sliced image to storage
                 img_file_name = img_handler.save(
                     dir,
                     img,
@@ -131,8 +150,10 @@ class GuiStitchProcess:
                         file=img_file_name,
                     ),
                 )
+            # Perform garbage collection to free up memory after processing a directory
             gc.collect()
             if settings.load("run_postprocess"):
+                # If post-processing is enabled, run the post-processing step
                 status_func(
                     percentage,
                     'Working - [{iteration}/{count}] Running post process on output files'.format(
@@ -150,6 +171,7 @@ class GuiStitchProcess:
                     float(input_dirs_count) * float(img_count)
                 )
             dir_iteration += 1
+
         end_time = time()
         percentage = 100
         status_func(

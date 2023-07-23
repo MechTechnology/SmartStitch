@@ -12,14 +12,16 @@ from gui.process import GuiStitchProcess
 
 SCRIPT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 
-
+# Define a custom QThread class for running the process asynchronously
 class ProcessThread(QThread):
+    # Define signals for updating the GUI from the thread
     progress = Signal(int, str)
     postProcessConsole = Signal(str)
 
     def __init__(self, parent):
         super(ProcessThread, self).__init__(parent)
 
+    # The main function of the thread that executes the GuiStitchProcess
     def run(self):
         process = GuiStitchProcess()
         process.run_with_error_msgs(
@@ -29,35 +31,42 @@ class ProcessThread(QThread):
             console_func=self.postProcessConsole.emit,
         )
 
-
+# Function to initialize the GUI
 def initialize_gui():
     global MainWindow
     global settings
     global appVersion
     global appAuthor
     global processThread
+    # Load the GUI from the layout file
     MainWindow = QUiLoader().load(os.path.join(SCRIPT_DIRECTORY, 'layout.ui'))
+    # Create an instance of the SettingsHandler for managing application settings
     settings = SettingsHandler()
+
     # Sets Window Title & Icon
     pixmap = QPixmap()
     pixmap.loadFromData(icon)
     appIcon = QIcon(pixmap)
     MainWindow.setWindowIcon(appIcon)
+
     # Sets Window Title
     appVersion = "3.1"
     appAuthor = "MechTechnology"
     MainWindow.setWindowTitle("SmartStitch By {0} [{1}]".format(appAuthor, appVersion))
-    # Controls Setup
+
+    # Setup various controls and signals
     on_load()
     bind_signals()
-    # Sets up process thread
+
+    # Sets up process thread for running stitching process asynchronously
     processThread = ProcessThread(MainWindow)
     processThread.progress.connect(update_process_progress)
     processThread.postProcessConsole.connect(update_postprocess_console)
-    # Show Window
+
+    # Show the main window
     MainWindow.show()
 
-
+# Function to initialize the GUI on load
 def on_load(load_profiles=True):
     # App Fields
     MainWindow.statusField.setText("Idle")
@@ -83,7 +92,7 @@ def on_load(load_profiles=True):
         MainWindow.currentProfileDropdown.setCurrentIndex(settings.get_current_index())
         current_profile_changed(False)
 
-
+# Function to bind signals to their respective functions
 def bind_signals():
     MainWindow.inputField.textChanged.connect(input_field_changed)
     MainWindow.browseButton.clicked.connect(browse_location)
@@ -110,7 +119,7 @@ def bind_signals():
     MainWindow.postProcessArgsField.textChanged.connect(postprocess_args_changed)
     MainWindow.startProcessButton.clicked.connect(launch_process_async)
 
-
+# Function to handle changes in the input field
 def input_field_changed():
     input_path = MainWindow.inputField.text() or ""
     if input_path:
@@ -120,7 +129,7 @@ def input_field_changed():
     if (os.path.exists(input_path)):
         settings.save("last_browse_location", input_path)
 
-
+# Function to browse for the input location
 def browse_location():
     start_directory = settings.load("last_browse_location")
     if not start_directory or not os.path.exists(start_directory):
@@ -136,7 +145,7 @@ def browse_location():
         MainWindow.inputField.setText(input_path)
         MainWindow.outputField.setText(input_path + OUTPUT_SUFFIX)
 
-
+# Function to handle changes in the output type dropdown
 def output_type_changed(save=True):
     file_type = MainWindow.outputTypeDropdown.currentText()
     if save:
@@ -146,7 +155,7 @@ def output_type_changed(save=True):
     else:
         MainWindow.lossyWrapper.setHidden(True)
 
-
+# Function to handle changes in the lossy quality field
 def lossy_quality_changed():
     settings.save("lossy_quality", MainWindow.lossyField.value())
 
@@ -194,7 +203,7 @@ def scan_step_changed():
 def ignorable_margin_changed():
     settings.save("ignorable_pixels", MainWindow.ignoreMarginField.value())
 
-
+# Function to update the list of profiles in the dropdown
 def update_profiles_list():
     profile_names = settings.get_profile_names()
     MainWindow.currentProfileDropdown.clear()
@@ -202,7 +211,7 @@ def update_profiles_list():
         MainWindow.currentProfileDropdown.insertItem(index, profile_names[index])
     return len(profile_names)
 
-
+# Function to handle changes in the current profile dropdown
 def current_profile_changed(save=True):
     current_profile = MainWindow.currentProfileDropdown.currentIndex()
     if save:
@@ -210,32 +219,32 @@ def current_profile_changed(save=True):
         on_load(False)
     MainWindow.currentProfileName.setText(settings.get_current_profile_name())
 
-
+# Function to handle changes in the current profile name field
 def current_profile_name_changed():
     new_name = MainWindow.currentProfileName.text()
     settings.set_current_profile_name(new_name)
     current = MainWindow.currentProfileDropdown.currentIndex()
     MainWindow.currentProfileDropdown.setItemText(current, new_name)
 
-
+# Function to add a new profile
 def add_profile():
     profile_name = settings.add_profile()
     new_index = update_profiles_list() - 1
     MainWindow.currentProfileDropdown.setCurrentIndex(new_index)
     MainWindow.currentProfileName.setText(profile_name)
 
-
+# Function to remove the current profile
 def remove_profile():
     current_profile = MainWindow.currentProfileDropdown.currentIndex()
     settings.remove_profile(current_profile)
     MainWindow.currentProfileDropdown.removeItem(current_profile)
     MainWindow.currentProfileDropdown.setCurrentIndex(0)
 
-
+# Function to handle changes in the "Run Post Process" checkbox
 def run_postprocess_changed():
     settings.save("run_postprocess", MainWindow.runProcessCheckbox.isChecked())
 
-
+# Function to browse for the post-process application
 def browse_postprocess_app():
     dialog = QFileDialog(
         MainWindow,
@@ -246,23 +255,24 @@ def browse_postprocess_app():
         input_path = dialog.selectedFiles()[0] or ""
         MainWindow.postProcessAppField.setText(input_path)
 
-
+# Function to handle changes in the post-process application field
 def postprocess_app_changed():
     settings.save("postprocess_app", MainWindow.postProcessAppField.text())
 
-
+# Function to handle changes in the post-process arguments field
 def postprocess_args_changed():
     settings.save("postprocess_args", MainWindow.postProcessArgsField.text())
 
-
+# Function to update the progress in the status field and progress bar
 def update_process_progress(percentage: int, message: str):
     MainWindow.statusField.setText(message)
     MainWindow.statusProgressBar.setValue(percentage)
 
+# Function to update the post-process console field
 def update_postprocess_console(message: str):
     MainWindow.processConsoleField.append(message)
 
-
+# Function to launch the stitching process asynchronously
 def launch_process_async():
     MainWindow.processConsoleField.clear()
     processThread.start()
