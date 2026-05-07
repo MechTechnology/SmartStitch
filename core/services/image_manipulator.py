@@ -30,7 +30,7 @@ class ImageManipulator:
             img_ratio = float(img.size[1] / img.size[0])
             new_img_height = int(img_ratio * new_img_width)
             if new_img_height > 0:
-                img = img.resize((new_img_width, new_img_height), pil.ANTIALIAS)
+                img = img.resize((new_img_width, new_img_height), pil.LANCZOS)
                 resized_imgs.append(img)
         return resized_imgs
 

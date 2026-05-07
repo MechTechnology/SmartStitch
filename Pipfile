@@ -16,7 +16,7 @@ pillow = "*"
 numpy = "*"
 pyside6 = "*"
 pyqtdarktheme = "*"
-psd-tools = "*"
+psd-tools = ">=1.10.13"
 
 [dev-packages]
 flake8 = "*"
