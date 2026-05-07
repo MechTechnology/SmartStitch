@@ -1,3 +1,4 @@
+from .chunked_processor import ChunkedProcessor
 from .directory_explorer import DirectoryExplorer
 from .global_logger import GlobalLogger, logFunc
 from .global_tracker import GlobalTracker
@@ -9,6 +10,7 @@ from .settings_handler import SettingsHandler
 __all__ = [
     logFunc,
     GlobalLogger,
+    ChunkedProcessor,
     DirectoryExplorer,
     ImageHandler,
     ImageManipulator,

@@ -1,8 +1,10 @@
 import gc
+import threading
 from time import time
 
 from core.detectors import select_detector
 from core.services import (
+    ChunkedProcessor,
     DirectoryExplorer,
     ImageHandler,
     ImageManipulator,
@@ -10,6 +12,7 @@ from core.services import (
     SettingsHandler,
     logFunc,
 )
+from core.utils.errors import CancelledError
 
 
 class GuiStitchProcess:
@@ -18,6 +21,9 @@ class GuiStitchProcess:
         status_func = kwargs.get("status_func", print)
         try:
             return self.run(**kwargs)
+        except CancelledError:
+            status_func(0, "Idle - Process cancelled by user")
+            return None
         except Exception as error:
             status_func(0, "Idle - {0}".format(str(error)))
             raise error
@@ -30,114 +36,109 @@ class GuiStitchProcess:
         img_manipulator = ImageManipulator()
         postprocess_runner = PostProcessRunner()
         detector = select_detector(detection_type=settings.load("detector_type"))
+
+        cancel_event = kwargs.get("cancel_event", threading.Event())
         input_path = kwargs.get("input_path", "")
-        output_path = kwargs.get("input_path", "")
+        output_path = kwargs.get("output_path", "")
         status_func = kwargs.get("status_func", print)
         console_func = kwargs.get("console_func", print)
+
+        has_postprocess = settings.load("run_postprocess")
+
+        # Define step percentages for progress tracking
         step_percentages = {
             "explore": 5.0,
-            "load": 15.0,
-            "combine": 5.0,
-            "detect": 15.0,
-            "slice": 10.0,
-            "save": 30.0,
+            "process": 75.0,
             "postprocess": 20.0,
         }
-        has_postprocess = settings.load("run_postprocess")
         if not has_postprocess:
-            step_percentages["save"] = 50.0
+            step_percentages["process"] = 95.0
 
         # Starting Stitch Process
         start_time = time()
         percentage = 0.0
-        status_func(percentage, 'Exploring input directory for working directories')
+        status_func(percentage, "Exploring input directory for working directories")
         input_dirs = explorer.run(input=input_path, output_path=output_path)
         input_dirs_count = len(input_dirs)
+        percentage += step_percentages["explore"]
         status_func(
             percentage,
-            'Working - [{count}] Working directories were found'.format(
-                count=input_dirs_count
-            ),
+            "[{count}] Working directories were found".format(count=input_dirs_count),
         )
-        percentage += step_percentages.get("explore")
+
+        # Track total images across all directories for progress calculation
+        total_images = sum(len(dir.input_files) for dir in input_dirs)
+        processed_images = 0
+
+        # Process each working directory
         dir_iteration = 1
         for dir in input_dirs:
+            if cancel_event.is_set():
+                raise CancelledError("Process cancelled by user")
+
+            dir_image_count = len(dir.input_files)
+            dir_percentage_start = percentage
+            dir_percentage_range = step_percentages["process"] / input_dirs_count
+
             status_func(
                 percentage,
-                'Working - [{iteration}/{count}] Preparing & loading images Into memory'.format(
+                "Working - [{iteration}/{count}] Processing images".format(
                     iteration=dir_iteration, count=input_dirs_count
                 ),
             )
-            imgs = img_handler.load(dir)
-            imgs = img_manipulator.resize(
-                imgs, settings.load("enforce_type"), settings.load("enforce_width")
+
+            # Progress callback for chunked processor
+            def progress_callback(phase, current, total, msg):
+                nonlocal percentage
+                if total_images > 0:
+                    progress_in_dir = (processed_images + current) / total_images
+                    percentage = (
+                        percentage
+                        + (dir_percentage_range * progress_in_dir)
+                        - (dir_percentage_range * (processed_images / total_images))
+                    )
+                    percentage = min(
+                        percentage,
+                        dir_percentage_start + dir_percentage_range,
+                    )
+                status_func(
+                    int(percentage),
+                    "Working - [{iteration}/{count}] {msg}".format(
+                        iteration=dir_iteration, count=input_dirs_count, msg=msg
+                    ),
+                )
+
+            # Initialize and run chunked processor for this directory
+            processor = ChunkedProcessor(
+                img_handler=img_handler,
+                img_manipulator=img_manipulator,
+                detector=detector,
+                cancel_event=cancel_event,
+                progress_callback=progress_callback,
             )
-            percentage += step_percentages.get("load") / float(input_dirs_count)
-            status_func(
-                percentage,
-                'Working - [{iteration}/{count}] Combining images into a single combined image'.format(
-                    iteration=dir_iteration, count=input_dirs_count
-                ),
-            )
-            combined_img = img_manipulator.combine(imgs)
-            percentage += step_percentages.get("combine") / float(input_dirs_count)
-            status_func(
-                percentage,
-                'Working - [{iteration}/{count}] Detecting & selecting valid slicing points'.format(
-                    iteration=dir_iteration, count=input_dirs_count
-                ),
-            )
-            slice_points = detector.run(
-                combined_img,
-                settings.load("split_height"),
+
+            processor.run(
+                workdirectory=dir,
+                split_height=settings.load("split_height"),
+                output_type=settings.load("output_type"),
+                lossy_quality=settings.load("lossy_quality"),
+                enforce_type=settings.load("enforce_type"),
+                enforce_width=settings.load("enforce_width"),
                 sensitivity=settings.load("senstivity"),
                 ignorable_pixels=settings.load("ignorable_pixels"),
                 scan_step=settings.load("scan_step"),
             )
-            percentage += step_percentages.get("detect") / float(input_dirs_count)
-            status_func(
-                percentage,
-                'Working - [{iteration}/{count}] Generating sliced output images in memory'.format(
-                    iteration=dir_iteration, count=input_dirs_count
-                ),
-            )
-            imgs = img_manipulator.slice(combined_img, slice_points)
-            percentage += step_percentages.get("slice") / float(input_dirs_count)
-            status_func(
-                percentage,
-                'Working - [{iteration}/{count}] Saving output images to storage'.format(
-                    iteration=dir_iteration, count=input_dirs_count
-                ),
-            )
-            img_iteration = 1
-            img_count = len(imgs)
-            for img in imgs:
-                img_file_name = img_handler.save(
-                    dir,
-                    img,
-                    img_iteration,
-                    img_format=settings.load("output_type"),
-                    quality=settings.load("lossy_quality"),
-                )
-                img_iteration += 1
-                percentage += step_percentages.get("save") / (
-                    float(input_dirs_count) * float(img_count)
-                )
-                status_func(
-                    percentage,
-                    'Working - [{iteration}/{count}] {file} has been successfully saved'.format(
-                        iteration=dir_iteration,
-                        count=input_dirs_count,
-                        file=img_file_name,
-                    ),
-                )
+
+            processed_images += dir_image_count
+            percentage = dir_percentage_start + dir_percentage_range
             gc.collect()
+
+            # Run postprocess if enabled
             if settings.load("run_postprocess"):
                 status_func(
-                    percentage,
-                    'Working - [{iteration}/{count}] Running post process on output files'.format(
-                        iteration=dir_iteration,
-                        count=input_dirs_count,
+                    int(percentage),
+                    "Working - [{iteration}/{count}] Running post process on output files".format(
+                        iteration=dir_iteration, count=input_dirs_count,
                     ),
                 )
                 postprocess_runner.run(
@@ -146,15 +147,16 @@ class GuiStitchProcess:
                     postprocess_args=settings.load("postprocess_args"),
                     console_func=console_func,
                 )
-                percentage += step_percentages.get("postprocess") / (
-                    float(input_dirs_count) * float(img_count)
-                )
+                percentage += step_percentages["postprocess"] / input_dirs_count
+
             dir_iteration += 1
+
+        # Process completed
         end_time = time()
         percentage = 100
         status_func(
             percentage,
-            'Idle - Process completed in {time:.3f} seconds'.format(
+            "Idle - Process completed in {time:.3f} seconds".format(
                 time=end_time - start_time
             ),
         )

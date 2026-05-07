@@ -1,4 +1,5 @@
 import os
+import threading
 
 from PySide6.QtCore import QThread, Signal
 from PySide6.QtGui import QIcon, QPixmap
@@ -19,6 +20,7 @@ class ProcessThread(QThread):
 
     def __init__(self, parent):
         super(ProcessThread, self).__init__(parent)
+        self.cancel_event = threading.Event()
 
     def run(self):
         process = GuiStitchProcess()
@@ -27,7 +29,11 @@ class ProcessThread(QThread):
             output_path=MainWindow.outputField.text(),
             status_func=self.progress.emit,
             console_func=self.postProcessConsole.emit,
+            cancel_event=self.cancel_event,
         )
+
+    def cancel(self):
+        self.cancel_event.set()
 
 
 def initialize_gui():
@@ -36,7 +42,7 @@ def initialize_gui():
     global appVersion
     global appAuthor
     global processThread
-    MainWindow = QUiLoader().load(os.path.join(SCRIPT_DIRECTORY, 'layout.ui'))
+    MainWindow = QUiLoader().load(os.path.join(SCRIPT_DIRECTORY, "layout.ui"))
     settings = SettingsHandler()
     # Sets Window Title & Icon
     pixmap = QPixmap()
@@ -54,6 +60,7 @@ def initialize_gui():
     processThread = ProcessThread(MainWindow)
     processThread.progress.connect(update_process_progress)
     processThread.postProcessConsole.connect(update_postprocess_console)
+    processThread.finished.connect(on_process_finished)
     # Show Window
     MainWindow.show()
 
@@ -109,6 +116,7 @@ def bind_signals():
     MainWindow.postProcessAppField.textChanged.connect(postprocess_app_changed)
     MainWindow.postProcessArgsField.textChanged.connect(postprocess_args_changed)
     MainWindow.startProcessButton.clicked.connect(launch_process_async)
+    MainWindow.cancelProcessButton.clicked.connect(cancel_process_async)
 
 
 def input_field_changed():
@@ -117,7 +125,7 @@ def input_field_changed():
         MainWindow.outputField.setText(input_path + OUTPUT_SUFFIX)
     else:
         MainWindow.outputField.setText("")
-    if (os.path.exists(input_path)):
+    if os.path.exists(input_path):
         settings.save("last_browse_location", input_path)
 
 
@@ -127,7 +135,7 @@ def browse_location():
         start_directory = os.path.expanduser("~")
     dialog = QFileDialog(
         MainWindow,
-        'Select Input Directory Files',
+        "Select Input Directory Files",
         directory=start_directory,
         FileMode=QFileDialog.FileMode.Directory,
     )
@@ -141,7 +149,7 @@ def output_type_changed(save=True):
     file_type = MainWindow.outputTypeDropdown.currentText()
     if save:
         settings.save("output_type", file_type)
-    if file_type in ['.jpg', '.webp']:
+    if file_type in [".jpg", ".webp"]:
         MainWindow.lossyWrapper.setHidden(False)
     else:
         MainWindow.lossyWrapper.setHidden(True)
@@ -239,7 +247,7 @@ def run_postprocess_changed():
 def browse_postprocess_app():
     dialog = QFileDialog(
         MainWindow,
-        'Select Post Process Application Directory',
+        "Select Post Process Application Directory",
         FileMode=QFileDialog.FileMode.ExistingFile,
     )
     if dialog.exec_() == QDialog.Accepted:
@@ -259,10 +267,26 @@ def update_process_progress(percentage: int, message: str):
     MainWindow.statusField.setText(message)
     MainWindow.statusProgressBar.setValue(percentage)
 
+
 def update_postprocess_console(message: str):
     MainWindow.processConsoleField.append(message)
 
 
 def launch_process_async():
     MainWindow.processConsoleField.clear()
+    MainWindow.startProcessButton.setHidden(True)
+    MainWindow.cancelProcessButton.setHidden(False)
+    processThread.cancel_event.clear()
     processThread.start()
+
+
+def cancel_process_async():
+    processThread.cancel()
+    MainWindow.cancelProcessButton.setEnabled(False)
+    MainWindow.statusField.setText("Cancelling...")
+
+
+def on_process_finished():
+    MainWindow.startProcessButton.setHidden(False)
+    MainWindow.cancelProcessButton.setHidden(True)
+    MainWindow.cancelProcessButton.setEnabled(True)

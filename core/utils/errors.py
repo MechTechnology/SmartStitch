@@ -1,3 +1,7 @@
+class CancelledError(Exception):
+    pass
+
+
 class DirectoryException(Exception):
     pass
 
