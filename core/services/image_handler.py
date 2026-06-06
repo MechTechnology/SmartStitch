@@ -4,8 +4,8 @@ from PIL import Image as pil
 from psd_tools import PSDImage
 
 from ..models import WorkDirectory
-from .global_logger import logFunc
 from ..utils.constants import PHOTOSHOP_FILE_TYPES
+from .global_logger import logFunc
 
 
 class ImageHandler:

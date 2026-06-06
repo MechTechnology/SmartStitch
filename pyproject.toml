@@ -33,9 +33,18 @@ dev = [
 gui = "SmartStitchGUI:launch"
 
 [tool.taskipy.tasks]
-black = "black . --skip-string-normalization --line-length 120 --exclude .venv --target-version py310"
+black = "black ."
 format = "python -m scripts.formatter"
 console = "python -m SmartStitchConsole"
 gui = "python -m SmartStitchGUI"
 build = "pyinstaller Build.spec"
 build-no-icon = "pyinstaller BuildNoIcon.spec"
+
+[tool.black]
+line-length = 120
+target-version = ["py310"]
+skip-string-normalization = true
+
+[tool.isort]
+profile = "black"
+line_length = 120
