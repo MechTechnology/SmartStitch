@@ -68,7 +68,6 @@ class GuiStitchProcess:
 
         # Track total images across all directories for progress calculation
         total_images = sum(len(dir.input_files) for dir in input_dirs)
-        processed_images = 0
 
         # Process each working directory
         dir_iteration = 1
@@ -76,14 +75,13 @@ class GuiStitchProcess:
             if cancel_event.is_set():
                 raise CancelledError("Process cancelled by user")
 
-            dir_image_count = len(dir.input_files)
             dir_percentage_start = percentage
             dir_percentage_range = step_percentages["process"] / input_dirs_count
 
             status_func(
                 percentage,
                 "Working - [{iteration}/{count}] Processing images".format(
-                    iteration=dir_iteration, count=input_dirs_count
+                    iteration=dir_iteration, count=total_images
                 ),
             )
 
@@ -91,12 +89,8 @@ class GuiStitchProcess:
             def progress_callback(phase, current, total, msg):
                 nonlocal percentage
                 if total_images > 0:
-                    progress_in_dir = (processed_images + current) / total_images
-                    percentage = (
-                        percentage
-                        + (dir_percentage_range * progress_in_dir)
-                        - (dir_percentage_range * (processed_images / total_images))
-                    )
+                    progress_in_dir = current / total_images
+                    percentage =(dir_percentage_range * progress_in_dir)
                     percentage = min(
                         percentage,
                         dir_percentage_start + dir_percentage_range,
@@ -104,7 +98,7 @@ class GuiStitchProcess:
                 status_func(
                     int(percentage),
                     "Working - [{iteration}/{count}] {msg}".format(
-                        iteration=dir_iteration, count=input_dirs_count, msg=msg
+                        iteration=current, count=total, msg=msg
                     ),
                 )
 
@@ -129,7 +123,6 @@ class GuiStitchProcess:
                 scan_step=settings.load("scan_step"),
             )
 
-            processed_images += dir_image_count
             percentage = dir_percentage_start + dir_percentage_range
             gc.collect()
 

@@ -54,7 +54,6 @@ class ChunkedProcessor:
         scan_step: int = 5,
     ) -> WorkDirectory:
         """Runs the chunked processing pipeline for a working directory."""
-        # Resolve target width based on enforcement mode
         target_width = self._resolve_target_width(
             workdirectory.input_path, workdirectory.input_files, enforce_type, enforce_width
         )
@@ -64,31 +63,40 @@ class ChunkedProcessor:
         chunk_count = 0
         total_images = len(workdirectory.input_files)
 
-        # Load and process images one at a time
         for i, img_file in enumerate(workdirectory.input_files):
             self._check_cancelled()
 
-            # Load and resize single image
             img_path = os.path.join(workdirectory.input_path, img_file)
             img = self._load_single_image(img_path)
             img = self._resize_single_image(img, enforce_type, target_width)
 
-            # Append to buffer (create or extend)
             if buffer_img is None:
                 buffer_img = img
             else:
                 buffer_img = self._append_to_buffer(buffer_img, img)
+            
+            current_progress = i + 1
 
-            self._report_progress("Loading", i + 1, total_images, f"Loaded {img_file}")
+            self._report_progress(
+                "Loading",
+                current_progress,
+                total_images,
+                f"Loading {img_file}",
+            )
 
-            # Check if buffer is large enough to process, or if this is the last image
             threshold = int(split_height * self.BUFFER_THRESHOLD_MULTIPLIER)
             should_process = buffer_img.size[1] >= threshold or i == total_images - 1
 
             if should_process:
                 chunk_count += 1
 
-                # Run detector on buffer to find slice points
+                self._report_progress(
+                    "Detecting",
+                    current_progress,
+                    total_images,
+                    f"Running detector on loaded images",
+                )
+
                 slice_points = self.detector.run(
                     buffer_img,
                     split_height,
@@ -97,16 +105,20 @@ class ChunkedProcessor:
                     scan_step=scan_step,
                 )
 
-                # Slice and save each panel
                 for j in range(1, len(slice_points)):
                     self._check_cancelled()
                     upper = slice_points[j - 1]
                     lower = slice_points[j]
                     panel = buffer_img.crop((0, upper, buffer_img.size[0], lower))
+                    self._report_progress(
+                        "Saving",
+                        current_progress,
+                        total_images,
+                        f"Saving image {img_iteration}",
+                    )
                     self.img_handler.save(workdirectory, panel, img_iteration, output_type, lossy_quality)
                     img_iteration += 1
 
-                # Keep remaining bottom portion as new buffer
                 last_slice = slice_points[-1]
                 if last_slice < buffer_img.size[1]:
                     remainder = buffer_img.crop((0, last_slice, buffer_img.size[0], buffer_img.size[1]))
@@ -114,11 +126,18 @@ class ChunkedProcessor:
                 else:
                     buffer_img = None
 
-                self._report_progress("Processing", chunk_count, None, f"Chunk {chunk_count} processed")
+                self._report_progress("Processing", current_progress, total_images, f"Chunk {chunk_count} processed")
 
-        # Handle any remaining buffer content after all images are processed
         if buffer_img is not None and buffer_img.size[1] > 0:
             self._check_cancelled()
+
+            self._report_progress(
+                "Detecting",
+                current_progress,
+                total_images,
+                f"Running detector on final buffer",
+            )
+
             slice_points = self.detector.run(
                 buffer_img,
                 split_height,
@@ -131,6 +150,12 @@ class ChunkedProcessor:
                 lower = slice_points[j]
                 panel = buffer_img.crop((0, upper, buffer_img.size[0], lower))
                 self.img_handler.save(workdirectory, panel, img_iteration, output_type, lossy_quality)
+                self._report_progress(
+                    "Saving",
+                    current_progress,
+                    total_images,
+                    f"Saved image {img_iteration}",
+                )
                 img_iteration += 1
 
         return workdirectory
