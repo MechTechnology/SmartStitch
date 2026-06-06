@@ -28,9 +28,7 @@ class DirectoryExplorer:
     def explore_directories(self, main_directory: WorkDirectory) -> list[WorkDirectory]:
         """Gets all the possible working directories from main paths"""
         work_directories = []
-        for (dir_root, folders, files) in os.walk(
-            main_directory.input_path, topdown=True
-        ):
+        for dir_root, folders, files in os.walk(main_directory.input_path, topdown=True):
             img_files = []
             for file in files:
                 if file.lower().endswith(SUPPORTED_IMG_TYPES):

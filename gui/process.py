@@ -138,7 +138,8 @@ class GuiStitchProcess:
                 status_func(
                     int(percentage),
                     "Working - [{iteration}/{count}] Running post process on output files".format(
-                        iteration=dir_iteration, count=input_dirs_count,
+                        iteration=dir_iteration,
+                        count=input_dirs_count,
                     ),
                 )
                 postprocess_runner.run(
@@ -156,7 +157,5 @@ class GuiStitchProcess:
         percentage = 100
         status_func(
             percentage,
-            "Idle - Process completed in {time:.3f} seconds".format(
-                time=end_time - start_time
-            ),
+            "Idle - Process completed in {time:.3f} seconds".format(time=end_time - start_time),
         )

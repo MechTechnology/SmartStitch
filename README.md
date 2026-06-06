@@ -166,12 +166,11 @@ Of course, you can use whatever version of waifu2x or process that you want. Thi
 
 ## How to Run the Console Version (Windows, Mac, Linux)
 
-### Using Pipenv (Recommended)
+### Using uv (Recommended)
 1. Download the source code zip file of the latest release (found in the [Releases](https://github.com/MechTechnology/SmartStitch/releases) section).
 2. Unzip the file to a suitable location on your device.
-3. Install Python (3.10+ required).
-4. Install Pipenv: `pip install pipenv`
-5. From the terminal, navigate to the directory where the source code was unzipped and run: `pipenv run console -- --help`
+3. Install Python (3.10+ required) and [uv](https://docs.astral.sh/uv/getting-started/installation/).
+4. From the terminal, navigate to the directory where the source code was unzipped and run: `uv run task console -- --help`
 
 ### Using pip
 1. Download the source code zip file of the latest release (found in the [Releases](https://github.com/MechTechnology/SmartStitch/releases) section).
@@ -216,14 +215,14 @@ python SmartStitchConsole.py -i "Review me" -sh 7500 -t ".png"
 ## How to Build/Compile Your Own GUI Version
 
 ### How to Compile GUI Package (Windows Users)
-1. Install Python (3.10+ required).
+1. Install Python (3.10+ required) and [uv](https://docs.astral.sh/uv/getting-started/installation/).
 2. Run `setup.py` either by double-clicking it or using the terminal: `python setup.py`
-3. From the terminal, navigate to the directory where the source code was unzipped and run: `pipenv run build`
+3. From the terminal, navigate to the directory where the source code was unzipped and run: `uv run task build`
 
 ### How to Compile GUI Package (Mac & Linux Users)
-1. Install Python (3.10+ required).
+1. Install Python (3.10+ required) and [uv](https://docs.astral.sh/uv/getting-started/installation/).
 2. Run `setup.py` either by double-clicking it or using the terminal: `python setup.py`
-3. From the terminal, navigate to the directory where the source code was unzipped and run: `pipenv run build-no-icon`
+3. From the terminal, navigate to the directory where the source code was unzipped and run: `uv run task build-no-icon`
 
 - The output compiled application will not need Python installed to run, but will only run on the platform it was built/compiled on.
 - Mac and Linux compiling was not tested by me, so uh... good luck xD

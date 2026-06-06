@@ -28,9 +28,7 @@ class SettingsHandler:
         """Loads application settings from current profile"""
         if not self.current_profiles.profiles:
             return AppSettings()
-        return AppSettings(
-            self.current_profiles.profiles[self.current_profiles.current]
-        )
+        return AppSettings(self.current_profiles.profiles[self.current_profiles.current])
 
     def save_current_settings(self, settings: AppSettings = None) -> AppSettings:
         """Saves application settings to current profile"""
@@ -77,12 +75,8 @@ class SettingsHandler:
     def add_profile(self, profile_name: str = None):
         """Adds a settings profile to the collection"""
         if not profile_name:
-            profile_name = "Settings Profile " + str(
-                len(self.current_profiles.profiles) + 1
-            )
-        self.current_profiles.profiles.append(
-            {"profile_name": profile_name, **vars(self.current_settings)}
-        )
+            profile_name = "Settings Profile " + str(len(self.current_profiles.profiles) + 1)
+        self.current_profiles.profiles.append({"profile_name": profile_name, **vars(self.current_settings)})
         self.save_all(self.current_profiles)
         return profile_name
 

@@ -7,20 +7,11 @@ from core.services.global_logger import logFunc
 
 class PostProcessRunner:
     def run(self, workdirectory: WorkDirectory, **kwargs: dict[str:any]):
-        command = (
-            "\""
-            + kwargs.get("postprocess_app", "")
-            + "\" "
-            + kwargs.get("postprocess_args", "")
-        )
+        command = "\"" + kwargs.get("postprocess_app", "") + "\" " + kwargs.get("postprocess_args", "")
         console_func = kwargs.get("console_func", print)
         command = command.replace('[stitched]', "\"" + workdirectory.output_path + "\"")
-        command = command.replace(
-            '[processed]', "\"" + workdirectory.postprocess_path + "\""
-        )
-        return self.call_external_func(
-            workdirectory.postprocess_path, command, console_func
-        )
+        command = command.replace('[processed]', "\"" + workdirectory.postprocess_path + "\"")
+        return self.call_external_func(workdirectory.postprocess_path, command, console_func)
 
     @logFunc(inclass=True)
     def call_external_func(self, processed_path, command, console_func):

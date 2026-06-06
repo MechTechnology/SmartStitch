@@ -69,6 +69,7 @@ def on_load(load_profiles=True):
     # App Fields
     MainWindow.statusField.setText("Idle")
     MainWindow.statusProgressBar.setValue(0)
+    MainWindow.cancelProcessButton.setHidden(True)
     # Settings Fields
     MainWindow.outputTypeDropdown.setCurrentText(settings.load("output_type"))
     MainWindow.lossyField.setValue(settings.load("lossy_quality"))
@@ -100,14 +101,10 @@ def bind_signals():
     MainWindow.widthEnforcementDropdown.currentTextChanged.connect(enforce_type_changed)
     MainWindow.customWidthField.valueChanged.connect(custom_width_changed)
     MainWindow.detectorTypeDropdown.currentTextChanged.connect(detector_type_changed)
-    MainWindow.detectorSensitivityField.valueChanged.connect(
-        detector_sensitivity_changed
-    )
+    MainWindow.detectorSensitivityField.valueChanged.connect(detector_sensitivity_changed)
     MainWindow.scanStepField.valueChanged.connect(scan_step_changed)
     MainWindow.ignoreMarginField.valueChanged.connect(ignorable_margin_changed)
-    MainWindow.currentProfileDropdown.currentTextChanged.connect(
-        current_profile_changed
-    )
+    MainWindow.currentProfileDropdown.currentTextChanged.connect(current_profile_changed)
     MainWindow.currentProfileName.textChanged.connect(current_profile_name_changed)
     MainWindow.addProfileButton.clicked.connect(add_profile)
     MainWindow.removeProfileButton.clicked.connect(remove_profile)

@@ -1,0 +1,41 @@
+[project]
+name = "SmartStitch"
+version = "3.2.0"
+description = "A program for stitching and cutting webtoons/manhwa/manhua raws"
+requires-python = ">=3.10"
+dependencies = [
+    "natsort",
+    "pillow",
+    "numpy",
+    "pyside6",
+    "pyqtdarktheme",
+    "psd-tools>=1.10.13",
+]
+
+[project.optional-dependencies]
+dev = [
+    "flake8",
+    "black",
+    "isort",
+    "pyinstaller",
+]
+
+[dependency-groups]
+dev = [
+    "flake8",
+    "black",
+    "isort",
+    "pyinstaller",
+    "taskipy",
+]
+
+[project.scripts]
+gui = "SmartStitchGUI:launch"
+
+[tool.taskipy.tasks]
+black = "black . --skip-string-normalization --line-length 120 --exclude .venv --target-version py310"
+format = "python -m scripts.formatter"
+console = "python -m SmartStitchConsole"
+gui = "python -m SmartStitchGUI"
+build = "pyinstaller Build.spec"
+build-no-icon = "pyinstaller BuildNoIcon.spec"

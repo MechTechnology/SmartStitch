@@ -18,10 +18,8 @@ SUPPORTED_IMG_TYPES = (
     '.psb',
 )
 
-PHOTOSHOP_FILE_TYPES = (
-    ".psd",
-    ".psb"
-)
+PHOTOSHOP_FILE_TYPES = (".psd", ".psb")
+
 
 # Static Enums
 class WIDTH_ENFORCEMENT(IntEnum):

@@ -49,9 +49,7 @@ class ImageManipulator:
         return combined_img
 
     @logFunc(inclass=True)
-    def slice(
-        self, combined_img: pil.Image, slice_locations: list[int]
-    ) -> list[pil.Image]:
+    def slice(self, combined_img: pil.Image, slice_locations: list[int]) -> list[pil.Image]:
         """Combines given combined img to into multiple img slices given the slice locations."""
         max_width = combined_img.size[0]
         img_objs = []

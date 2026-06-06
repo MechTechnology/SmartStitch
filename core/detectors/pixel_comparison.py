@@ -24,9 +24,7 @@ class PixelComparisonDetector:
         while row < last_row:
             row_pixels = combined_img[row]
             can_slice = True
-            for index in range(
-                ignorable_pixels + 1, len(row_pixels) - ignorable_pixels
-            ):
+            for index in range(ignorable_pixels + 1, len(row_pixels) - ignorable_pixels):
                 prev_pixel = int(row_pixels[index - 1])
                 next_pixel = int(row_pixels[index])
                 value_diff = next_pixel - prev_pixel

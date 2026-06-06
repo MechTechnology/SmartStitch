@@ -40,6 +40,7 @@ class ChunkedProcessor:
         self.cancel_event = cancel_event or threading.Event()
         self.progress_callback = progress_callback or (lambda *args: None)
 
+    @logFunc(inclass=True)
     def run(
         self,
         workdirectory: WorkDirectory,
@@ -78,9 +79,7 @@ class ChunkedProcessor:
             else:
                 buffer_img = self._append_to_buffer(buffer_img, img)
 
-            self._report_progress(
-                "Loading", i + 1, total_images, f"Loaded {img_file}"
-            )
+            self._report_progress("Loading", i + 1, total_images, f"Loaded {img_file}")
 
             # Check if buffer is large enough to process, or if this is the last image
             threshold = int(split_height * self.BUFFER_THRESHOLD_MULTIPLIER)
@@ -104,24 +103,18 @@ class ChunkedProcessor:
                     upper = slice_points[j - 1]
                     lower = slice_points[j]
                     panel = buffer_img.crop((0, upper, buffer_img.size[0], lower))
-                    self.img_handler.save(
-                        workdirectory, panel, img_iteration, output_type, lossy_quality
-                    )
+                    self.img_handler.save(workdirectory, panel, img_iteration, output_type, lossy_quality)
                     img_iteration += 1
 
                 # Keep remaining bottom portion as new buffer
                 last_slice = slice_points[-1]
                 if last_slice < buffer_img.size[1]:
-                    remainder = buffer_img.crop(
-                        (0, last_slice, buffer_img.size[0], buffer_img.size[1])
-                    )
+                    remainder = buffer_img.crop((0, last_slice, buffer_img.size[0], buffer_img.size[1]))
                     buffer_img = remainder
                 else:
                     buffer_img = None
 
-                self._report_progress(
-                    "Processing", chunk_count, None, f"Chunk {chunk_count} processed"
-                )
+                self._report_progress("Processing", chunk_count, None, f"Chunk {chunk_count} processed")
 
         # Handle any remaining buffer content after all images are processed
         if buffer_img is not None and buffer_img.size[1] > 0:
@@ -137,9 +130,7 @@ class ChunkedProcessor:
                 upper = slice_points[j - 1]
                 lower = slice_points[j]
                 panel = buffer_img.crop((0, upper, buffer_img.size[0], lower))
-                self.img_handler.save(
-                    workdirectory, panel, img_iteration, output_type, lossy_quality
-                )
+                self.img_handler.save(workdirectory, panel, img_iteration, output_type, lossy_quality)
                 img_iteration += 1
 
         return workdirectory
@@ -197,7 +188,7 @@ class ChunkedProcessor:
         enforce_width: int,
     ) -> int | None:
         """Resolves the target width based on enforcement mode.
-        
+
         For AUTOMATIC mode, scans all files to find the minimum width.
         """
         if enforce_type == WIDTH_ENFORCEMENT.MANUAL:

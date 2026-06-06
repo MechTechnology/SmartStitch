@@ -53,9 +53,7 @@ def logFunc(func=None, inclass=False):
             result = func(*args, **kwargs)
             return result
         except Exception as e:
-            logging.exception(
-                f"Exception raised in {func.__name__}. exception: {str(e)}"
-            )
+            logging.exception(f"Exception raised in {func.__name__}. exception: {str(e)}")
             raise e
 
     return wrapper

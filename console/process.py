@@ -32,11 +32,7 @@ class ConsoleStitchProcess:
         img_handler = ImageHandler()
         img_manipulator = ImageManipulator()
         detector = select_detector(detection_type=kwargs.get("detection_type"))
-        width_enforce_mode = (
-            WIDTH_ENFORCEMENT.MANUAL
-            if kwargs.get("custom_width") > 0
-            else WIDTH_ENFORCEMENT.NONE
-        )
+        width_enforce_mode = WIDTH_ENFORCEMENT.MANUAL if kwargs.get("custom_width") > 0 else WIDTH_ENFORCEMENT.NONE
 
         # Starting Stitch Process
         start_time = time()
@@ -53,11 +49,7 @@ class ConsoleStitchProcess:
                 print("\nProcess cancelled by user.")
                 return
 
-            print(
-                "-> Starting stitching process for working directory #{iteration} <-".format(
-                    iteration=dir_iteration
-                )
-            )
+            print("-> Starting stitching process for working directory #{iteration} <-".format(iteration=dir_iteration))
 
             # Initialize and run chunked processor for this directory
             processor = ChunkedProcessor(
@@ -66,9 +58,7 @@ class ConsoleStitchProcess:
                 detector=detector,
                 cancel_event=cancel_event,
                 progress_callback=lambda phase, current, total, msg: print(
-                    "[{iteration}/{count}] {msg}".format(
-                        iteration=dir_iteration, count=input_dirs_count, msg=msg
-                    )
+                    "[{iteration}/{count}] {msg}".format(iteration=dir_iteration, count=input_dirs_count, msg=msg)
                 ),
             )
 
@@ -93,8 +83,4 @@ class ConsoleStitchProcess:
 
         # Process completed
         end_time = time()
-        print(
-            "--- Process completed in {time:.3f} seconds ---".format(
-                time=end_time - start_time
-            )
-        )
+        print("--- Process completed in {time:.3f} seconds ---".format(time=end_time - start_time))
